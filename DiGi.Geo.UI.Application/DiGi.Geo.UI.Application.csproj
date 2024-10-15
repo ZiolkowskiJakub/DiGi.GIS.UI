@@ -14,7 +14,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\DiGi.OSM\DiGi.OSM\DiGi.OSM.csproj" />
+    <Reference Include="DiGi.Core">
+      <HintPath>..\references\DiGi.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.Geo">
+      <HintPath>..\references\DiGi.Geo.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.OSM">
+      <HintPath>..\references\DiGi.OSM.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

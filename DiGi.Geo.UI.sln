@@ -5,8 +5,6 @@ VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiGi.Geo.UI.Application", "DiGi.Geo.UI.Application\DiGi.Geo.UI.Application.csproj", "{A99915F2-A33E-4FBB-99EB-EF8BA505F633}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiGi.OSM", "..\DiGi.OSM\DiGi.OSM\DiGi.OSM.csproj", "{F5FA29DC-5660-4159-B07B-60AE1848AA9F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{A99915F2-A33E-4FBB-99EB-EF8BA505F633}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A99915F2-A33E-4FBB-99EB-EF8BA505F633}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A99915F2-A33E-4FBB-99EB-EF8BA505F633}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F5FA29DC-5660-4159-B07B-60AE1848AA9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5FA29DC-5660-4159-B07B-60AE1848AA9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F5FA29DC-5660-4159-B07B-60AE1848AA9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F5FA29DC-5660-4159-B07B-60AE1848AA9F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

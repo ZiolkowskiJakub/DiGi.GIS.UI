@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using Microsoft.Win32;
+using System.IO;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -21,9 +23,23 @@ namespace DiGi.Geo.UI.Application.Windows
             InitializeComponent();
         }
 
-        private void Convert_Click(object sender, RoutedEventArgs e)
+        private async void Convert_Click(object sender, RoutedEventArgs e)
         {
-            OSM.Query.Test("C:\\Users\\jakub\\Downloads\\map.osm");
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "zip files (*.zip)|*.zip|All files (*.*)|*.*";
+            bool? result = openFileDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string path = openFileDialog.FileName;
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            {
+                return;
+            }
+
+            await Modify.Write(path, new Core.Classes.Range<int>(2001, 2023));
         }
     }
 }
