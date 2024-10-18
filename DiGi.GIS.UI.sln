@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiGi.Geo.UI.Application", "DiGi.Geo.UI.Application\DiGi.Geo.UI.Application.csproj", "{A99915F2-A33E-4FBB-99EB-EF8BA505F633}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiGi.GIS.UI.Application", "DiGi.GIS.UI.Application\DiGi.GIS.UI.Application.csproj", "{A99915F2-A33E-4FBB-99EB-EF8BA505F633}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

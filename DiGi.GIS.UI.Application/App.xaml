@@ -1,7 +1,7 @@
-﻿<Application x:Class="DiGi.Geo.UI.Application.App"
+﻿<Application x:Class="DiGi.GIS.UI.Application.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:DiGi.Geo.UI.Application"
+             xmlns:local="clr-namespace:DiGi.GIS.UI.Application"
              Startup="App_Startup">
     <Application.Resources>
          

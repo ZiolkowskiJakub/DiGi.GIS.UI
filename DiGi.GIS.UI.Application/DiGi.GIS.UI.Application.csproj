@@ -14,11 +14,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="DiGi.BDOT10k.UI">
+      <HintPath>..\references\DiGi.BDOT10k.UI.dll</HintPath>
+    </Reference>
     <Reference Include="DiGi.Core">
       <HintPath>..\references\DiGi.Core.dll</HintPath>
     </Reference>
-    <Reference Include="DiGi.Geo">
-      <HintPath>..\references\DiGi.Geo.dll</HintPath>
+    <Reference Include="DiGi.GIS">
+      <HintPath>..\references\DiGi.GIS.dll</HintPath>
     </Reference>
     <Reference Include="DiGi.OSM">
       <HintPath>..\references\DiGi.OSM.dll</HintPath>
