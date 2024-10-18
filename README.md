@@ -1,1 +1,1 @@
-# DiGi.Geo.UI
+# DiGi.GIS.UI
