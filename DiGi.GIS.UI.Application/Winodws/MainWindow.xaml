@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DiGi.GIS.UI.Application"
         mc:Ignorable="d"
-        Title="Geo" Height="100" Width="150" ResizeMode="NoResize">
+        Title="GIS" Height="100" Width="150" ResizeMode="NoResize">
     <Grid>
         <Button x:Name="Button_Write" Content="Write" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Width="130" Click="Button_Write_Click"/>
         <Button x:Name="Button_Read" Content="Read" HorizontalAlignment="Center" Margin="0,37,0,0" VerticalAlignment="Top" Width="130" Click="Button_Read_Click"/>
