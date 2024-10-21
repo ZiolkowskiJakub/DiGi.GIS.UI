@@ -1,4 +1,5 @@
-﻿using DiGi.GIS.Classes;
+﻿using DiGi.Core.Interfaces;
+using DiGi.GIS.Classes;
 using Microsoft.Win32;
 using System.IO;
 using System.Windows;
@@ -46,16 +47,18 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            Modify.Extract(new ExtractOptions(path, directory) { UpdateExisting = false });
+            SQLite.Modify.Extract(new SQLite.Classes.SQLiteExtractOptions(path, directory) { UpdateExisting = false });
+
+            //Modify.Extract(new DirectoryExtractOptions(path, directory) { UpdateExisting = false });
         }
 
         private void Button_Read_Click(object sender, RoutedEventArgs e)
         {
 
-            Read();
+            Read_SQLite();
         }
 
-        private void Read()
+        private void Read_Files()
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
             bool? result = openFolderDialog.ShowDialog(this);
@@ -71,6 +74,34 @@ namespace DiGi.GIS.UI.Application.Windows
             }
 
             List<Building2D> building2Ds = Create.Building2Ds(directory);
+        }
+
+        private void Read_SQLite()
+        {
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths = Directory.GetFiles(directory, "*.sqlite3", SearchOption.AllDirectories);
+            foreach(string path in paths)
+            {
+                List<ISerializableObject> serializableObjects = SQLite.Convert.ToDiGi<ISerializableObject>(path);
+                if(serializableObjects != null)
+                {
+
+                }
+            }
+
+            //List<Building2D> building2Ds = Create.Building2Ds(directory);
         }
 
         private void Reorganize()
@@ -114,14 +145,15 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Delete()
         {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            bool? result = openFolderDialog.ShowDialog(this);
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
+            //OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            //bool? result = openFolderDialog.ShowDialog(this);
+            //if (result == null || !result.HasValue || !result.Value)
+            //{
+            //    return;
+            //}
 
-            string directory = openFolderDialog.FolderName;
+            //string directory = openFolderDialog.FolderName;
+            string directory = @"C:\Users\jakub\Nextcloud\Data\GIS\Output";
             if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
             {
                 return;
