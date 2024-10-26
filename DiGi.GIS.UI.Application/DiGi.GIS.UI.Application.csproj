@@ -21,6 +21,9 @@
     <Reference Include="DiGi.Core">
       <HintPath>..\references\DiGi.Core.dll</HintPath>
     </Reference>
+    <Reference Include="DiGi.Geometry">
+      <HintPath>..\references\DiGi.Geometry.dll</HintPath>
+    </Reference>
     <Reference Include="DiGi.GIS">
       <HintPath>..\references\DiGi.GIS.dll</HintPath>
     </Reference>
