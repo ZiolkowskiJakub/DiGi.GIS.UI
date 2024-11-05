@@ -21,6 +21,12 @@
     <Reference Include="DiGi.Core">
       <HintPath>..\references\DiGi.Core.dll</HintPath>
     </Reference>
+    <Reference Include="DiGi.Core.IO">
+      <HintPath>..\references\DiGi.Core.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.Core.Relation">
+      <HintPath>..\references\DiGi.Core.Relation.dll</HintPath>
+    </Reference>
     <Reference Include="DiGi.Geometry">
       <HintPath>..\references\DiGi.Geometry.dll</HintPath>
     </Reference>
@@ -30,8 +36,8 @@
     <Reference Include="DiGi.GIS.SQLite">
       <HintPath>..\references\DiGi.GIS.SQLite.dll</HintPath>
     </Reference>
-    <Reference Include="DiGi.OSM">
-      <HintPath>..\references\DiGi.OSM.dll</HintPath>
+    <Reference Include="DiGi.SQLite">
+      <HintPath>..\references\DiGi.SQLite.dll</HintPath>
     </Reference>
   </ItemGroup>
 

@@ -20,6 +20,63 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Button_Write_Click(object sender, RoutedEventArgs e)
         {
+            ReadAndWrite_SQLite();
+        }
+
+        private void Button_Read_Click(object sender, RoutedEventArgs e)
+        {
+
+            GetData();
+        }
+
+        private void Read_Files()
+        {
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            List<Building2D> building2Ds = Create.Building2Ds(directory);
+        }
+
+        private void Read_SQLite_Version_1()
+        {
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths = Directory.GetFiles(directory, "*.sqlite3", SearchOption.AllDirectories);
+            foreach(string path in paths)
+            {
+                List<ISerializableObject> serializableObjects = SQLite.Convert.ToDiGi<ISerializableObject>(path);
+                if(serializableObjects != null)
+                {
+
+                }
+            }
+
+            //List<Building2D> building2Ds = Create.Building2Ds(directory);
+        }
+
+        private void Read_SQLite_Version_2()
+        {
             bool? result;
 
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -54,31 +111,7 @@ namespace DiGi.GIS.UI.Application.Windows
             //Modify.Extract(new DirectoryExtractOptions(path, directory) { UpdateExisting = true });
         }
 
-        private void Button_Read_Click(object sender, RoutedEventArgs e)
-        {
-
-            GetData();
-        }
-
-        private void Read_Files()
-        {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            bool? result = openFolderDialog.ShowDialog(this);
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-            string directory = openFolderDialog.FolderName;
-            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
-            {
-                return;
-            }
-
-            List<Building2D> building2Ds = Create.Building2Ds(directory);
-        }
-
-        private void Read_SQLite()
+        private void ReadAndWrite_SQLite()
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
             bool? result = openFolderDialog.ShowDialog(this);
@@ -94,16 +127,26 @@ namespace DiGi.GIS.UI.Application.Windows
             }
 
             string[] paths = Directory.GetFiles(directory, "*.sqlite3", SearchOption.AllDirectories);
+
             foreach(string path in paths)
             {
-                List<ISerializableObject> serializableObjects = SQLite.Convert.ToDiGi<ISerializableObject>(path);
-                if(serializableObjects != null)
+                List<Areal2D> areal2Ds = SQLite.Convert.ToDiGi<Areal2D>(path);
+                if (areal2Ds == null)
                 {
-
+                    continue;
                 }
-            }
 
-            //List<Building2D> building2Ds = Create.Building2Ds(directory);
+                GISModel gISModel = new GISModel();
+                foreach(Areal2D areal2D in areal2Ds)
+                {
+                    gISModel.Update(areal2D as dynamic);
+                    break;
+                }
+
+                string path_Output = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + "." + DiGi.SQLite.Constans.FileExtension.SQLite);
+
+                SQLite.Convert.ToSQLite(gISModel, path_Output);
+            }
         }
 
         private void GetData()
