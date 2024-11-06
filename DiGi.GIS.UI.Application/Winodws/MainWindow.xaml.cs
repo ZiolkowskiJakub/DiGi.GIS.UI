@@ -1,4 +1,5 @@
-﻿using DiGi.Core.Interfaces;
+﻿using DiGi.Core;
+using DiGi.Core.Interfaces;
 using DiGi.Geometry.Planar.Classes;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Enums;
@@ -20,13 +21,64 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Button_Write_Click(object sender, RoutedEventArgs e)
         {
-            ReadAndWrite_SQLite();
+            //Convert_SQLite();
+            Convert_Json();
         }
 
         private void Button_Read_Click(object sender, RoutedEventArgs e)
         {
 
             GetData();
+        }
+
+        private void Convert_Json()
+        {
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths = Directory.GetFiles(directory, "*.sqlite3", SearchOption.AllDirectories);
+
+            foreach (string path in paths)
+            {
+                List<Areal2D> areal2Ds = SQLite.Convert.ToDiGi<Areal2D>(path);
+                if (areal2Ds == null)
+                {
+                    continue;
+                }
+
+                GISModel gISModel = new GISModel();
+                foreach (Areal2D areal2D in areal2Ds)
+                {
+                    //if(!(areal2D is Building2D))
+                    //{
+                    //    continue;
+                    //}
+
+                    gISModel.Update(areal2D as dynamic);
+                    //break;
+                }
+
+                string path_Output = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + "." + "json");
+                if (File.Exists(path_Output))
+                {
+                    File.Delete(path_Output);
+                }
+
+
+                Core.Convert.ToFileInfo(gISModel, path_Output);
+            }
+
+
         }
 
         private void Read_Files()
@@ -111,7 +163,64 @@ namespace DiGi.GIS.UI.Application.Windows
             //Modify.Extract(new DirectoryExtractOptions(path, directory) { UpdateExisting = true });
         }
 
-        private void ReadAndWrite_SQLite()
+        private void Compare_SQLite()
+        {
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths_Old = Directory.GetFiles(directory, "*.sqlite3", SearchOption.AllDirectories);
+
+            foreach (string path_Old in paths_Old)
+            {
+                string path_New = Path.Combine(Path.GetDirectoryName(path_Old), Path.GetFileNameWithoutExtension(path_Old) + "." + DiGi.SQLite.Constans.FileExtension.SQLite);
+                if(!File.Exists(path_New))
+                {
+                    continue;
+                }
+
+                List<Areal2D> areal2Ds_Old = SQLite.Convert.ToDiGi<Areal2D>(path_Old);
+                if (areal2Ds_Old == null)
+                {
+                    continue;
+                }
+
+                GISModel gISModel = SQLite.Convert.ToDiGi(path_New);
+                if(gISModel == null)
+                {
+                    throw new Exception();
+                }
+
+                foreach(Areal2D areal2D_Old in areal2Ds_Old)
+                {
+                    Areal2D areal2D_New = gISModel.GetObject<Areal2D>(x => areal2D_Old.UniqueReference().Equals(x.UniqueReference()));
+                    if(areal2D_New == null)
+                    {
+                        //continue;
+                        throw new Exception();
+                    }
+
+                    string string_New = Core.Convert.ToString(areal2D_New);
+                    string string_Old = Core.Convert.ToString(areal2D_Old);
+
+                    if(string_New != string_Old)
+                    {
+                        throw new Exception();
+                    }
+                }
+            }
+        }
+
+        private void Convert_SQLite()
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
             bool? result = openFolderDialog.ShowDialog(this);
@@ -139,11 +248,21 @@ namespace DiGi.GIS.UI.Application.Windows
                 GISModel gISModel = new GISModel();
                 foreach(Areal2D areal2D in areal2Ds)
                 {
+                    //if(!(areal2D is Building2D))
+                    //{
+                    //    continue;
+                    //}
+
                     gISModel.Update(areal2D as dynamic);
-                    break;
+                    //break;
                 }
 
                 string path_Output = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + "." + DiGi.SQLite.Constans.FileExtension.SQLite);
+                if(File.Exists(path_Output))
+                {
+                    File.Delete(path_Output);
+                }
+
 
                 SQLite.Convert.ToSQLite(gISModel, path_Output);
             }

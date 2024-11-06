@@ -7,43 +7,16 @@
   "targets": {
     ".NETStandard,Version=v2.0": {},
     ".NETStandard,Version=v2.0/": {
-      "DiGi.GIS/1.0.0": {
+      "DiGi.SQLite/1.0.0": {
         "dependencies": {
+          "Microsoft.Data.Sqlite": "8.0.10",
           "NETStandard.Library": "2.0.3",
-          "ProjNET4GeoAPI": "1.4.1",
           "System.Text.Json": "8.0.5",
-          "DiGi.BDOT10k": "1.0.0.0",
-          "DiGi.BDOT10k.UI": "1.0.0.0",
           "DiGi.Core": "1.0.0.0",
-          "DiGi.Core.IO": "1.0.0.0",
-          "DiGi.Core.Relation": "1.0.0.0",
-          "DiGi.Geometry": "1.0.0.0",
-          "DiGi.Geometry.Object": "1.0.0.0",
-          "DiGi.Geometry.Visual": "1.0.0.0",
-          "DiGi.GML": "1.0.0.0",
-          "DiGi.Math": "1.0.0.0"
+          "DiGi.Core.IO": "1.0.0.0"
         },
         "runtime": {
-          "DiGi.GIS.dll": {}
-        }
-      },
-      "GeoAPI.CoordinateSystems/1.7.5": {
-        "dependencies": {
-          "GeoAPI.Core": "1.7.5"
-        },
-        "runtime": {
-          "lib/netstandard2.0/GeoAPI.CoordinateSystems.dll": {
-            "assemblyVersion": "1.7.5.0",
-            "fileVersion": "1.7.5.0"
-          }
-        }
-      },
-      "GeoAPI.Core/1.7.5": {
-        "runtime": {
-          "lib/netstandard2.0/GeoAPI.dll": {
-            "assemblyVersion": "1.7.5.0",
-            "fileVersion": "1.7.5.0"
-          }
+          "DiGi.SQLite.dll": {}
         }
       },
       "Microsoft.Bcl.AsyncInterfaces/8.0.0": {
@@ -57,20 +30,61 @@
           }
         }
       },
+      "Microsoft.Data.Sqlite/8.0.10": {
+        "dependencies": {
+          "Microsoft.Data.Sqlite.Core": "8.0.10",
+          "SQLitePCLRaw.bundle_e_sqlite3": "2.1.6"
+        }
+      },
+      "Microsoft.Data.Sqlite.Core/8.0.10": {
+        "dependencies": {
+          "SQLitePCLRaw.core": "2.1.6"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Data.Sqlite.dll": {
+            "assemblyVersion": "8.0.10.0",
+            "fileVersion": "8.0.1024.46708"
+          }
+        }
+      },
       "Microsoft.NETCore.Platforms/1.1.0": {},
       "NETStandard.Library/2.0.3": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.1.0"
         }
       },
-      "ProjNET4GeoAPI/1.4.1": {
+      "SQLitePCLRaw.bundle_e_sqlite3/2.1.6": {
         "dependencies": {
-          "GeoAPI.CoordinateSystems": "1.7.5"
+          "SQLitePCLRaw.lib.e_sqlite3": "2.1.6",
+          "SQLitePCLRaw.provider.e_sqlite3": "2.1.6"
         },
         "runtime": {
-          "lib/netstandard2.0/ProjNET.dll": {
-            "assemblyVersion": "1.4.0.0",
-            "fileVersion": "1.4.0.0"
+          "lib/netstandard2.0/SQLitePCLRaw.batteries_v2.dll": {
+            "assemblyVersion": "2.1.6.2060",
+            "fileVersion": "2.1.6.2060"
+          }
+        }
+      },
+      "SQLitePCLRaw.core/2.1.6": {
+        "dependencies": {
+          "System.Memory": "4.5.5"
+        },
+        "runtime": {
+          "lib/netstandard2.0/SQLitePCLRaw.core.dll": {
+            "assemblyVersion": "2.1.6.2060",
+            "fileVersion": "2.1.6.2060"
+          }
+        }
+      },
+      "SQLitePCLRaw.lib.e_sqlite3/2.1.6": {},
+      "SQLitePCLRaw.provider.e_sqlite3/2.1.6": {
+        "dependencies": {
+          "SQLitePCLRaw.core": "2.1.6"
+        },
+        "runtime": {
+          "lib/netstandard2.0/SQLitePCLRaw.provider.e_sqlite3.dll": {
+            "assemblyVersion": "2.1.6.2060",
+            "fileVersion": "2.1.6.2060"
           }
         }
       },
@@ -151,22 +165,6 @@
           }
         }
       },
-      "DiGi.BDOT10k/1.0.0.0": {
-        "runtime": {
-          "DiGi.BDOT10k.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
-      "DiGi.BDOT10k.UI/1.0.0.0": {
-        "runtime": {
-          "DiGi.BDOT10k.UI.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
       "DiGi.Core/1.0.0.0": {
         "runtime": {
           "DiGi.Core.dll": {
@@ -182,76 +180,14 @@
             "fileVersion": "1.0.0.0"
           }
         }
-      },
-      "DiGi.Core.Relation/1.0.0.0": {
-        "runtime": {
-          "DiGi.Core.Relation.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
-      "DiGi.Geometry/1.0.0.0": {
-        "runtime": {
-          "DiGi.Geometry.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
-      "DiGi.Geometry.Object/1.0.0.0": {
-        "runtime": {
-          "DiGi.Geometry.Object.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
-      "DiGi.Geometry.Visual/1.0.0.0": {
-        "runtime": {
-          "DiGi.Geometry.Visual.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
-      "DiGi.GML/1.0.0.0": {
-        "runtime": {
-          "DiGi.GML.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
-      "DiGi.Math/1.0.0.0": {
-        "runtime": {
-          "DiGi.Math.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
       }
     }
   },
   "libraries": {
-    "DiGi.GIS/1.0.0": {
+    "DiGi.SQLite/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
-    },
-    "GeoAPI.CoordinateSystems/1.7.5": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-JBcvkeQFjCW9NTfkII5WiJNmnv0ZtYA/VTVljbIqDFWBJ8kHwu2UHd2MVStD/VVHVnLoyNcDIapsuTENdlyF3g==",
-      "path": "geoapi.coordinatesystems/1.7.5",
-      "hashPath": "geoapi.coordinatesystems.1.7.5.nupkg.sha512"
-    },
-    "GeoAPI.Core/1.7.5": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-Dy/YkgZ1szgx+xbVWqMi+4++Fm6v3szbVdei1LKPRZ3meSvgNSMZxqhar5IAeaTj5LcUHLtLGdfyUtkjnYbg3A==",
-      "path": "geoapi.core/1.7.5",
-      "hashPath": "geoapi.core.1.7.5.nupkg.sha512"
     },
     "Microsoft.Bcl.AsyncInterfaces/8.0.0": {
       "type": "package",
@@ -259,6 +195,20 @@
       "sha512": "sha512-3WA9q9yVqJp222P3x1wYIGDAkpjAku0TMUaaQV22g6L67AI0LdOIrVS7Ht2vJfLHGSPVuqN94vIr15qn+HEkHw==",
       "path": "microsoft.bcl.asyncinterfaces/8.0.0",
       "hashPath": "microsoft.bcl.asyncinterfaces.8.0.0.nupkg.sha512"
+    },
+    "Microsoft.Data.Sqlite/8.0.10": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-WN+qgrEcXg66YHtICl0W4If9v98PBenIj/INVkJaC+wqGX/Zus3aqyv6EI17EBRsw6tcvWsKd980X5iQ7wcj1Q==",
+      "path": "microsoft.data.sqlite/8.0.10",
+      "hashPath": "microsoft.data.sqlite.8.0.10.nupkg.sha512"
+    },
+    "Microsoft.Data.Sqlite.Core/8.0.10": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-i95bgLqp6rJzmhQEtGhVVHnk1nYAhr/pLDul676PnwI/d7uDSSGs2ZPU9aP0VOuppkZaNinQOUCrD7cstDbQiQ==",
+      "path": "microsoft.data.sqlite.core/8.0.10",
+      "hashPath": "microsoft.data.sqlite.core.8.0.10.nupkg.sha512"
     },
     "Microsoft.NETCore.Platforms/1.1.0": {
       "type": "package",
@@ -274,12 +224,33 @@
       "path": "netstandard.library/2.0.3",
       "hashPath": "netstandard.library.2.0.3.nupkg.sha512"
     },
-    "ProjNET4GeoAPI/1.4.1": {
+    "SQLitePCLRaw.bundle_e_sqlite3/2.1.6": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Gw1fW7vQpGB23XZJepG9Cvo2bjpPKuddmsb8+Bwap6KYJdEYWwqHIr+6YP3e391h0ksf6t8mzvj3FA0U/7hUfA==",
-      "path": "projnet4geoapi/1.4.1",
-      "hashPath": "projnet4geoapi.1.4.1.nupkg.sha512"
+      "sha512": "sha512-BmAf6XWt4TqtowmiWe4/5rRot6GerAeklmOPfviOvwLoF5WwgxcJHAxZtySuyW9r9w+HLILnm8VfJFLCUJYW8A==",
+      "path": "sqlitepclraw.bundle_e_sqlite3/2.1.6",
+      "hashPath": "sqlitepclraw.bundle_e_sqlite3.2.1.6.nupkg.sha512"
+    },
+    "SQLitePCLRaw.core/2.1.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-wO6v9GeMx9CUngAet8hbO7xdm+M42p1XeJq47ogyRoYSvNSp0NGLI+MgC0bhrMk9C17MTVFlLiN6ylyExLCc5w==",
+      "path": "sqlitepclraw.core/2.1.6",
+      "hashPath": "sqlitepclraw.core.2.1.6.nupkg.sha512"
+    },
+    "SQLitePCLRaw.lib.e_sqlite3/2.1.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-2ObJJLkIUIxRpOUlZNGuD4rICpBnrBR5anjyfUFQep4hMOIeqW+XGQYzrNmHSVz5xSWZ3klSbh7sFR6UyDj68Q==",
+      "path": "sqlitepclraw.lib.e_sqlite3/2.1.6",
+      "hashPath": "sqlitepclraw.lib.e_sqlite3.2.1.6.nupkg.sha512"
+    },
+    "SQLitePCLRaw.provider.e_sqlite3/2.1.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-PQ2Oq3yepLY4P7ll145P3xtx2bX8xF4PzaKPRpw9jZlKvfe4LE/saAV82inND9usn1XRpmxXk7Lal3MTI+6CNg==",
+      "path": "sqlitepclraw.provider.e_sqlite3/2.1.6",
+      "hashPath": "sqlitepclraw.provider.e_sqlite3.2.1.6.nupkg.sha512"
     },
     "System.Buffers/4.5.1": {
       "type": "package",
@@ -330,52 +301,12 @@
       "path": "system.threading.tasks.extensions/4.5.4",
       "hashPath": "system.threading.tasks.extensions.4.5.4.nupkg.sha512"
     },
-    "DiGi.BDOT10k/1.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "DiGi.BDOT10k.UI/1.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
     "DiGi.Core/1.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
     "DiGi.Core.IO/1.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "DiGi.Core.Relation/1.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "DiGi.Geometry/1.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "DiGi.Geometry.Object/1.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "DiGi.Geometry.Visual/1.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "DiGi.GML/1.0.0.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "DiGi.Math/1.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
