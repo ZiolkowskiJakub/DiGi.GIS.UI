@@ -35,7 +35,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Button_Analyse_Click(object sender, RoutedEventArgs e)
         {
-            Report(true);
+            Report(false);
         }
 
         private void Button_Calculate_Click(object sender, RoutedEventArgs e)
