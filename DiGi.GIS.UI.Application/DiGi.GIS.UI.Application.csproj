@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\DiGi.GIS\DiGi.GIS\DiGi.GIS.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="DiGi.BDOT10k.UI">
       <HintPath>..\references\DiGi.BDOT10k.UI.dll</HintPath>
     </Reference>
@@ -30,14 +34,14 @@
     <Reference Include="DiGi.Geometry">
       <HintPath>..\references\DiGi.Geometry.dll</HintPath>
     </Reference>
-    <Reference Include="DiGi.GIS">
-      <HintPath>..\references\DiGi.GIS.dll</HintPath>
+    <Reference Include="DiGi.Geometry.Object">
+      <HintPath>..\references\DiGi.Geometry.Object.dll</HintPath>
     </Reference>
-    <Reference Include="DiGi.GIS.SQLite">
-      <HintPath>..\references\DiGi.GIS.SQLite.dll</HintPath>
+    <Reference Include="DiGi.Geometry.Visual">
+      <HintPath>..\references\DiGi.Geometry.Visual.dll</HintPath>
     </Reference>
-    <Reference Include="DiGi.SQLite">
-      <HintPath>..\references\DiGi.SQLite.dll</HintPath>
+    <Reference Include="DiGi.GML">
+      <HintPath>..\references\DiGi.GML.dll</HintPath>
     </Reference>
   </ItemGroup>
 

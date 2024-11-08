@@ -1,10 +1,8 @@
-﻿using DiGi.Core;
-using DiGi.Core.Interfaces;
-using DiGi.Geometry.Planar.Classes;
-using DiGi.GIS.Classes;
+﻿using DiGi.GIS.Classes;
 using DiGi.GIS.Enums;
 using Microsoft.Win32;
 using System.IO;
+
 using System.Windows;
 
 namespace DiGi.GIS.UI.Application.Windows
@@ -21,17 +19,31 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Button_Write_Click(object sender, RoutedEventArgs e)
         {
-            //Convert_SQLite();
-            Convert_Json();
+            Convert_FromBDOT10k();
+        }
+
+        private void Button_Convert_Click(object sender, RoutedEventArgs e)
+        {
+            Convert_FromBDOT10k();
         }
 
         private void Button_Read_Click(object sender, RoutedEventArgs e)
         {
 
-            GetData();
+            Read_FromZip();
         }
 
-        private void Convert_Json()
+        private void Button_Analyse_Click(object sender, RoutedEventArgs e)
+        {
+            Report(true);
+        }
+
+        private void Button_Calculate_Click(object sender, RoutedEventArgs e)
+        {
+            Calculate();
+        }
+
+        private void CalculateBuilding2DGeometries()
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
             bool? result = openFolderDialog.ShowDialog(this);
@@ -46,45 +58,182 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            string[] paths = Directory.GetFiles(directory, "*.sqlite3", SearchOption.AllDirectories);
-
-            foreach (string path in paths)
+            string[] paths_Input = Directory.GetFiles(directory, "*." + Core.IO.File.Constans.FileExtension.Zip, SearchOption.AllDirectories);
+            for (int i = 0; i < paths_Input.Length; i++)
             {
-                List<Areal2D> areal2Ds = SQLite.Convert.ToDiGi<Areal2D>(path);
-                if (areal2Ds == null)
+                string path_Input = paths_Input[i];
+
+                GISModel gISModel = null;
+
+                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                {
+                    gISModelFile.Open();
+                    gISModel = gISModelFile.Value;
+
+                    gISModel.CalculateBuilding2DGeometries();
+
+                    gISModelFile.Value = gISModel;
+                    gISModelFile.Save();
+                }
+            };
+
+            MessageBox.Show("Finished!");
+        }
+
+        private void CalculateAdministrativeAreal2DGeometries()
+        {
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths_Input = Directory.GetFiles(directory, "*." + Core.IO.File.Constans.FileExtension.Zip, SearchOption.AllDirectories);
+            for (int i = 0; i < paths_Input.Length; i++)
+            {
+                string path_Input = paths_Input[i];
+
+                GISModel gISModel = null;
+
+                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                {
+                    gISModelFile.Open();
+                    gISModel = gISModelFile.Value;
+
+                    gISModel.CalculateAdministrativeAreal2DGeometries();
+
+                    gISModelFile.Value = gISModel;
+                    gISModelFile.Save();
+                }
+            };
+
+            MessageBox.Show("Finished!");
+        }
+
+        private void Calculate()
+        {
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths_Input = Directory.GetFiles(directory, "*." + Core.IO.File.Constans.FileExtension.Zip, SearchOption.AllDirectories);
+            for (int i = 0; i < paths_Input.Length; i++)
+            {
+                string path_Input = paths_Input[i];
+
+                GISModel gISModel = null;
+
+                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                {
+                    gISModelFile.Open();
+                    gISModel = gISModelFile.Value;
+
+                    gISModel.Calculate();
+
+                    gISModelFile.Value = gISModel;
+                    gISModelFile.Save();
+                }
+            };
+
+            MessageBox.Show("Finished!");
+        }
+
+        private void ListAdministrativeAreal2Ds()
+        {
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths_Input = Directory.GetFiles(directory, "*." + Core.IO.File.Constans.FileExtension.Zip, SearchOption.AllDirectories);
+
+            string path_Output = Path.Combine(directory, "administrativeArealNames.txt");
+
+            HashSet<string> types = new HashSet<string>();
+            if (File.Exists(path_Output))
+            {
+                string[] lines = File.ReadAllLines(path_Output);
+                foreach (string line in lines)
+                {
+                    string[] values = line?.Split('\t');
+                    if (values != null && values.Length > 1)
+                    {
+                        types.Add(values[0]);
+                    }
+                }
+            }
+
+            for (int i = 0; i < paths_Input.Length; i++)
+            {
+                string path_Input = paths_Input[i];
+
+                string type = Path.GetFileNameWithoutExtension(path_Input);
+                if (types.Contains(type))
                 {
                     continue;
                 }
 
-                GISModel gISModel = new GISModel();
-                foreach (Areal2D areal2D in areal2Ds)
-                {
-                    //if(!(areal2D is Building2D))
-                    //{
-                    //    continue;
-                    //}
+                GISModel gISModel = null;
 
-                    gISModel.Update(areal2D as dynamic);
-                    //break;
+                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                {
+                    gISModelFile.Open();
+                    gISModel = gISModelFile.Value;
                 }
 
-                string path_Output = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + "." + "json");
-                if (File.Exists(path_Output))
+                if (gISModel == null)
                 {
-                    File.Delete(path_Output);
+                    return;
                 }
 
+                List<AdministrativeAreal2D> administrativeAreal2Ds = gISModel.GetObjects<AdministrativeAreal2D>();
+                if (administrativeAreal2Ds == null)
+                {
+                    return;
+                }
 
-                Core.Convert.ToFileInfo(gISModel, path_Output);
-            }
+                List<string> lines = new List<string>();
+                foreach (AdministrativeAreal2D administrativeAreal2D in administrativeAreal2Ds)
+                {
+                    lines.Add(string.Format("{0}\t{1}\t{2}", type, administrativeAreal2D.Name, administrativeAreal2D.AdministrativeArealType.ToString()));
+                }
 
+                File.AppendAllLines(path_Output, lines);
+            };
 
+            //MessageBox.Show("Finished!");
         }
 
-        private void Read_Files()
+        private void Read_FromZip()
         {
+            bool? result;
+
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            bool? result = openFolderDialog.ShowDialog(this);
+            result = openFolderDialog.ShowDialog(this);
             if (result == null || !result.HasValue || !result.Value)
             {
                 return;
@@ -96,38 +245,49 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            List<Building2D> building2Ds = Create.Building2Ds(directory);
-        }
-
-        private void Read_SQLite_Version_1()
-        {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            bool? result = openFolderDialog.ShowDialog(this);
-            if (result == null || !result.HasValue || !result.Value)
+            string[] paths_Input = Directory.GetFiles(directory, "*." + Core.IO.File.Constans.FileExtension.Zip, SearchOption.AllDirectories);
+            foreach (string path_Input in paths_Input)
             {
-                return;
-            }
+                GISModel gISModel_Input = null;
 
-            string directory = openFolderDialog.FolderName;
-            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
-            {
-                return;
-            }
+                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                {
+                    gISModelFile.Open();
+                    gISModel_Input = gISModelFile.Value;
+                }
 
-            string[] paths = Directory.GetFiles(directory, "*.sqlite3", SearchOption.AllDirectories);
-            foreach(string path in paths)
-            {
-                List<ISerializableObject> serializableObjects = SQLite.Convert.ToDiGi<ISerializableObject>(path);
-                if(serializableObjects != null)
+                if (gISModel_Input == null)
+                {
+                    continue;
+                }
+
+                Building2D building2D = gISModel_Input.GetObject<Building2D>();
+
+                string path_Output = Path.Combine(Path.GetDirectoryName(path_Input), Path.GetFileNameWithoutExtension(path_Input) + "_Out." + Core.IO.File.Constans.FileExtension.Zip);
+                using (GISModelFile gISModelFile = new GISModelFile(path_Output))
                 {
 
+                    GISModel gISModel_Output = new GISModel();
+                    gISModel_Output.Update(building2D);
+                    gISModel_Output.CalculateBuilding2DGeometries();
+
+                    gISModel_Output.CalculateBuilding2DGeometries();
+
+                    gISModelFile.Value = gISModel_Output;
+                    gISModelFile.Save();
                 }
+
+                using (GISModelFile gISModelFile = new GISModelFile(path_Output))
+                {
+                    gISModelFile.Open();
+                    GISModel gISModel_Output = gISModelFile.Value;
+                }
+
             }
 
-            //List<Building2D> building2Ds = Create.Building2Ds(directory);
         }
 
-        private void Read_SQLite_Version_2()
+        private void Convert_FromBDOT10k()
         {
             bool? result;
 
@@ -158,12 +318,10 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            SQLite.Modify.Extract(new SQLite.Classes.SQLiteExtractOptions(path, directory) { UpdateExisting = false });
-
-            //Modify.Extract(new DirectoryExtractOptions(path, directory) { UpdateExisting = true });
+            Convert.ToDiGi(path, directory);
         }
 
-        private void Compare_SQLite()
+        private void Read_Files()
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
             bool? result = openFolderDialog.ShowDialog(this);
@@ -178,278 +336,12 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            string[] paths_Old = Directory.GetFiles(directory, "*.sqlite3", SearchOption.AllDirectories);
-
-            foreach (string path_Old in paths_Old)
-            {
-                string path_New = Path.Combine(Path.GetDirectoryName(path_Old), Path.GetFileNameWithoutExtension(path_Old) + "." + DiGi.SQLite.Constans.FileExtension.SQLite);
-                if(!File.Exists(path_New))
-                {
-                    continue;
-                }
-
-                List<Areal2D> areal2Ds_Old = SQLite.Convert.ToDiGi<Areal2D>(path_Old);
-                if (areal2Ds_Old == null)
-                {
-                    continue;
-                }
-
-                GISModel gISModel = SQLite.Convert.ToDiGi(path_New);
-                if(gISModel == null)
-                {
-                    throw new Exception();
-                }
-
-                foreach(Areal2D areal2D_Old in areal2Ds_Old)
-                {
-                    Areal2D areal2D_New = gISModel.GetObject<Areal2D>(x => areal2D_Old.UniqueReference().Equals(x.UniqueReference()));
-                    if(areal2D_New == null)
-                    {
-                        //continue;
-                        throw new Exception();
-                    }
-
-                    string string_New = Core.Convert.ToString(areal2D_New);
-                    string string_Old = Core.Convert.ToString(areal2D_Old);
-
-                    if(string_New != string_Old)
-                    {
-                        throw new Exception();
-                    }
-                }
-            }
+            List<Building2D> building2Ds = Create.Building2Ds(directory);
         }
 
-        private void Convert_SQLite()
+        private void FindTest()
         {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            bool? result = openFolderDialog.ShowDialog(this);
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
 
-            string directory = openFolderDialog.FolderName;
-            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
-            {
-                return;
-            }
-
-            string[] paths = Directory.GetFiles(directory, "*.sqlite3", SearchOption.AllDirectories);
-
-            foreach(string path in paths)
-            {
-                List<Areal2D> areal2Ds = SQLite.Convert.ToDiGi<Areal2D>(path);
-                if (areal2Ds == null)
-                {
-                    continue;
-                }
-
-                GISModel gISModel = new GISModel();
-                foreach(Areal2D areal2D in areal2Ds)
-                {
-                    //if(!(areal2D is Building2D))
-                    //{
-                    //    continue;
-                    //}
-
-                    gISModel.Update(areal2D as dynamic);
-                    //break;
-                }
-
-                string path_Output = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + "." + DiGi.SQLite.Constans.FileExtension.SQLite);
-                if(File.Exists(path_Output))
-                {
-                    File.Delete(path_Output);
-                }
-
-
-                SQLite.Convert.ToSQLite(gISModel, path_Output);
-            }
-        }
-
-        private void GetData()
-        {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            bool? result = openFolderDialog.ShowDialog(this);
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-            string directory = openFolderDialog.FolderName;
-            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
-            {
-                return;
-            }
-
-            string[] paths = Directory.GetFiles(directory, "*.sqlite3", SearchOption.AllDirectories);
-
-            //List<Building2D> building2Ds = paths.ToList().ConvertAll(x => Core.Convert.ToDiGi<Building2D>((Core.Classes.Path?)x).FirstOrDefault());
-
-            foreach(string path in paths)
-            {
-                List<Building2D> building2Ds = SQLite.Convert.ToDiGi<Building2D>(path);
-                if(building2Ds == null)
-                {
-                    continue;
-                }
-
-                List<string> lines = new List<string>() { string.Join("\t", "Id", "Main Building Function", "Auxiliary Building Functions", "X", "Y", "Storeys", "Storey Area", "Total Area", "Thinness Ratio") };
-
-
-                Dictionary<BuildingSpecificFunction, List<Building2D>> dictionary = new Dictionary<BuildingSpecificFunction, List<Building2D>>();
-                foreach (Building2D building2D in building2Ds)
-                {
-                    if (building2D == null)
-                    {
-                        continue;
-                    }
-
-                    if (building2D.BuildingPhase != BuildingPhase.occupied)
-                    {
-                        continue;
-                    }
-
-                    if (building2D.BuildingGeneralFunction != BuildingGeneralFunction.residential_buildings)
-                    {
-                        continue;
-                    }
-
-                    if (building2D.BuildingSpecificFunctions == null)
-                    {
-                        continue;
-                    }
-
-                    if (!building2D.BuildingSpecificFunctions.Contains(BuildingSpecificFunction.single_family_building) && !building2D.BuildingSpecificFunctions.Contains(BuildingSpecificFunction.multi_family_building))
-                    {
-                        continue;
-                    }
-
-                    PolygonalFace2D polygonalFace2D = building2D.PolygonalFace2D;
-                    if (polygonalFace2D == null)
-                    {
-                        continue;
-                    }
-
-                    List<BuildingSpecificFunction> buildingSpecificFunctions = new List<BuildingSpecificFunction>(building2D.BuildingSpecificFunctions);
-
-                    BuildingSpecificFunction buildingSpecificFunction_Main = buildingSpecificFunctions.FirstOrDefault();
-
-                    buildingSpecificFunctions.RemoveAt(0);
-                    buildingSpecificFunctions.Sort((x, y) => Core.Query.Description(x).CompareTo(Core.Query.Description(y)));
-
-                    double thinnessRatio = Geometry.Planar.Query.ThinnessRatio(polygonalFace2D.ExternalEdge);
-
-                    Point2D point2D = polygonalFace2D.GetInternalPoint();
-
-                    double area = polygonalFace2D.GetArea();
-
-                    List<string> values = new List<string>();
-
-                    values.Add(building2D.Reference);
-                    values.Add(Core.Query.Description(buildingSpecificFunction_Main));
-                    values.Add(string.Join("; ", buildingSpecificFunctions.ConvertAll(x => Core.Query.Description(x))));
-                    values.Add(Core.Query.Round(point2D.X, Core.Constans.Tolerance.MacroDistance).ToString());
-                    values.Add(Core.Query.Round(point2D.Y, Core.Constans.Tolerance.MacroDistance).ToString());
-                    values.Add(building2D.Storeys.ToString());
-                    values.Add(Core.Query.Round(area, Core.Constans.Tolerance.MacroDistance).ToString());
-                    values.Add(Core.Query.Round(area * System.Convert.ToDouble(building2D.Storeys), Core.Constans.Tolerance.MacroDistance).ToString());
-                    values.Add(Core.Query.Round(thinnessRatio, Core.Constans.Tolerance.Distance).ToString());
-
-                    lines.Add(string.Join("\t", values));
-
-                    foreach (BuildingSpecificFunction buildingSpecificFunction in building2D.BuildingSpecificFunctions)
-                    {
-                        if (!dictionary.TryGetValue(buildingSpecificFunction, out List<Building2D> building2Ds_Temp) || building2Ds_Temp == null)
-                        {
-                            building2Ds_Temp = new List<Building2D>();
-                            dictionary[buildingSpecificFunction] = building2Ds_Temp;
-                        }
-
-                        building2Ds_Temp.Add(building2D);
-                    }
-                }
-
-                File.WriteAllLines(Path.Combine(Path.GetDirectoryName(path), "buildings.txt"), lines);
-
-                lines = new List<string>() { string.Join("\t", "Building Function", "Count", "Total Area", "Avg. Storey Area", "Avg. Building Area", "Avg. Thinness Ratio") };
-
-                foreach (KeyValuePair<BuildingSpecificFunction, List<Building2D>> keyValuePair in dictionary)
-                {
-                    int count = keyValuePair.Value.Count;
-                    double storeys = 0;
-                    double storeyArea = 0;
-                    double totalArea = 0;
-                    double thinnesRatio = 0;
-
-                    foreach(Building2D building2D in keyValuePair.Value)
-                    {
-                        PolygonalFace2D polygonalFace2D = building2D.PolygonalFace2D;
-
-                        double storeys_Building = System.Convert.ToDouble(building2D.Storeys);
-                        double area_Building = polygonalFace2D.GetArea();
-                        double thinnessRatio_Building = Geometry.Planar.Query.ThinnessRatio(polygonalFace2D.ExternalEdge);
-
-                        storeys += storeys_Building;
-                        storeyArea += area_Building;
-                        totalArea += area_Building * storeys_Building;
-                        thinnesRatio += thinnessRatio_Building;
-                    }
-
-                    List<string> values = new List<string>();
-
-                    values.Add(Core.Query.Description(keyValuePair.Key));
-                    values.Add(count.ToString());
-                    values.Add(Core.Query.Round(totalArea, Core.Constans.Tolerance.MacroDistance).ToString());
-
-                    storeyArea = storeyArea / count;
-                    totalArea = totalArea / count;
-                    thinnesRatio = thinnesRatio / count;
-
-                    values.Add(Core.Query.Round(storeyArea , Core.Constans.Tolerance.MacroDistance).ToString());
-                    values.Add(Core.Query.Round(totalArea, Core.Constans.Tolerance.MacroDistance).ToString());
-                    values.Add(Core.Query.Round(thinnesRatio, Core.Constans.Tolerance.MacroDistance).ToString());
-
-                    lines.Add(string.Join("\t", values));
-                }
-
-                File.WriteAllLines(Path.Combine(Path.GetDirectoryName(path), "summary.txt"), lines);
-            }
-        }
-
-        private void CreateOrto()
-        {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            bool? result = openFolderDialog.ShowDialog(this);
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-            string directory = openFolderDialog.FolderName;
-            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
-            {
-                return;
-            }
-
-            string[] paths = Directory.GetFiles(directory, "*.sqlite3", SearchOption.AllDirectories);
-            foreach (string path in paths)
-            {
-                List<Building2D> building2Ds = SQLite.Convert.ToDiGi<Building2D>(path);
-                if (building2Ds == null)
-                {
-                    continue;
-                }
-
-                string directory_Orto = Path.Combine(Path.GetDirectoryName(path), "orto"); 
-                if(!Directory.Exists(directory_Orto))
-                {
-                    Directory.CreateDirectory(directory_Orto);
-                }
-
-                building2Ds.Write(directory_Orto, new Core.Classes.Range<int>(2004, 2024));
-            }
         }
 
         private void Reorganize()
@@ -467,10 +359,10 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            foreach(string directory_Temp in Directory.GetDirectories(directory))
+            foreach (string directory_Temp in Directory.GetDirectories(directory))
             {
                 string directory_Buildings = Path.Combine(directory_Temp, "Buildings");
-                if(!Directory.Exists(directory_Buildings))
+                if (!Directory.Exists(directory_Buildings))
                 {
                     Directory.CreateDirectory(directory_Buildings);
                 }
@@ -512,5 +404,180 @@ namespace DiGi.GIS.UI.Application.Windows
                 Directory.Delete(directory_Temp, true);
             }
         }
+
+        private void Report(bool recalculate)
+        {
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            //Dictionary<AdministrativeArealType, Tuple<int, double, double, double>> dictionary = new Dictionary<AdministrativeArealType, Tuple<int, double, double, double>>();
+
+            string[] paths_Input = Directory.GetFiles(directory, "*." + Core.IO.File.Constans.FileExtension.Zip, SearchOption.AllDirectories);
+            for (int i = 0; i < paths_Input.Length; i++)
+            {
+                string path_Input = paths_Input[i];
+
+                GISModel gISModel = null;
+
+                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                {
+                    gISModelFile.Open();
+                    gISModel = gISModelFile.Value;
+
+                    if(recalculate)
+                    {
+                        gISModel.Calculate();
+                        gISModelFile.Value = gISModel;
+                        gISModelFile.Save();
+                    }
+                }
+
+                List<AdministrativeAreal2D> administrativeAreal2Ds = gISModel.GetObjects<AdministrativeAreal2D>();
+                if (administrativeAreal2Ds == null)
+                {
+                    continue;
+                }
+
+                List<string> lines = new List<string>();
+
+                List<string> values;
+
+                values = new List<string>()
+                {
+                    "Name",
+                    "Type",
+                    "Building Count",
+                    "Total Area",
+                    "Avg. Area",
+                    "Avg. Thinness Ratio",
+                    "Avg. Rectangularity",
+                };
+
+                lines.Add(string.Join("\t", values));
+
+                foreach (AdministrativeAreal2D administrativeAreal2D in administrativeAreal2Ds)
+                {
+                    AdministrativeAreal2DBuilding2DsRelation administrativeAreal2DBuilding2DsRelation = gISModel.GetRelation<AdministrativeAreal2DBuilding2DsRelation>(administrativeAreal2D);
+                    if (administrativeAreal2DBuilding2DsRelation == null)
+                    {
+                        continue;
+                    }
+
+                    int count = 0;
+
+                    double area = 0;
+
+                    double thinessRatio = 0;
+                    double rectangularity = 0;
+
+                    foreach (Core.Classes.GuidReference guidReference in administrativeAreal2DBuilding2DsRelation.UniqueReferences_To)
+                    {
+                        Building2D building2D = gISModel.GetObject<Building2D>(guidReference);
+                        if (building2D == null)
+                        {
+                            continue;
+                        }
+
+                        if (!building2D.IsOccupied())
+                        {
+                            continue;
+                        }
+
+                        Building2DGeometryCalculationResult building2DGeometryCalculationResult = gISModel.GetRelatedObjects<Building2DGeometryCalculationResult>(building2D)?.FirstOrDefault();
+                        if (building2DGeometryCalculationResult == null)
+                        {
+                            building2DGeometryCalculationResult = Create.Building2DGeometryCalculationResult(building2D);
+                        }
+
+                        double area_Building2D = building2DGeometryCalculationResult.Area * building2D.Storeys;
+                        if(double.IsNaN(area_Building2D) || area_Building2D == 0)
+                        {
+                            continue;
+                        }
+
+                        count++;
+
+                        area += area_Building2D;
+
+                        thinessRatio += building2DGeometryCalculationResult.ThinnessRatio * area_Building2D;
+                        rectangularity += building2DGeometryCalculationResult.Rectangularity * area_Building2D;
+                    }
+
+                    if(area == 0)
+                    {
+                        continue;
+                    }
+
+                    values = new List<string>()
+                    {
+                        administrativeAreal2D.Name,
+                        administrativeAreal2D.AdministrativeArealType.ToString(),
+                        count.ToString(),
+                        Core.Query.Round(area, 0.1).ToString(),
+                        Core.Query.Round(area / count, 0.1).ToString(),
+                        Core.Query.Round(thinessRatio / area, 0.001).ToString(),
+                        Core.Query.Round(rectangularity / area, 0.001).ToString(),
+                    };
+
+                    lines.Add(string.Join("\t", values));
+
+                    //if(!dictionary.TryGetValue(administrativeAreal2D.AdministrativeArealType, out Tuple<int, double, double, double> tuple))
+                    //{
+                    //    tuple = new Tuple<int, double, double, double>(0, 0, 0, 0);
+                    //    dictionary[administrativeAreal2D.AdministrativeArealType] = tuple;
+                    //}
+
+                    //dictionary[administrativeAreal2D.AdministrativeArealType] = new Tuple<int, double, double, double>(tuple.Item1 + count, tuple.Item2 + area, tuple.Item3 + (thinessRatio / area), tuple.Item4 + (rectangularity / area));
+                }
+
+                string path_Output = Path.Combine(Path.GetDirectoryName(path_Input), Path.GetFileNameWithoutExtension(path_Input) + "_Report.txt");
+
+                File.WriteAllLines(path_Output, lines);
+            };
+
+            //List<string> summary = new List<string>();
+            //summary.Add(string.Join("\t", new List<string> 
+            //{
+            //        "Type",
+            //        "Building Count",
+            //        "Total Area",
+            //        "Avg. Area",
+            //        "Avg. Thinness Ratio",
+            //        "Avg. Rectangularity",
+            //}));
+
+            //foreach (KeyValuePair<AdministrativeArealType, Tuple<int, double, double, double>> keyValuePair in dictionary)
+            //{
+
+            //    List<string> values = new List<string>()
+            //    {
+            //        keyValuePair.Key.ToString(),
+            //        keyValuePair.Value.Item1.ToString(),
+            //        keyValuePair.Value.Item2.ToString(),
+            //        Core.Query.Round(keyValuePair.Value.Item2 / keyValuePair.Value.Item1, 0.1).ToString(),
+            //        Core.Query.Round(keyValuePair.Value.Item3 / keyValuePair.Value.Item2, 0.001).ToString(),
+            //        Core.Query.Round(keyValuePair.Value.Item4 / keyValuePair.Value.Item2, 0.001).ToString(),
+            //    };
+
+            //    summary.Add(string.Join("\t", values));
+            //}
+
+            //string path_Summary = Path.Combine(directory, "Report.txt");
+            //File.WriteAllLines(path_Summary, summary);
+
+            //MessageBox.Show("Finished!");
+        }
+
+
     }
 }
