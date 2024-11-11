@@ -35,7 +35,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Button_Analyse_Click(object sender, RoutedEventArgs e)
         {
-            Report(false);
+            Report(true);
         }
 
         private void Button_Calculate_Click(object sender, RoutedEventArgs e)
@@ -459,8 +459,11 @@ namespace DiGi.GIS.UI.Application.Windows
                     "Building Count",
                     "Total Area",
                     "Avg. Area",
+                    "Avg. Perimeter",
                     "Avg. Thinness Ratio",
+                    "Avg. Rectangular Thinness Ratio",
                     "Avg. Rectangularity",
+                    "Avg. Isoperimetric Ratio",
                 };
 
                 lines.Add(string.Join("\t", values));
@@ -477,8 +480,11 @@ namespace DiGi.GIS.UI.Application.Windows
 
                     double area = 0;
 
+                    double perimeter = 0;
                     double thinessRatio = 0;
+                    double rectangularThinnessRatio = 0;
                     double rectangularity = 0;
+                    double isoperimetricRatio = 0;
 
                     foreach (Core.Classes.GuidReference guidReference in administrativeAreal2DBuilding2DsRelation.UniqueReferences_To)
                     {
@@ -509,8 +515,11 @@ namespace DiGi.GIS.UI.Application.Windows
 
                         area += area_Building2D;
 
+                        perimeter += building2DGeometryCalculationResult.Perimeter * area_Building2D;
                         thinessRatio += building2DGeometryCalculationResult.ThinnessRatio * area_Building2D;
+                        rectangularThinnessRatio += building2DGeometryCalculationResult.RectangularThinnessRatio * area_Building2D;
                         rectangularity += building2DGeometryCalculationResult.Rectangularity * area_Building2D;
+                        isoperimetricRatio += building2DGeometryCalculationResult.IsoperimetricRatio * area_Building2D;
                     }
 
                     if(area == 0)
@@ -525,8 +534,11 @@ namespace DiGi.GIS.UI.Application.Windows
                         count.ToString(),
                         Core.Query.Round(area, 0.1).ToString(),
                         Core.Query.Round(area / count, 0.1).ToString(),
+                        Core.Query.Round(perimeter / area, 0.001).ToString(),
                         Core.Query.Round(thinessRatio / area, 0.001).ToString(),
+                        Core.Query.Round(rectangularThinnessRatio / area, 0.001).ToString(),
                         Core.Query.Round(rectangularity / area, 0.001).ToString(),
+                        Core.Query.Round(isoperimetricRatio / area, 0.001).ToString(),
                     };
 
                     lines.Add(string.Join("\t", values));
@@ -577,7 +589,5 @@ namespace DiGi.GIS.UI.Application.Windows
 
             //MessageBox.Show("Finished!");
         }
-
-
     }
 }
