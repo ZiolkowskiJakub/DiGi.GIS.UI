@@ -1,5 +1,5 @@
-﻿using DiGi.GIS.Classes;
-using DiGi.GIS.Enums;
+﻿using DiGi.Core;
+using DiGi.GIS.Classes;
 using Microsoft.Win32;
 using System.IO;
 
@@ -35,7 +35,8 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Button_Analyse_Click(object sender, RoutedEventArgs e)
         {
-            Report(true);
+            //Report_Geometry(true);
+            Report_Occupancy();
         }
 
         private void Button_Calculate_Click(object sender, RoutedEventArgs e)
@@ -405,7 +406,7 @@ namespace DiGi.GIS.UI.Application.Windows
             }
         }
 
-        private void Report(bool recalculate)
+        private void Report_Geometry(bool recalculate)
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
             bool? result = openFolderDialog.ShowDialog(this);
@@ -434,7 +435,7 @@ namespace DiGi.GIS.UI.Application.Windows
                     gISModelFile.Open();
                     gISModel = gISModelFile.Value;
 
-                    if(recalculate)
+                    if (recalculate)
                     {
                         gISModel.Calculate();
                         gISModelFile.Value = gISModel;
@@ -506,7 +507,7 @@ namespace DiGi.GIS.UI.Application.Windows
                         }
 
                         double area_Building2D = building2DGeometryCalculationResult.Area * building2D.Storeys;
-                        if(double.IsNaN(area_Building2D) || area_Building2D == 0)
+                        if (double.IsNaN(area_Building2D) || area_Building2D == 0)
                         {
                             continue;
                         }
@@ -522,7 +523,7 @@ namespace DiGi.GIS.UI.Application.Windows
                         isoperimetricRatio += building2DGeometryCalculationResult.IsoperimetricRatio * area_Building2D;
                     }
 
-                    if(area == 0)
+                    if (area == 0)
                     {
                         continue;
                     }
@@ -588,6 +589,128 @@ namespace DiGi.GIS.UI.Application.Windows
             //File.WriteAllLines(path_Summary, summary);
 
             //MessageBox.Show("Finished!");
+        }
+
+        private void Report_Occupancy()
+        {
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            //Dictionary<AdministrativeArealType, Tuple<int, double, double, double>> dictionary = new Dictionary<AdministrativeArealType, Tuple<int, double, double, double>>();
+
+            string[] paths_Input = Directory.GetFiles(directory, "*." + Core.IO.File.Constans.FileExtension.Zip, SearchOption.AllDirectories);
+
+            for (int i = 0; i < paths_Input.Length; i++)
+            {
+                string path_Input = paths_Input[i];
+
+                GISModel gISModel = null;
+
+                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                {
+                    gISModelFile.Open();
+                    gISModel = gISModelFile.Value;
+
+                    //if (recalculate)
+                    //{
+                    //    gISModel.Calculate();
+                    //    gISModelFile.Value = gISModel;
+                    //    gISModelFile.Save();
+                    //}
+                }
+
+                if(gISModel == null)
+                {
+                    continue;
+                }
+
+                List<Building2D> building2Ds = gISModel.GetObjects<Building2D>();
+                if(building2Ds == null)
+                {
+                    continue;
+                }
+
+                string path_Output = Path.Combine(Path.GetDirectoryName(path_Input), string.Format("{0}_OccupacyReport.txt", Path.GetFileNameWithoutExtension(path_Input)));
+
+                List<string> lines = new List<string>();
+                lines.Add(string.Join("\t", new string[]
+                {
+                    "Reference",
+                    "IsOccupied",
+                    "BuildingPhase",
+                    "Storeys",
+                    "BuildingGeneralFunction",
+                    "BuildingSpecificFunctions",
+                    "OccupancyArea",
+                    "Occupancy",
+                    "Area",
+                    "Perimeter",
+                    "ThinnessRatio",
+                    "RectangularThinnessRatio",
+                    "Rectangularity",
+                    "IsoperimetricRatio"
+                }));
+
+                foreach(Building2D building2D in building2Ds)
+                {
+                    if(building2D == null)
+                    {
+                        continue;
+                    }
+
+                    List<string> values = new List<string>();
+                    values.Add(building2D.Reference);
+                    values.Add(building2D.IsOccupied() ? "True" : "False");
+                    values.Add(building2D.BuildingPhase != null ? building2D.BuildingPhase.ToString() : string.Empty);
+                    values.Add(building2D.Storeys.ToString());
+                    values.Add(building2D.BuildingGeneralFunction != null ? building2D.BuildingGeneralFunction.ToString() : string.Empty);
+                    values.Add(building2D.BuildingSpecificFunctions != null ? string.Join(";", building2D.BuildingSpecificFunctions.ToList().ConvertAll(x => x.ToString())) : string.Empty);
+
+                    if(gISModel.TryGetRelatedObject(building2D, out OccupancyCalculationResult occupancyCalculationResult) && occupancyCalculationResult != null)
+                    {
+                        values.Add(occupancyCalculationResult.OccupancyArea?.ToString());
+                        values.Add(occupancyCalculationResult.Occupancy?.ToString());
+                    }
+                    else
+                    {
+                        values.Add(string.Empty);
+                        values.Add(string.Empty);
+                    }
+
+                    if (gISModel.TryGetRelatedObject(building2D, out Building2DGeometryCalculationResult building2DGeometryCalculationResult) && building2DGeometryCalculationResult != null)
+                    {
+                        values.Add(Core.Query.Round(building2DGeometryCalculationResult.Area, 0.01).ToString());
+                        values.Add(Core.Query.Round(building2DGeometryCalculationResult.Perimeter, 0.01).ToString());
+                        values.Add(Core.Query.Round(building2DGeometryCalculationResult.ThinnessRatio, 0.001).ToString());
+                        values.Add(Core.Query.Round(building2DGeometryCalculationResult.RectangularThinnessRatio, 0.001).ToString());
+                        values.Add(Core.Query.Round(building2DGeometryCalculationResult.Rectangularity, 0.001).ToString());
+                        values.Add(Core.Query.Round(building2DGeometryCalculationResult.IsoperimetricRatio, 0.001).ToString());
+                    }
+                    else
+                    {
+                        values.Add(string.Empty);
+                        values.Add(string.Empty);
+                        values.Add(string.Empty);
+                        values.Add(string.Empty);
+                        values.Add(string.Empty);
+                        values.Add(string.Empty);
+                    }
+
+                    lines.Add(string.Join("\t", values));
+                }
+
+                File.WriteAllLines(path_Output, lines);
+            }
         }
     }
 }
