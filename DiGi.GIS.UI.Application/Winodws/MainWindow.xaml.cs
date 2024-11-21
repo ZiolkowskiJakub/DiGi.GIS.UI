@@ -35,8 +35,8 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Button_Analyse_Click(object sender, RoutedEventArgs e)
         {
-            //Report_Geometry(true);
-            Report_Occupancy();
+            Report_Geometry(false);
+            //Report_Occupancy();
         }
 
         private void Button_Calculate_Click(object sender, RoutedEventArgs e)
@@ -421,8 +421,6 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            //Dictionary<AdministrativeArealType, Tuple<int, double, double, double>> dictionary = new Dictionary<AdministrativeArealType, Tuple<int, double, double, double>>();
-
             string[] paths_Input = Directory.GetFiles(directory, "*." + Core.IO.File.Constans.FileExtension.Zip, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
             {
@@ -500,7 +498,7 @@ namespace DiGi.GIS.UI.Application.Windows
                             continue;
                         }
 
-                        Building2DGeometryCalculationResult building2DGeometryCalculationResult = gISModel.GetRelatedObjects<Building2DGeometryCalculationResult>(building2D)?.FirstOrDefault();
+                        Building2DGeometryCalculationResult building2DGeometryCalculationResult = gISModel.GetRelatedObject<Building2DGeometryCalculationResult>(building2D);
                         if (building2DGeometryCalculationResult == null)
                         {
                             building2DGeometryCalculationResult = Create.Building2DGeometryCalculationResult(building2D);
@@ -543,52 +541,14 @@ namespace DiGi.GIS.UI.Application.Windows
                     };
 
                     lines.Add(string.Join("\t", values));
-
-                    //if(!dictionary.TryGetValue(administrativeAreal2D.AdministrativeArealType, out Tuple<int, double, double, double> tuple))
-                    //{
-                    //    tuple = new Tuple<int, double, double, double>(0, 0, 0, 0);
-                    //    dictionary[administrativeAreal2D.AdministrativeArealType] = tuple;
-                    //}
-
-                    //dictionary[administrativeAreal2D.AdministrativeArealType] = new Tuple<int, double, double, double>(tuple.Item1 + count, tuple.Item2 + area, tuple.Item3 + (thinessRatio / area), tuple.Item4 + (rectangularity / area));
                 }
 
-                string path_Output = Path.Combine(Path.GetDirectoryName(path_Input), Path.GetFileNameWithoutExtension(path_Input) + "_Report.txt");
+                string path_Output = Path.Combine(Path.GetDirectoryName(path_Input), Path.GetFileNameWithoutExtension(path_Input) + "_GeometryReport.txt");
 
                 File.WriteAllLines(path_Output, lines);
             };
 
-            //List<string> summary = new List<string>();
-            //summary.Add(string.Join("\t", new List<string> 
-            //{
-            //        "Type",
-            //        "Building Count",
-            //        "Total Area",
-            //        "Avg. Area",
-            //        "Avg. Thinness Ratio",
-            //        "Avg. Rectangularity",
-            //}));
-
-            //foreach (KeyValuePair<AdministrativeArealType, Tuple<int, double, double, double>> keyValuePair in dictionary)
-            //{
-
-            //    List<string> values = new List<string>()
-            //    {
-            //        keyValuePair.Key.ToString(),
-            //        keyValuePair.Value.Item1.ToString(),
-            //        keyValuePair.Value.Item2.ToString(),
-            //        Core.Query.Round(keyValuePair.Value.Item2 / keyValuePair.Value.Item1, 0.1).ToString(),
-            //        Core.Query.Round(keyValuePair.Value.Item3 / keyValuePair.Value.Item2, 0.001).ToString(),
-            //        Core.Query.Round(keyValuePair.Value.Item4 / keyValuePair.Value.Item2, 0.001).ToString(),
-            //    };
-
-            //    summary.Add(string.Join("\t", values));
-            //}
-
-            //string path_Summary = Path.Combine(directory, "Report.txt");
-            //File.WriteAllLines(path_Summary, summary);
-
-            //MessageBox.Show("Finished!");
+            MessageBox.Show("Finished!");
         }
 
         private void Report_Occupancy()
@@ -605,8 +565,6 @@ namespace DiGi.GIS.UI.Application.Windows
             {
                 return;
             }
-
-            //Dictionary<AdministrativeArealType, Tuple<int, double, double, double>> dictionary = new Dictionary<AdministrativeArealType, Tuple<int, double, double, double>>();
 
             string[] paths_Input = Directory.GetFiles(directory, "*." + Core.IO.File.Constans.FileExtension.Zip, SearchOption.AllDirectories);
 
@@ -710,6 +668,8 @@ namespace DiGi.GIS.UI.Application.Windows
                 }
 
                 File.WriteAllLines(path_Output, lines);
+                
+                MessageBox.Show("Finished!");
             }
         }
     }
