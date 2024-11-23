@@ -6,6 +6,9 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+	<OutputPath>..\bin\</OutputPath>
+	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,8 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="DiGi.BDOT10k.UI">
-      <HintPath>..\references\DiGi.BDOT10k.UI.dll</HintPath>
+    <Reference Include="DiGi.BDOT10k">
+      <HintPath>..\references\DiGi.BDOT10k.dll</HintPath>
     </Reference>
     <Reference Include="DiGi.Core">
       <HintPath>..\references\DiGi.Core.dll</HintPath>

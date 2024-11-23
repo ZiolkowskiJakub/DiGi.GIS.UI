@@ -322,23 +322,23 @@ namespace DiGi.GIS.UI.Application.Windows
             Convert.ToDiGi(path, directory);
         }
 
-        private void Read_Files()
-        {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            bool? result = openFolderDialog.ShowDialog(this);
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
+        //private void Read_Files()
+        //{
+        //    OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+        //    bool? result = openFolderDialog.ShowDialog(this);
+        //    if (result == null || !result.HasValue || !result.Value)
+        //    {
+        //        return;
+        //    }
 
-            string directory = openFolderDialog.FolderName;
-            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
-            {
-                return;
-            }
+        //    string directory = openFolderDialog.FolderName;
+        //    if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+        //    {
+        //        return;
+        //    }
 
-            List<Building2D> building2Ds = Create.Building2Ds(directory);
-        }
+        //    List<Building2D> building2Ds = Create.Building2Ds(directory);
+        //}
 
         private void FindTest()
         {
