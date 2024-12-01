@@ -1,6 +1,12 @@
 ﻿using DiGi.Core;
+using DiGi.Core.Classes;
+using DiGi.Geometry.Planar;
+using DiGi.Geometry.Planar.Classes;
 using DiGi.GIS.Classes;
+using DiGi.GIS.Constans;
 using Microsoft.Win32;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 
 using System.Windows;
@@ -24,7 +30,8 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Button_Convert_Click(object sender, RoutedEventArgs e)
         {
-            Convert_FromBDOT10k();
+            //Convert_FromBDOT10k();
+            Convert_ToFiles();
         }
 
         private void Button_Read_Click(object sender, RoutedEventArgs e)
@@ -35,16 +42,22 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Button_Analyse_Click(object sender, RoutedEventArgs e)
         {
-            Report_Geometry(false);
+            Analyse_OrtoDatas_SaveImage();
+            //Report_Geometry(false);
             //Report_Occupancy();
         }
 
         private void Button_Calculate_Click(object sender, RoutedEventArgs e)
         {
-            Calculate();
+            Calculate_OrtoDatas();
         }
 
-        private void CalculateBuilding2DGeometries()
+        private void Button_Reduce_Click(object sender, RoutedEventArgs e)
+        {
+            Reduce();
+        }
+
+        private void Calculate_Building2DGeometries()
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
             bool? result = openFolderDialog.ShowDialog(this);
@@ -59,7 +72,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            string[] paths_Input = Directory.GetFiles(directory, "*." + Core.IO.File.Constans.FileExtension.Zip, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
             {
                 string path_Input = paths_Input[i];
@@ -81,7 +94,7 @@ namespace DiGi.GIS.UI.Application.Windows
             MessageBox.Show("Finished!");
         }
 
-        private void CalculateAdministrativeAreal2DGeometries()
+        private void Calculate_AdministrativeAreal2DGeometries()
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
             bool? result = openFolderDialog.ShowDialog(this);
@@ -96,7 +109,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            string[] paths_Input = Directory.GetFiles(directory, "*." + Core.IO.File.Constans.FileExtension.Zip, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
             {
                 string path_Input = paths_Input[i];
@@ -133,7 +146,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            string[] paths_Input = Directory.GetFiles(directory, "*." + Core.IO.File.Constans.FileExtension.Zip, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
             {
                 string path_Input = paths_Input[i];
@@ -155,7 +168,7 @@ namespace DiGi.GIS.UI.Application.Windows
             MessageBox.Show("Finished!");
         }
 
-        private void ListAdministrativeAreal2Ds()
+        private void Analyse_AdministrativeAreal2Ds()
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
             bool? result = openFolderDialog.ShowDialog(this);
@@ -170,9 +183,9 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            string[] paths_Input = Directory.GetFiles(directory, "*." + Core.IO.File.Constans.FileExtension.Zip, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
 
-            string path_Output = Path.Combine(directory, "administrativeArealNames.txt");
+            string path_Output = System.IO.Path.Combine(directory, "administrativeArealNames.txt");
 
             HashSet<string> types = new HashSet<string>();
             if (File.Exists(path_Output))
@@ -192,7 +205,7 @@ namespace DiGi.GIS.UI.Application.Windows
             {
                 string path_Input = paths_Input[i];
 
-                string type = Path.GetFileNameWithoutExtension(path_Input);
+                string type = System.IO.Path.GetFileNameWithoutExtension(path_Input);
                 if (types.Contains(type))
                 {
                     continue;
@@ -246,7 +259,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            string[] paths_Input = Directory.GetFiles(directory, "*." + Core.IO.File.Constans.FileExtension.Zip, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
             foreach (string path_Input in paths_Input)
             {
                 GISModel gISModel_Input = null;
@@ -264,7 +277,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
                 Building2D building2D = gISModel_Input.GetObject<Building2D>();
 
-                string path_Output = Path.Combine(Path.GetDirectoryName(path_Input), Path.GetFileNameWithoutExtension(path_Input) + "_Out." + Core.IO.File.Constans.FileExtension.Zip);
+                string path_Output = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path_Input), System.IO.Path.GetFileNameWithoutExtension(path_Input) + "_Out." + Constans.FileExtension.GISModelFile);
                 using (GISModelFile gISModelFile = new GISModelFile(path_Output))
                 {
 
@@ -322,29 +335,6 @@ namespace DiGi.GIS.UI.Application.Windows
             Convert.ToDiGi(path, directory);
         }
 
-        private void Read_Files()
-        {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            bool? result = openFolderDialog.ShowDialog(this);
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-            string directory = openFolderDialog.FolderName;
-            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
-            {
-                return;
-            }
-
-            List<Building2D> building2Ds = Create.Building2Ds(directory);
-        }
-
-        private void FindTest()
-        {
-
-        }
-
         private void Reorganize()
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
@@ -362,7 +352,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             foreach (string directory_Temp in Directory.GetDirectories(directory))
             {
-                string directory_Buildings = Path.Combine(directory_Temp, "Buildings");
+                string directory_Buildings = System.IO.Path.Combine(directory_Temp, "Buildings");
                 if (!Directory.Exists(directory_Buildings))
                 {
                     Directory.CreateDirectory(directory_Buildings);
@@ -379,7 +369,7 @@ namespace DiGi.GIS.UI.Application.Windows
                         continue;
                     }
 
-                    Directory.Move(directory_Building, Path.Combine(directory_Buildings, name));
+                    Directory.Move(directory_Building, System.IO.Path.Combine(directory_Buildings, name));
                 }
             }
         }
@@ -406,7 +396,7 @@ namespace DiGi.GIS.UI.Application.Windows
             }
         }
 
-        private void Report_Geometry(bool recalculate)
+        private void Analyse_Geometry(bool recalculate)
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
             bool? result = openFolderDialog.ShowDialog(this);
@@ -421,7 +411,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            string[] paths_Input = Directory.GetFiles(directory, "*." + Core.IO.File.Constans.FileExtension.Zip, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
             {
                 string path_Input = paths_Input[i];
@@ -543,7 +533,7 @@ namespace DiGi.GIS.UI.Application.Windows
                     lines.Add(string.Join("\t", values));
                 }
 
-                string path_Output = Path.Combine(Path.GetDirectoryName(path_Input), Path.GetFileNameWithoutExtension(path_Input) + "_GeometryReport.txt");
+                string path_Output = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path_Input), System.IO.Path.GetFileNameWithoutExtension(path_Input) + "_GeometryReport.txt");
 
                 File.WriteAllLines(path_Output, lines);
             };
@@ -551,7 +541,7 @@ namespace DiGi.GIS.UI.Application.Windows
             MessageBox.Show("Finished!");
         }
 
-        private void Report_Occupancy()
+        private void Analyse_Occupancy()
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
             bool? result = openFolderDialog.ShowDialog(this);
@@ -566,7 +556,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            string[] paths_Input = Directory.GetFiles(directory, "*." + Core.IO.File.Constans.FileExtension.Zip, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
 
             for (int i = 0; i < paths_Input.Length; i++)
             {
@@ -598,7 +588,7 @@ namespace DiGi.GIS.UI.Application.Windows
                     continue;
                 }
 
-                string path_Output = Path.Combine(Path.GetDirectoryName(path_Input), string.Format("{0}_OccupacyReport.txt", Path.GetFileNameWithoutExtension(path_Input)));
+                string path_Output = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path_Input), string.Format("{0}_OccupacyReport.txt", System.IO.Path.GetFileNameWithoutExtension(path_Input)));
 
                 List<string> lines = new List<string>();
                 lines.Add(string.Join("\t", new string[]
@@ -671,6 +661,392 @@ namespace DiGi.GIS.UI.Application.Windows
                 
                 MessageBox.Show("Finished!");
             }
+        }
+
+        private async void Calculate_OrtoDatas(int count = 10)
+        {
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
+            for (int i = 0; i < paths_Input.Length; i++)
+            {
+                string path_Input = paths_Input[i];
+
+                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                {
+                    gISModelFile.Open();
+
+                    GISModel gISModel = gISModelFile.Value;
+                    if (gISModel != null)
+                    {
+                        List<Building2D> building2Ds = gISModel.GetObjects<Building2D>();
+                        if(building2Ds != null)
+                        {
+                            OrtoDataOptions ortoDataOptions = new OrtoDataOptions();
+
+                            while(building2Ds.Count > 0)
+                            {
+                                int count_Temp = building2Ds.Count > count ? count : building2Ds.Count;
+
+                                List<Building2D> building2Ds_Temp = building2Ds.GetRange(0, count_Temp);
+
+                                HashSet<GuidReference> guidReferences = await gISModelFile.CalculateOrtoDatas(building2Ds.GetRange(0, count_Temp), ortoDataOptions);
+
+                                building2Ds.RemoveRange(0, count_Temp);
+                            }
+                        }
+                    }
+                }
+            };
+
+            MessageBox.Show("Finished!");
+        }
+
+        private void Convert_ToFiles(int count = 10)
+        {
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.OrtoDatasFile, SearchOption.AllDirectories);
+            for (int i = 0; i < paths_Input.Length; i++)
+            {
+                string path_Input = paths_Input[i];
+
+                using (OrtoDatasFile ortoDatasFile = new OrtoDatasFile(path_Input))
+                {
+                    ortoDatasFile.Open();
+
+                    List<Core.Classes.UniqueReference> uniqueReferences = ortoDatasFile.GetUniqueReferences()?.ToList();
+                    if(uniqueReferences == null)
+                    {
+                        continue;
+                    }
+
+                    string directory_Temp = System.IO.Path.Combine(directory, "OrtoData");
+                    if (!Directory.Exists(directory_Temp))
+                    {
+                        Directory.CreateDirectory(directory_Temp);
+                    }
+
+                    while (uniqueReferences.Count > 0)
+                    {
+                        int count_Temp = Math.Max(count, uniqueReferences.Count);
+
+                        List<Core.Classes.UniqueReference> uniqueReferences_Temp = uniqueReferences.GetRange(0, count_Temp);
+                        uniqueReferences.RemoveRange(0, count_Temp);
+
+                        IEnumerable<OrtoDatas> ortoDatasList = ortoDatasFile.GetValues<OrtoDatas>(uniqueReferences_Temp);
+                        if(ortoDatasList != null)
+                        {
+                            foreach (OrtoDatas ortoDatas in ortoDatasList)
+                            {
+                                if(string.IsNullOrWhiteSpace(ortoDatas?.Reference))
+                                {
+                                    continue;
+                                }
+
+                                foreach(OrtoData ortoData in ortoDatas)
+                                {
+                                    if (ortoData?.Bytes == null || ortoData.Bytes.Length == 0)
+                                    {
+                                        continue;
+                                    }
+
+                                    string fileName = string.Format("{0}_{1}.{2}", ortoDatas.Reference, ortoData.DateTime.Year.ToString(), "jpeg");
+
+                                    using (Image image = Image.FromStream(new MemoryStream(ortoData.Bytes)))
+                                    {
+                                        image.Save(System.IO.Path.Combine(directory_Temp, fileName), ImageFormat.Jpeg);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            MessageBox.Show("Finished!");
+        }
+
+        private void Reduce()
+        {
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.OrtoDatasFile, SearchOption.AllDirectories);
+            for (int i = 0; i < paths_Input.Length; i++)
+            {
+                string path_Input = paths_Input[i];
+
+                using (OrtoDatasFile ortoDatasFile = new OrtoDatasFile(path_Input))
+                {
+                    ortoDatasFile.Open();
+
+                    string directory_Temp = @"C:\Users\jakub\Downloads\GIS Test\OrtoData";
+
+                    IEnumerable<OrtoDatas> ortoDatasList = ortoDatasFile.Values;
+                    if (ortoDatasList != null)
+                    {
+                        foreach (OrtoDatas ortoDatas in ortoDatasList)
+                        {
+                            if (ortoDatas == null)
+                            {
+                                continue;
+                            }
+
+                            string directory_Temp_Before = System.IO.Path.Combine(directory_Temp, "Before");
+                            if(!Directory.Exists(directory_Temp_Before))
+                            {
+                                Directory.CreateDirectory(directory_Temp_Before);
+                            }
+
+                            foreach (OrtoData ortoData in ortoDatas)
+                            {
+                                if (ortoData?.Bytes == null || ortoData.Bytes.Length == 0)
+                                {
+                                    continue;
+                                }
+
+                                string fileName = string.Format("{0}_{1}.{2}", ortoDatas.Reference, ortoData.DateTime.Year.ToString(), "jpg");
+
+                                using (Image image = Image.FromStream(new MemoryStream(ortoData.Bytes)))
+                                {
+                                    image.Save(System.IO.Path.Combine(directory_Temp_Before, fileName), ImageFormat.Jpeg);
+                                }
+                            }
+
+                            ortoDatas.Reduce();
+
+                            string directory_Temp_After = System.IO.Path.Combine(directory_Temp, "After");
+                            if (!Directory.Exists(directory_Temp_After))
+                            {
+                                Directory.CreateDirectory(directory_Temp_After);
+                            }
+
+                            foreach (OrtoData ortoData in ortoDatas)
+                            {
+                                if (ortoData?.Bytes == null || ortoData.Bytes.Length == 0)
+                                {
+                                    continue;
+                                }
+
+                                string fileName = string.Format("{0}_{1}.{2}", ortoDatas.Reference, ortoData.DateTime.Year.ToString(), "jpg");
+
+                                using (Image image = Image.FromStream(new MemoryStream(ortoData.Bytes)))
+                                {
+                                    image.Save(System.IO.Path.Combine(directory_Temp_After, fileName), ImageFormat.Jpeg);
+                                }
+                            }
+
+                            ortoDatasFile.AddValue(ortoDatas);
+                        }
+
+                    }
+
+                    ortoDatasFile.Save();
+
+                }
+            };
+
+            MessageBox.Show("Finished!");
+        }
+
+        private void Analyse_OrtoDatas_GetBytes()
+        {
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.OrtoDatasFile, SearchOption.AllDirectories);
+            for (int i = 0; i < paths_Input.Length; i++)
+            {
+                string path_Input = paths_Input[i];
+
+                using (OrtoDatasFile ortoDatasFile = new OrtoDatasFile(path_Input))
+                {
+                    ortoDatasFile.Open();
+
+                    HashSet<Core.Classes.UniqueReference> uniqueReferences = ortoDatasFile.GetUniqueReferences();
+                    if (uniqueReferences == null)
+                    {
+                        continue;
+                    }
+
+                    List<OrtoDatas> ortoDatasList = new List<OrtoDatas>();
+                    for (int j = 0; j < uniqueReferences.Count; j++)
+                    {
+                        OrtoDatas ortoDatas = ortoDatasFile.GetValue<OrtoDatas>(uniqueReferences.ElementAt(j));
+                        if(ortoDatas == null)
+                        {
+                            continue;
+                        }
+
+                        byte[] bytes = ortoDatas.GetBytes(new DateTime(2023, 12, 12));
+
+                    }
+                }
+            };
+
+            MessageBox.Show("Finished!");
+        }
+
+        private void Analyse_OrtoDatas_SaveImage()
+        {
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string directory_Temp = System.IO.Path.Combine(directory, "OrtoData");
+            if (!Directory.Exists(directory_Temp))
+            {
+                Directory.CreateDirectory(directory_Temp);
+            }
+
+            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
+            for (int i = 0; i < paths_Input.Length; i++)
+            {
+                string path_Input = paths_Input[i];
+
+                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                {
+                    gISModelFile.Open();
+
+                    GISModel gISModel = gISModelFile.Value;
+                    if(gISModel == null)
+                    {
+                        continue;
+                    }
+
+                    List<Building2D> building2Ds = gISModel.GetObjects<Building2D>();
+                    if(building2Ds == null || building2Ds.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    foreach(Building2D building2D in building2Ds)
+                    {
+                        OrtoDatas ortoDatas = gISModelFile.OrtoDatas(building2D);
+                        if(ortoDatas == null)
+                        {
+                            continue;
+                        }
+
+                        Polygon2D polygon2D = building2D?.PolygonalFace2D?.ExternalEdge as Polygon2D;
+
+                        List<Point2D> point2Ds = polygon2D?.GetPoints();
+                        if (point2Ds == null)
+                        {
+                            continue;
+                        }
+
+                        Polygon2D polygon2D_Offset = polygon2D.Offset(0.5)?.FirstOrDefault();
+
+                        List<Point2D> point2Ds_Offset = polygon2D_Offset?.GetPoints();
+
+                        foreach (OrtoData ortoData in ortoDatas)
+                        {
+                            byte[] bytes = ortoData?.Bytes;
+                            if(bytes == null)
+                            {
+                                continue;
+                            }
+
+                            string fileName = string.Format("{0}_{1}.{2}", ortoDatas.Reference, ortoData.DateTime.Year.ToString(), "jpeg");
+
+                            using (Image image = Image.FromStream(new MemoryStream(bytes)))
+                            {
+                                List<Point2D> point2Ds_Temp = new List<Point2D>();
+                                for (int j = 0; j < point2Ds.Count; j++)
+                                {
+                                    point2Ds_Temp.Add(ortoData.ToOrto(point2Ds[j]));
+                                }
+
+                                List<Point2D> point2Ds_Offset_Temp = null;
+                                if(point2Ds_Offset != null)
+                                {
+                                    point2Ds_Offset_Temp = new List<Point2D>();
+                                    for (int j = 0; j < point2Ds_Offset.Count; j++)
+                                    {
+                                        point2Ds_Offset_Temp.Add(ortoData.ToOrto(point2Ds_Offset[j]));
+                                    }
+                                }
+
+
+                                using (Graphics graphics = Graphics.FromImage(image))
+                                {
+                                    Polygon2D polygon2D_OrtoData = new Polygon2D(point2Ds_Temp);
+       
+                                    Geometry.Drawing.Modify.Draw(graphics, polygon2D_OrtoData, new Pen(System.Drawing.Color.Black.ToDiGi(), 3), false);
+                                    Geometry.Drawing.Modify.Draw(graphics, polygon2D_OrtoData.GetBoundingBox(), new Pen(System.Drawing.Color.Gray.ToDiGi(), 1), false);
+
+                                    if(point2Ds_Offset_Temp != null)
+                                    {
+                                        Polygon2D polygon2D_OrtoData_Offset = new Polygon2D(point2Ds_Offset_Temp);
+
+                                        Geometry.Drawing.Modify.Draw(graphics, polygon2D_OrtoData_Offset, new Pen(System.Drawing.Color.Red.ToDiGi(), 3), false);
+                                        Geometry.Drawing.Modify.Draw(graphics, polygon2D_OrtoData_Offset.GetBoundingBox(), new Pen(System.Drawing.Color.Gray.ToDiGi(), 1), false);
+                                    }
+                                }
+                                
+                                image.Save(System.IO.Path.Combine(directory_Temp, fileName), ImageFormat.Jpeg);
+                            }
+                        }
+
+                    }
+
+                }
+            };
+
+            MessageBox.Show("Finished!");
         }
     }
 }
