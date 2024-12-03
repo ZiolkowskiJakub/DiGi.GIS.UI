@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\DiGi.GIS.Emgu.CV\DiGi.GIS.Emgu.CV\DiGi.GIS.Emgu.CV.csproj" />
     <ProjectReference Include="..\..\DiGi.GIS\DiGi.GIS\DiGi.GIS.csproj" />
   </ItemGroup>
 
