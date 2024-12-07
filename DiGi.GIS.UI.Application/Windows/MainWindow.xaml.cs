@@ -4,6 +4,7 @@ using DiGi.Geometry.Planar;
 using DiGi.Geometry.Planar.Classes;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Constans;
+using DiGi.GIS.Emgu.CV.Classes;
 using Microsoft.Win32;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -42,7 +43,8 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Button_Analyse_Click(object sender, RoutedEventArgs e)
         {
-            Analyse_OrtoDatas_SaveImage();
+            Analyse_OrtoDataComparisons();
+            //Analyse_OrtoDatas_SaveImage();
             //Report_Geometry(false);
             //Report_Occupancy();
         }
@@ -728,7 +730,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.OrtoDatasFile, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.OrtoDatasFile, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
             {
                 string path_Input = paths_Input[i];
@@ -1043,6 +1045,56 @@ namespace DiGi.GIS.UI.Application.Windows
 
                     }
 
+                }
+            };
+
+            MessageBox.Show("Finished!");
+        }
+
+        private void Analyse_OrtoDataComparisons()
+        {
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
+            for (int i = 0; i < paths_Input.Length; i++)
+            {
+                string path_Input = paths_Input[i];
+
+                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                {
+                    gISModelFile.Open();
+
+                    GISModel gISModel = gISModelFile.Value;
+                    if (gISModel != null)
+                    {
+                        List<Building2D> building2Ds = gISModel.GetObjects<Building2D>();
+                        if (building2Ds != null)
+                        {
+                            List<string> names = new List<string>();
+                            List<string> values = new List<string>();
+
+                            for (int j = 0; j < building2Ds.Count; j++)
+                            {
+                                OrtoDatasComparison ortoDatasComparison = Emgu.CV.Create.OrtoDatasComparison(gISModelFile, building2Ds[i], new Range<int>(2008, 2024));
+                                if(ortoDatasComparison == null)
+                                {
+                                    continue;
+                                }                             
+
+                            }
+                        }
+                    }
                 }
             };
 
