@@ -1081,9 +1081,6 @@ namespace DiGi.GIS.UI.Application.Windows
                         List<Building2D> building2Ds = gISModel.GetObjects<Building2D>();
                         if (building2Ds != null)
                         {
-                            List<string> names = new List<string>();
-                            List<string> values = new List<string>();
-
                             for (int j = 0; j < building2Ds.Count; j++)
                             {
                                 OrtoDatasComparison ortoDatasComparison = Emgu.CV.Create.OrtoDatasComparison(gISModelFile, building2Ds[i], new Range<int>(2008, 2024));
