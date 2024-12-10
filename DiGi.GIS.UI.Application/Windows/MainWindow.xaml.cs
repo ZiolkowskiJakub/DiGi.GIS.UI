@@ -51,7 +51,8 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Button_Calculate_Click(object sender, RoutedEventArgs e)
         {
-            Calculate_OrtoDatas();
+            Test_CalculateConstructionDate();
+            //Calculate_OrtoDatas();
         }
 
         private void Button_Reduce_Click(object sender, RoutedEventArgs e)
@@ -74,7 +75,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
             {
                 string path_Input = paths_Input[i];
@@ -111,7 +112,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
             {
                 string path_Input = paths_Input[i];
@@ -148,7 +149,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
             {
                 string path_Input = paths_Input[i];
@@ -185,7 +186,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
 
             string path_Output = System.IO.Path.Combine(directory, "administrativeArealNames.txt");
 
@@ -261,7 +262,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
             foreach (string path_Input in paths_Input)
             {
                 GISModel gISModel_Input = null;
@@ -279,7 +280,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
                 Building2D building2D = gISModel_Input.GetObject<Building2D>();
 
-                string path_Output = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path_Input), System.IO.Path.GetFileNameWithoutExtension(path_Input) + "_Out." + Constans.FileExtension.GISModelFile);
+                string path_Output = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path_Input), System.IO.Path.GetFileNameWithoutExtension(path_Input) + "_Out." + FileExtension.GISModelFile);
                 using (GISModelFile gISModelFile = new GISModelFile(path_Output))
                 {
 
@@ -413,7 +414,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
             {
                 string path_Input = paths_Input[i];
@@ -558,7 +559,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
 
             for (int i = 0; i < paths_Input.Length; i++)
             {
@@ -695,7 +696,7 @@ namespace DiGi.GIS.UI.Application.Windows
                         List<Building2D> building2Ds = gISModel.GetObjects<Building2D>();
                         if(building2Ds != null)
                         {
-                            OrtoDataOptions ortoDataOptions = new OrtoDataOptions();
+                            OrtoDatasOptions ortoDatasOptions = new OrtoDatasOptions();
 
                             while(building2Ds.Count > 0)
                             {
@@ -703,7 +704,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
                                 List<Building2D> building2Ds_Temp = building2Ds.GetRange(0, count_Temp);
 
-                                HashSet<GuidReference> guidReferences = await gISModelFile.CalculateOrtoDatas(building2Ds.GetRange(0, count_Temp), ortoDataOptions);
+                                HashSet<GuidReference> guidReferences = await gISModelFile.CalculateOrtoDatas(building2Ds.GetRange(0, count_Temp), ortoDatasOptions);
 
                                 building2Ds.RemoveRange(0, count_Temp);
                             }
@@ -806,7 +807,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.OrtoDatasFile, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.OrtoDatasFile, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
             {
                 string path_Input = paths_Input[i];
@@ -899,7 +900,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.OrtoDatasFile, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.OrtoDatasFile, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
             {
                 string path_Input = paths_Input[i];
@@ -953,7 +954,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 Directory.CreateDirectory(directory_Temp);
             }
 
-            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
             {
                 string path_Input = paths_Input[i];
@@ -1093,6 +1094,126 @@ namespace DiGi.GIS.UI.Application.Windows
                         }
                     }
                 }
+            };
+
+            MessageBox.Show("Finished!");
+        }
+
+        private void Test_CreateTestGISModelFile()
+        {
+            bool? result;
+
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
+            foreach (string path_Input in paths_Input)
+            {
+                GISModel gISModel_Input = null;
+
+                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                {
+                    gISModelFile.Open();
+                    gISModel_Input = gISModelFile.Value;
+                }
+
+                if (gISModel_Input == null)
+                {
+                    continue;
+                }
+
+                Building2D building2D = gISModel_Input.GetObject<Building2D>();
+
+                string path_Output = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path_Input), System.IO.Path.GetFileNameWithoutExtension(path_Input) + "_Out." + FileExtension.GISModelFile);
+                using (GISModelFile gISModelFile = new GISModelFile(path_Output))
+                {
+
+                    GISModel gISModel_Output = new GISModel();
+                    gISModel_Output.Update(building2D);
+                    gISModelFile.Value = gISModel_Output;
+                    gISModelFile.Save();
+                }
+
+                using (GISModelFile gISModelFile = new GISModelFile(path_Output))
+                {
+                    gISModelFile.Open();
+                    GISModel gISModel_Output = gISModelFile.Value;
+                }
+
+            }
+
+        }
+
+        private void Test_CalculateConstructionDate()
+        {
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
+            for (int i = 0; i < paths_Input.Length; i++)
+            {
+                string path_Input = paths_Input[i];
+
+                GISModel gISModel = null;
+
+                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                {
+                    gISModelFile.Open();
+                    gISModel = gISModelFile.Value;
+                }
+
+                if(gISModel == null)
+                {
+                    continue;
+                }
+
+                List<Building2D> buidling2Ds = gISModel.GetObjects<Building2D>();
+                if(buidling2Ds == null || buidling2Ds.Count == 0)
+                {
+                    continue;
+                }
+
+                foreach (Building2D building2D in buidling2Ds)
+                {
+                    gISModel.Update(building2D, new Building2DMachineLearningConstructionDateCalculationResult(new DateTime(2025, 1, 1)));
+                }
+
+                foreach (Building2D building2D in buidling2Ds)
+                {
+                    gISModel.Update(building2D, new Building2DManualConstructionDateCalculationResult(new DateTime(2024, 1, 1)));
+                }
+
+                foreach (Building2D building2D in buidling2Ds)
+                {
+                    gISModel.Update(building2D, new Building2DMachineLearningConstructionDateCalculationResult(new DateTime(2026, 1, 1)));
+                }
+
+                foreach (Building2D building2D in buidling2Ds)
+                {
+                    gISModel.Update(building2D, new Building2DManualConstructionDateCalculationResult(new DateTime(2025, 1, 1)));
+                }
+
+
             };
 
             MessageBox.Show("Finished!");
