@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiGi.GIS", "..\DiGi.GIS\DiG
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiGi.GIS.Emgu.CV", "..\DiGi.GIS.Emgu.CV\DiGi.GIS.Emgu.CV\DiGi.GIS.Emgu.CV.csproj", "{24EEB18C-6367-460C-B13F-949313B3EF2F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiGi.GIS.UI", "DiGi.GIS.UI\DiGi.GIS.UI.csproj", "{E4282E46-82A1-40E6-B3A9-E6171C8865DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{24EEB18C-6367-460C-B13F-949313B3EF2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24EEB18C-6367-460C-B13F-949313B3EF2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24EEB18C-6367-460C-B13F-949313B3EF2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4282E46-82A1-40E6-B3A9-E6171C8865DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4282E46-82A1-40E6-B3A9-E6171C8865DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4282E46-82A1-40E6-B3A9-E6171C8865DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4282E46-82A1-40E6-B3A9-E6171C8865DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
