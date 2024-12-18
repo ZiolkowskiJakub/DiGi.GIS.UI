@@ -10,9 +10,8 @@ namespace DiGi.GIS.UI.Application
     {
         void App_Startup(object sender, StartupEventArgs e)
         {
-            // Create main application window, starting minimized if specified
-            MainWindow mainWindow = new MainWindow();
-            mainWindow.Show();
+            UI.Windows.GISWindow gISWindow = new UI.Windows.GISWindow();
+            gISWindow.Show();
         }
     }
 

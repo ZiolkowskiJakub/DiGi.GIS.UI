@@ -11,7 +11,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Windows\" />
+    <ProjectReference Include="..\..\DiGi.GIS.Emgu.CV\DiGi.GIS.Emgu.CV\DiGi.GIS.Emgu.CV.csproj" />
+    <ProjectReference Include="..\..\DiGi.GIS\DiGi.GIS\DiGi.GIS.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="DiGi.Core">
+      <HintPath>..\references\DiGi.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.UI.WPF.Core">
+      <HintPath>..\references\DiGi.UI.WPF.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controls\" />
   </ItemGroup>
 
 </Project>
