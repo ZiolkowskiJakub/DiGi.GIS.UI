@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DiGi.GIS.Classes;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace DiGi.GIS.UI.Windows
 {
@@ -19,6 +8,8 @@ namespace DiGi.GIS.UI.Windows
     /// </summary>
     public partial class GISWindow : Window
     {
+        GISModelFileManager gISModelFileManager = new GISModelFileManager();
+
         public GISWindow()
         {
             InitializeComponent();
