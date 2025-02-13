@@ -16,8 +16,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="DiGi.BDOT10k">
+      <HintPath>..\references\DiGi.BDOT10k.dll</HintPath>
+    </Reference>
     <Reference Include="DiGi.Core">
       <HintPath>..\references\DiGi.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.Core.IO">
+      <HintPath>..\references\DiGi.Core.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.Core.Relation">
+      <HintPath>..\references\DiGi.Core.Relation.dll</HintPath>
     </Reference>
     <Reference Include="DiGi.UI.WPF.Core">
       <HintPath>..\references\DiGi.UI.WPF.Core.dll</HintPath>

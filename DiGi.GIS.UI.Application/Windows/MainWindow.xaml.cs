@@ -53,6 +53,8 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Button_Calculate_Click(object sender, RoutedEventArgs e)
         {
+            //Calculate();
+
             Calculate_OrtoDatasComparisons();
 
             //Test_CalculateConstructionDate();
@@ -140,39 +142,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Calculate()
         {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            bool? result = openFolderDialog.ShowDialog(this);
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-            string directory = openFolderDialog.FolderName;
-            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
-            {
-                return;
-            }
-
-            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
-            for (int i = 0; i < paths_Input.Length; i++)
-            {
-                string path_Input = paths_Input[i];
-
-                GISModel gISModel = null;
-
-                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
-                {
-                    gISModelFile.Open();
-                    gISModel = gISModelFile.Value;
-
-                    gISModel.Calculate();
-
-                    gISModelFile.Value = gISModel;
-                    gISModelFile.Save();
-                }
-            };
-
-            MessageBox.Show("Finished!");
+            Modify.CalculateGISModelFiles(this);
         }
 
         private void Analyse_AdministrativeAreal2Ds()
@@ -310,36 +280,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Convert_FromBDOT10k()
         {
-            bool? result;
-
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "zip files (*.zip)|*.zip|All files (*.*)|*.*";
-            result = openFileDialog.ShowDialog(this);
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-            string path = openFileDialog.FileName;
-            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
-            {
-                return;
-            }
-
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            result = openFolderDialog.ShowDialog(this);
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-            string directory = openFolderDialog.FolderName;
-            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
-            {
-                return;
-            }
-
-            Convert.ToDiGi(path, directory);
+            Convert.ToDiGi_GISModelFiles(this);
         }
 
         private void Reorganize()
@@ -482,7 +423,7 @@ namespace DiGi.GIS.UI.Application.Windows
                     double rectangularity = 0;
                     double isoperimetricRatio = 0;
 
-                    foreach (Core.Classes.GuidReference guidReference in administrativeAreal2DBuilding2DsRelation.UniqueReferences_To)
+                    foreach (GuidReference guidReference in administrativeAreal2DBuilding2DsRelation.UniqueReferences_To)
                     {
                         Building2D building2D = gISModel.GetObject<Building2D>(guidReference);
                         if (building2D == null)
@@ -672,102 +613,12 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private async void Calculate_OrtoDatas(int count = 10)
         {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            bool? result = openFolderDialog.ShowDialog(this);
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-            string directory = openFolderDialog.FolderName;
-            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
-            {
-                return;
-            }
-
-            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
-            for (int i = 0; i < paths_Input.Length; i++)
-            {
-                string path_Input = paths_Input[i];
-
-                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
-                {
-                    gISModelFile.Open();
-
-                    GISModel gISModel = gISModelFile.Value;
-                    if (gISModel != null)
-                    {
-                        List<Building2D> building2Ds = gISModel.GetObjects<Building2D>();
-                        if(building2Ds != null)
-                        {
-                            OrtoDatasOptions ortoDatasOptions = new OrtoDatasOptions();
-
-                            while(building2Ds.Count > 0)
-                            {
-                                int count_Temp = building2Ds.Count > count ? count : building2Ds.Count;
-
-                                List<Building2D> building2Ds_Temp = building2Ds.GetRange(0, count_Temp);
-
-                                HashSet<GuidReference> guidReferences = await gISModelFile.CalculateOrtoDatas(building2Ds.GetRange(0, count_Temp), ortoDatasOptions);
-
-                                building2Ds.RemoveRange(0, count_Temp);
-                            }
-                        }
-                    }
-                }
-            };
-
-            MessageBox.Show("Finished!");
+            Modify.CalculateOrtoDatas(this, count);
         }
 
         private async void Calculate_OrtoDatasComparisons(int count = 10)
         {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            bool? result = openFolderDialog.ShowDialog(this);
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-            string directory = openFolderDialog.FolderName;
-            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
-            {
-                return;
-            }
-
-            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
-            for (int i = 0; i < paths_Input.Length; i++)
-            {
-                string path_Input = paths_Input[i];
-
-                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
-                {
-                    gISModelFile.Open();
-
-                    GISModel gISModel = gISModelFile.Value;
-                    if (gISModel != null)
-                    {
-                        List<Building2D> building2Ds = gISModel.GetObjects<Building2D>();
-                        if (building2Ds != null)
-                        {
-                            OrtoDatasComparisonOptions ortoDatasComparisonOptions = new OrtoDatasComparisonOptions();
-
-                            while (building2Ds.Count > 0)
-                            {
-                                int count_Temp = building2Ds.Count > count ? count : building2Ds.Count;
-
-                                List<Building2D> building2Ds_Temp = building2Ds.GetRange(0, count_Temp);
-
-                                HashSet<GuidReference> guidReferences = await Emgu.CV.Modify.CalculateOrtoDatasComparisons(gISModelFile, building2Ds.GetRange(0, count_Temp), ortoDatasComparisonOptions);
-
-                                building2Ds.RemoveRange(0, count_Temp);
-                            }
-                        }
-                    }
-                }
-            };
-
-            MessageBox.Show("Finished!");
+            Modify.CalculateOrtoDatasComparisons(this, count);
         }
 
         private void Convert_ToFiles(int count = 10)
@@ -794,7 +645,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 {
                     ortoDatasFile.Open();
 
-                    List<Core.Classes.UniqueReference> uniqueReferences = ortoDatasFile.GetUniqueReferences()?.ToList();
+                    List<UniqueReference> uniqueReferences = ortoDatasFile.GetUniqueReferences()?.ToList();
                     if(uniqueReferences == null)
                     {
                         continue;
@@ -810,7 +661,7 @@ namespace DiGi.GIS.UI.Application.Windows
                     {
                         int count_Temp = Math.Max(count, uniqueReferences.Count);
 
-                        List<Core.Classes.UniqueReference> uniqueReferences_Temp = uniqueReferences.GetRange(0, count_Temp);
+                        List<UniqueReference> uniqueReferences_Temp = uniqueReferences.GetRange(0, count_Temp);
                         uniqueReferences.RemoveRange(0, count_Temp);
 
                         IEnumerable<OrtoDatas> ortoDatasList = ortoDatasFile.GetValues<OrtoDatas>(uniqueReferences_Temp);
@@ -963,7 +814,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 {
                     ortoDatasFile.Open();
 
-                    HashSet<Core.Classes.UniqueReference> uniqueReferences = ortoDatasFile.GetUniqueReferences();
+                    HashSet<UniqueReference> uniqueReferences = ortoDatasFile.GetUniqueReferences();
                     if (uniqueReferences == null)
                     {
                         continue;
