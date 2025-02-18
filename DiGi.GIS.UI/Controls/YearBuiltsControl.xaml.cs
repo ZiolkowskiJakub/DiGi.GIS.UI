@@ -1,18 +1,7 @@
 ﻿using DiGi.GIS.Classes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+using DiGi.GIS.UI.Classes;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace DiGi.GIS.UI.Controls
 {
@@ -21,6 +10,8 @@ namespace DiGi.GIS.UI.Controls
     /// </summary>
     public partial class YearBuiltsControl : UserControl
     {
+        public event YearBuiltActivatedEventHandler YearBuiltActivated;
+
         private GISModelFile gISModelFile;
 
         public YearBuiltsControl()
@@ -31,7 +22,84 @@ namespace DiGi.GIS.UI.Controls
         private void LoadGISModelFile()
         {
             ListBox_Main.Items.Clear();
-            //StackPanel_Main.
+            StackPanel_Main.Children.Clear();
+
+            ListBox_Main.SelectionChanged -= ListBox_Main_SelectionChanged;
+
+            GISModel gISModel = gISModelFile.Value;
+            if(gISModel == null)
+            {
+                return;
+            }
+
+            List<Building2D> building2Ds = gISModel.GetObjects<Building2D>();
+            if(building2Ds == null || building2Ds.Count == 0)
+            {
+                return;
+            }
+
+            foreach(Building2D building2D in building2Ds)
+            {
+                ListBox_Main.Items.Add(new ListBoxItem() { Content = building2D.Reference, Tag = building2D });
+            }
+
+            ListBox_Main.SelectionChanged += ListBox_Main_SelectionChanged;
+        }
+
+        private void ListBox_Main_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            StackPanel_Main.Children.Clear();
+
+            ListBoxItem listBoxItem = ListBox_Main.SelectedValue as ListBoxItem;
+            if(listBoxItem == null)
+            {
+                return;
+            }
+
+            Building2D building2D = listBoxItem.Tag as Building2D;
+            if (building2D == null)
+            {
+                return;
+            }
+
+            OrtoDatas ortoDatas = Query.OrtoDatas(gISModelFile, building2D);
+            if(ortoDatas == null)
+            {
+                return;
+            }
+
+            foreach(OrtoData ortoData in ortoDatas)
+            {
+                YearBuiltControl yearBuiltControl = new YearBuiltControl()
+                {
+                    Year = ortoData.DateTime.Year,
+                    BitmapImage = ortoData.BitmapImage(),
+                    Tag = ortoData,
+                    Active = false
+                };
+
+                yearBuiltControl.MouseDown += YearBuiltControl_MouseDown;
+
+                StackPanel_Main.Children.Add(yearBuiltControl);
+            }
+        }
+
+        private void YearBuiltControl_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            foreach(YearBuiltControl yearBuiltControl_Temp in StackPanel_Main.Children)
+            {
+                yearBuiltControl_Temp.Active = false;
+            }
+
+            YearBuiltControl yearBuiltControl = sender as YearBuiltControl;
+            if(yearBuiltControl == null)
+            {
+                return;
+            }
+
+            yearBuiltControl.Active = true;
+
+            YearBuiltActivated.Invoke(yearBuiltControl, new YearBuiltActivatedEventArgs());
         }
 
         public GISModelFile GISModelFile

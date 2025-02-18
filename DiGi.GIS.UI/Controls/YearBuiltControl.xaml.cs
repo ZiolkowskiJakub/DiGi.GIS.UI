@@ -25,6 +25,19 @@ namespace DiGi.GIS.UI.Controls
             InitializeComponent();
         }
 
+        public bool Active
+        {
+            get
+            {
+                return Border_Main.BorderThickness.Top != 0;
+            }
+
+            set
+            {
+                Border_Main.BorderThickness = new Thickness(value ? 1 : 0);
+            }
+        }
+
         public int Year
         {
             get
@@ -38,6 +51,30 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
+        public BitmapImage BitmapImage
+        {
+            get
+            {
+                return GetBitmapImage();
+            }
+
+            set
+            {
+                SetBitmapImage(value);
+            }
+        }
+
+        private bool SetBitmapImage(BitmapImage bitmapImage)
+        {
+            Image_Main.Source = bitmapImage;
+            return true;
+        }
+
+        private BitmapImage GetBitmapImage()
+        {
+            return Image_Main.Source as BitmapImage;
+        }
+        
         private bool SetYear(int year)
         {
             TextBlock_Main.Text = year > 0 ? year.ToString() : null;
@@ -61,5 +98,7 @@ namespace DiGi.GIS.UI.Controls
             return result;
 
         }
+
+
     }
 }

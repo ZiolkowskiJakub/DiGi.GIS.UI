@@ -439,7 +439,7 @@ namespace DiGi.GIS.UI.Application.Windows
                         Building2DGeometryCalculationResult building2DGeometryCalculationResult = gISModel.GetRelatedObject<Building2DGeometryCalculationResult>(building2D);
                         if (building2DGeometryCalculationResult == null)
                         {
-                            building2DGeometryCalculationResult = Create.Building2DGeometryCalculationResult(building2D);
+                            building2DGeometryCalculationResult = DiGi.GIS.Create.Building2DGeometryCalculationResult(building2D);
                         }
 
                         double area_Building2D = building2DGeometryCalculationResult.Area * building2D.Storeys;
