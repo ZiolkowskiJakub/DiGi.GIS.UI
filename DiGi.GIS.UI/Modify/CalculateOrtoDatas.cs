@@ -9,7 +9,7 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
-        public static async void CalculateOrtoDatas(Window owner, int count = 10)
+        public static async void CalculateOrtoDatas(Window owner, OrtoDatasOptions ortoDatasOptions, int count)
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
             bool? result = openFolderDialog.ShowDialog(owner);
@@ -22,6 +22,11 @@ namespace DiGi.GIS.UI
             if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
             {
                 return;
+            }
+
+            if(ortoDatasOptions == null)
+            {
+                ortoDatasOptions = new OrtoDatasOptions();
             }
 
             string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
@@ -39,8 +44,6 @@ namespace DiGi.GIS.UI
                         List<Building2D> building2Ds = gISModel.GetObjects<Building2D>();
                         if (building2Ds != null)
                         {
-                            OrtoDatasOptions ortoDatasOptions = new OrtoDatasOptions();
-
                             while (building2Ds.Count > 0)
                             {
                                 int count_Temp = building2Ds.Count > count ? count : building2Ds.Count;

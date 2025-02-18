@@ -55,7 +55,7 @@ namespace DiGi.GIS.UI.Application.Windows
         {
             //Calculate();
 
-            Calculate_OrtoDatasComparisons();
+            Calculate_OrtoDatas(100);
 
             //Test_CalculateConstructionDate();
             //Calculate_OrtoDatas();
@@ -613,12 +613,20 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private async void Calculate_OrtoDatas(int count = 10)
         {
-            Modify.CalculateOrtoDatas(this, count);
+            OrtoDatasOptions ortoDatasOptions = new OrtoDatasOptions()
+            {
+                MaxFileSize = (1024UL * 1024UL * 1024UL * 5) / 10
+            };
+
+            Modify.CalculateOrtoDatas(this, ortoDatasOptions, count);
         }
 
-        private async void Calculate_OrtoDatasComparisons(int count = 10)
+        private async void Calculate_OrtoDatasComparisons()
         {
-            Modify.CalculateOrtoDatasComparisons(this, count);
+            OrtoDatasComparisonOptions ortoDatasComparisonOptions = new OrtoDatasComparisonOptions();
+            ortoDatasComparisonOptions.OrtoDatasOptions.MaxFileSize = (1024UL * 1024UL * 1024UL * 5) / 10;
+
+            Modify.CalculateOrtoDatasComparisons(this, ortoDatasComparisonOptions);
         }
 
         private void Convert_ToFiles(int count = 10)
