@@ -1,7 +1,10 @@
 ﻿using DiGi.GIS.Classes;
 using DiGi.GIS.UI.Classes;
+using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace DiGi.GIS.UI.Controls
 {
@@ -52,6 +55,8 @@ namespace DiGi.GIS.UI.Controls
 
             Building2D building2D = Building2D;
 
+            Building2DControl_Main.Building2D = building2D;
+
             OrtoDatas ortoDatas = GIS.Query.OrtoDatas(gISModelFile, building2D);
             if(ortoDatas == null)
             {
@@ -68,12 +73,15 @@ namespace DiGi.GIS.UI.Controls
                     Active = false,
                     Width = 300,
                     Height = 300,
+                    Margin = new System.Windows.Thickness(5, 5, 5, 5),
                 };
 
                 yearBuiltControl.MouseDown += YearBuiltControl_MouseDown;
 
                 WrapPanel_Main.Children.Add(yearBuiltControl);
             }
+
+            Image_Main.Source = Create.BitmapImage(gISModelFile, building2D, DateTime.Now.Year);
         }
 
         private void YearBuiltControl_MouseDown(object sender, MouseButtonEventArgs e)

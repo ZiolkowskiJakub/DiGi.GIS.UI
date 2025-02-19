@@ -10,7 +10,7 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
-        public static bool Save(this GISModelFile gISModelFile, Building2D building2D, string directory)
+        public static bool WriteImages(this GISModelFile gISModelFile, Building2D building2D, string directory)
         {
             if(gISModelFile == null || building2D == null || string.IsNullOrWhiteSpace(directory))
             {

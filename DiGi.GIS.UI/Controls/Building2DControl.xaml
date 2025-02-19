@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="DiGi.GIS.UI.Controls.Building2DControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DiGi.GIS.UI.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="185" d:DesignWidth="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.7*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="Guid" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        <TextBox x:Name="TextBox_Guid" IsEnabled="False" Text="" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5,5,5,5"/>
+        <TextBlock Text="Reference" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        <TextBox x:Name="TextBox_Reference" IsEnabled="False" Text="" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5,5,5,5"/>
+        <TextBlock Text="Storeys" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        <TextBox x:Name="TextBox_Storeys" IsEnabled="False" Text="" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5,5,5,5"/>
+        <TextBlock Text="Building General Function" Grid.Column="0" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        <TextBox x:Name="TextBox_BuildingGeneralFunction" IsEnabled="False" Text="" Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5,5,5,5"/>
+        <TextBlock Text="Building Specific Function" Grid.Column="0" Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        <TextBox x:Name="TextBox_BuildingSpecificFunctions" IsEnabled="False" Text="" Grid.Column="1" Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5,5,5,5"/>
+        <TextBlock Text="Building Phase" Grid.Column="0" Grid.Row="5" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+        <TextBox x:Name="TextBox_BuildingPhase" IsEnabled="False" Text="" Grid.Column="1" Grid.Row="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="5,5,5,5"/>
+    </Grid>
+</UserControl>

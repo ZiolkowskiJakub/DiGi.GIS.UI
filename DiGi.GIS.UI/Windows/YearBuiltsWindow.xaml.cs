@@ -17,8 +17,17 @@ namespace DiGi.GIS.UI.Windows
 
         private void YearBuiltsControl_Main_YearBuiltActivated(object sender, Classes.YearBuiltActivatedEventArgs e)
         {
-            int year = e.Year;
             Building2D building2D = e.Building2D;
+            if(building2D != null)
+            {
+                return;
+            }
+
+            int year = e.Year;
+
+            GISModelFile gISModelFile = YearBuiltsControl_Main.GISModelFile;
+
+
         }
 
         private void MenuItem_Load_Click(object sender, RoutedEventArgs e)
@@ -37,7 +46,7 @@ namespace DiGi.GIS.UI.Windows
 
         private void MenuItem_Close_Click(object sender, RoutedEventArgs e)
         {
-
+            Close();
         }
 
         private void MenuItem_About_Click(object sender, RoutedEventArgs e)
