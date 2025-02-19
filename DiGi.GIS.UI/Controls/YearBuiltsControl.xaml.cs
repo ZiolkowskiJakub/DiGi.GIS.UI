@@ -22,7 +22,7 @@ namespace DiGi.GIS.UI.Controls
         private void LoadGISModelFile()
         {
             ListBox_Main.Items.Clear();
-            StackPanel_Main.Children.Clear();
+            WrapPanel_Main.Children.Clear();
 
             ListBox_Main.SelectionChanged -= ListBox_Main_SelectionChanged;
 
@@ -48,21 +48,11 @@ namespace DiGi.GIS.UI.Controls
 
         private void ListBox_Main_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            StackPanel_Main.Children.Clear();
+            WrapPanel_Main.Children.Clear();
 
-            ListBoxItem listBoxItem = ListBox_Main.SelectedValue as ListBoxItem;
-            if(listBoxItem == null)
-            {
-                return;
-            }
+            Building2D building2D = Building2D;
 
-            Building2D building2D = listBoxItem.Tag as Building2D;
-            if (building2D == null)
-            {
-                return;
-            }
-
-            OrtoDatas ortoDatas = Query.OrtoDatas(gISModelFile, building2D);
+            OrtoDatas ortoDatas = GIS.Query.OrtoDatas(gISModelFile, building2D);
             if(ortoDatas == null)
             {
                 return;
@@ -75,18 +65,20 @@ namespace DiGi.GIS.UI.Controls
                     Year = ortoData.DateTime.Year,
                     BitmapImage = ortoData.BitmapImage(),
                     Tag = ortoData,
-                    Active = false
+                    Active = false,
+                    Width = 300,
+                    Height = 300,
                 };
 
                 yearBuiltControl.MouseDown += YearBuiltControl_MouseDown;
 
-                StackPanel_Main.Children.Add(yearBuiltControl);
+                WrapPanel_Main.Children.Add(yearBuiltControl);
             }
         }
 
         private void YearBuiltControl_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            foreach(YearBuiltControl yearBuiltControl_Temp in StackPanel_Main.Children)
+            foreach(YearBuiltControl yearBuiltControl_Temp in WrapPanel_Main.Children)
             {
                 yearBuiltControl_Temp.Active = false;
             }
@@ -99,7 +91,7 @@ namespace DiGi.GIS.UI.Controls
 
             yearBuiltControl.Active = true;
 
-            YearBuiltActivated.Invoke(yearBuiltControl, new YearBuiltActivatedEventArgs());
+            YearBuiltActivated?.Invoke(yearBuiltControl, new YearBuiltActivatedEventArgs(Building2D, yearBuiltControl.Year));
         }
 
         public GISModelFile GISModelFile
@@ -113,6 +105,20 @@ namespace DiGi.GIS.UI.Controls
             {
                 gISModelFile = value;
                 LoadGISModelFile();
+            }
+        }
+
+        public Building2D Building2D
+        {
+            get
+            {
+                ListBoxItem listBoxItem = ListBox_Main.SelectedValue as ListBoxItem;
+                if (listBoxItem == null)
+                {
+                    return null;
+                }
+
+                return listBoxItem.Tag as Building2D;
             }
         }
     }

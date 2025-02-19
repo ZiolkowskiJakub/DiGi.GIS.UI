@@ -1176,5 +1176,13 @@ namespace DiGi.GIS.UI.Application.Windows
 
             MessageBox.Show("Finished!");
         }
+
+        private void Button_YearBuilts_Click(object sender, RoutedEventArgs e)
+        {
+            UI.Windows.YearBuiltsWindow yearBuiltsWindow = new UI.Windows.YearBuiltsWindow();
+            yearBuiltsWindow.WindowState = WindowState.Maximized;
+
+            yearBuiltsWindow.Show();
+        }
     }
 }

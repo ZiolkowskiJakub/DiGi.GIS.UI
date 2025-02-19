@@ -12,6 +12,6 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <ListBox x:Name="ListBox_Main" Grid.Column="0" SelectionMode="Single"/>
-        <StackPanel x:Name="StackPanel_Main" Grid.Column="1" Orientation="Vertical" Margin="10"/>
+        <WrapPanel x:Name="WrapPanel_Main" Grid.Column="1" Orientation="Horizontal" Margin="10"/>
     </Grid>
 </UserControl>

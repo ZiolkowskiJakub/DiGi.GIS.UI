@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DiGi.GIS.UI.Application"
         mc:Ignorable="d"
-        Title="GIS" Height="217" Width="150" ResizeMode="NoResize">
+        Title="GIS" Height="244" Width="150" ResizeMode="NoResize">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="31*"/>
@@ -17,5 +17,6 @@
         <Button x:Name="Button_Analyse" Content="Analyse" HorizontalAlignment="Center" Margin="0,91,0,0" VerticalAlignment="Top" Width="130" Click="Button_Analyse_Click" Grid.ColumnSpan="2"/>
         <Button x:Name="Button_Calculate" Content="Calculate" HorizontalAlignment="Center" Margin="0,118,0,0" VerticalAlignment="Top" Width="130" Click="Button_Calculate_Click" Grid.ColumnSpan="2"/>
         <Button x:Name="Button_Reduce" Content="Reduce" HorizontalAlignment="Center" Margin="0,145,0,0" VerticalAlignment="Top" Width="130" Click="Button_Reduce_Click" Grid.ColumnSpan="2"/>
+        <Button x:Name="Button_YearBuilts" Content="Year Builts" HorizontalAlignment="Center" Margin="0,172,0,0" VerticalAlignment="Top" Width="130" Click="Button_YearBuilts_Click" Grid.ColumnSpan="2"/>
     </Grid>
 </Window>
