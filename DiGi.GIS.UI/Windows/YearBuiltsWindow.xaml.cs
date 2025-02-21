@@ -11,23 +11,6 @@ namespace DiGi.GIS.UI.Windows
         public YearBuiltsWindow()
         {
             InitializeComponent();
-
-            YearBuiltsControl_Main.YearBuiltActivated += YearBuiltsControl_Main_YearBuiltActivated;
-        }
-
-        private void YearBuiltsControl_Main_YearBuiltActivated(object sender, Classes.YearBuiltActivatedEventArgs e)
-        {
-            Building2D building2D = e.Building2D;
-            if(building2D != null)
-            {
-                return;
-            }
-
-            int year = e.Year;
-
-            GISModelFile gISModelFile = YearBuiltsControl_Main.GISModelFile;
-
-
         }
 
         private void MenuItem_Load_Click(object sender, RoutedEventArgs e)

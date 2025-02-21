@@ -34,11 +34,11 @@ namespace DiGi.GIS.UI.Controls
 
             set
             {
-                Border_Main.BorderThickness = new Thickness(value ? 1 : 0);
+                Border_Main.BorderThickness = new Thickness(value ? 2 : 0);
             }
         }
 
-        public int Year
+        public short Year
         {
             get
             {
@@ -82,7 +82,7 @@ namespace DiGi.GIS.UI.Controls
             return !string.IsNullOrWhiteSpace(TextBlock_Main.Text);
         }
 
-        private int GetYear()
+        private short GetYear()
         {
             string value = TextBlock_Main.Text;
             if(string.IsNullOrWhiteSpace(value))
@@ -90,7 +90,7 @@ namespace DiGi.GIS.UI.Controls
                 return -1;
             }
 
-            if(!int.TryParse(value, out int result))
+            if(!short.TryParse(value, out short result))
             {
                 return -1;
             }
@@ -98,7 +98,5 @@ namespace DiGi.GIS.UI.Controls
             return result;
 
         }
-
-
     }
 }

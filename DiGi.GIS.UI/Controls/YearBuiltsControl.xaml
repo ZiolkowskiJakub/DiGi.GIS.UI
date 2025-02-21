@@ -8,24 +8,19 @@
              d:DesignHeight="450" d:DesignWidth="900">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="350"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <ListBox x:Name="ListBox_Main" Grid.Column="0" SelectionMode="Single"/>
-        <Grid Grid.Column="1">
+        <Grid Grid.Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="200"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="200"/>
             </Grid.RowDefinitions>
-            <WrapPanel x:Name="WrapPanel_Main" Grid.Row="1" Orientation="Horizontal" Margin="10"/>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0.7*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <local:Building2DControl x:Name="Building2DControl_Main" Grid.Column="0" HorizontalAlignment="Stretch" Margin="10,10,10,10" VerticalAlignment="Stretch"/>
-                <Image x:Name="Image_Main" Grid.Column="1" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10,10,10,10" />
-            </Grid>
+            <ListBox x:Name="ListBox_Main" Grid.Row="0" SelectionMode="Single"/>
+            <local:Building2DControl x:Name="Building2DControl_Main" Grid.Row="1" HorizontalAlignment="Stretch" Margin="10,10,0,10" VerticalAlignment="Stretch"/>
         </Grid>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Column="1">
+            <WrapPanel x:Name="WrapPanel_Main"  Orientation="Horizontal" Margin="10"/>
+        </ScrollViewer>
     </Grid>
 </UserControl>

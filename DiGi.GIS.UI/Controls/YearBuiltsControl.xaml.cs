@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
 
 namespace DiGi.GIS.UI.Controls
 {
@@ -13,8 +12,6 @@ namespace DiGi.GIS.UI.Controls
     /// </summary>
     public partial class YearBuiltsControl : UserControl
     {
-        public event YearBuiltActivatedEventHandler YearBuiltActivated;
-
         private GISModelFile gISModelFile;
 
         public YearBuiltsControl()
@@ -41,9 +38,11 @@ namespace DiGi.GIS.UI.Controls
                 return;
             }
 
-            foreach(Building2D building2D in building2Ds)
+            for (int i = 0; i < building2Ds.Count; i++)
             {
-                ListBox_Main.Items.Add(new ListBoxItem() { Content = building2D.Reference, Tag = building2D });
+                Building2D building2D = building2Ds[i];
+
+                ListBox_Main.Items.Add(new ListBoxItem() { Content = string.Format("[{0}] {1}", i + 1, building2D.Reference), Tag = building2D });
             }
 
             ListBox_Main.SelectionChanged += ListBox_Main_SelectionChanged;
@@ -58,19 +57,27 @@ namespace DiGi.GIS.UI.Controls
             Building2DControl_Main.Building2D = building2D;
 
             OrtoDatas ortoDatas = GIS.Query.OrtoDatas(gISModelFile, building2D);
-            if(ortoDatas == null)
+            if(ortoDatas == null || ortoDatas.Count() == 0)
             {
                 return;
             }
 
-            foreach(OrtoData ortoData in ortoDatas)
+            short? year = GIS.Query.YearBuilt(gISModelFile, building2D);
+
+            SortedDictionary<short, YearBuiltControl> dictionary = new SortedDictionary<short, YearBuiltControl>();
+
+            YearBuiltControl yearBuiltControl;
+
+            foreach (OrtoData ortoData in ortoDatas)
             {
-                YearBuiltControl yearBuiltControl = new YearBuiltControl()
+                short year_Temp = System.Convert.ToInt16(ortoData.DateTime.Year);
+
+                yearBuiltControl = new YearBuiltControl()
                 {
-                    Year = ortoData.DateTime.Year,
+                    Year = year_Temp,
                     BitmapImage = ortoData.BitmapImage(),
                     Tag = ortoData,
-                    Active = false,
+                    Active = year_Temp == year,
                     Width = 300,
                     Height = 300,
                     Margin = new System.Windows.Thickness(5, 5, 5, 5),
@@ -78,28 +85,60 @@ namespace DiGi.GIS.UI.Controls
 
                 yearBuiltControl.MouseDown += YearBuiltControl_MouseDown;
 
-                WrapPanel_Main.Children.Add(yearBuiltControl);
+                dictionary[year_Temp] = yearBuiltControl;   
             }
 
-            Image_Main.Source = Create.BitmapImage(gISModelFile, building2D, DateTime.Now.Year);
+            short max = System.Convert.ToInt16(Math.Min(dictionary.Keys.Max() + 1, DateTime.Now.Year));
+
+            if (!dictionary.TryGetValue(max, out yearBuiltControl) || yearBuiltControl == null)
+            {
+                yearBuiltControl = new YearBuiltControl()
+                {
+                    Year = max,
+                    BitmapImage = null,
+                    Tag = null,
+                    Active = max == year,
+                    Width = 300,
+                    Height = 300,
+                    Margin = new System.Windows.Thickness(5, 5, 5, 5),
+                };
+
+                yearBuiltControl.MouseDown += YearBuiltControl_MouseDown;
+
+                dictionary[max] = yearBuiltControl;
+            }
+
+            yearBuiltControl.BitmapImage = Create.BitmapImage(gISModelFile, building2D, DateTime.Now.Year);
+
+            foreach (YearBuiltControl yearBuiltControl_Temp in dictionary.Values)
+            {
+                WrapPanel_Main.Children.Add(yearBuiltControl_Temp);
+            }
         }
 
         private void YearBuiltControl_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            foreach(YearBuiltControl yearBuiltControl_Temp in WrapPanel_Main.Children)
+            YearBuiltControl yearBuiltControl = sender as YearBuiltControl;
+
+            bool active = yearBuiltControl == null ? false : yearBuiltControl.Active;
+
+            foreach (YearBuiltControl yearBuiltControl_Temp in WrapPanel_Main.Children)
             {
                 yearBuiltControl_Temp.Active = false;
             }
 
-            YearBuiltControl yearBuiltControl = sender as YearBuiltControl;
-            if(yearBuiltControl == null)
+            if (yearBuiltControl == null)
             {
                 return;
             }
 
-            yearBuiltControl.Active = true;
+            short? year = active ? null : yearBuiltControl.Year;
+            yearBuiltControl.Active = !active;
 
-            YearBuiltActivated?.Invoke(yearBuiltControl, new YearBuiltActivatedEventArgs(Building2D, yearBuiltControl.Year));
+            GIS.Modify.UpdateYearBuilt(gISModelFile, Building2D, year);
+
+            //ListBox_Main.Focus();
+            e.Handled = true;
         }
 
         public GISModelFile GISModelFile
