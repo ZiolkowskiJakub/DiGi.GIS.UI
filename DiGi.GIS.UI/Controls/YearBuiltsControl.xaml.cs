@@ -168,5 +168,26 @@ namespace DiGi.GIS.UI.Controls
                 return listBoxItem.Tag as Building2D;
             }
         }
+
+        private void Button_Next_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            int count = ListBox_Main.Items.Count;
+            if(count <= 0)
+            {
+                return;
+            }
+
+            int index = ListBox_Main.SelectedIndex;
+            index++;
+
+            if(index >= count)
+            {
+                return;
+            }
+
+            ListBox_Main.SelectedIndex = index;
+
+            ListBox_Main.ScrollIntoView(ListBox_Main.SelectedItem);
+        }
     }
 }

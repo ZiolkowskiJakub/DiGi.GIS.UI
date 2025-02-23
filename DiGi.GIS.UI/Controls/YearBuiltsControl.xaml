@@ -14,12 +14,20 @@
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="80"/>
                 <RowDefinition Height="200"/>
             </Grid.RowDefinitions>
             <ListBox x:Name="ListBox_Main" Grid.Row="0" SelectionMode="Single"/>
-            <local:Building2DControl x:Name="Building2DControl_Main" Grid.Row="1" HorizontalAlignment="Stretch" Margin="10,10,0,10" VerticalAlignment="Stretch"/>
+            <Button x:Name="Button_Next" Content="NEXT" Grid.Row="1" HorizontalAlignment="Stretch" Margin="0,3,0,3" VerticalAlignment="Stretch" Click="Button_Next_Click"/>
+            <local:Building2DControl x:Name="Building2DControl_Main" Grid.Row="2" HorizontalAlignment="Stretch" Margin="10,10,0,10" VerticalAlignment="Stretch"/>
         </Grid>
         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Column="1">
+            <ScrollViewer.Resources>
+                <Style TargetType="ScrollBar">
+                    <Setter Property="Orientation" Value="Vertical"/>
+                    <Setter Property="Width" Value="30"/>
+                </Style>
+            </ScrollViewer.Resources>
             <WrapPanel x:Name="WrapPanel_Main"  Orientation="Horizontal" Margin="10"/>
         </ScrollViewer>
     </Grid>

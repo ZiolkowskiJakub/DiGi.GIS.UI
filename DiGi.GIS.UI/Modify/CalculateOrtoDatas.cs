@@ -9,22 +9,22 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
-        public static async void CalculateOrtoDatas(Window owner, OrtoDatasOptions ortoDatasOptions, int count)
+        public static async Task<bool> CalculateOrtoDatas(Window owner, OrtoDatasOptions ortoDatasOptions, int count)
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
             bool? result = openFolderDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {
-                return;
+                return false;
             }
 
             string directory = openFolderDialog.FolderName;
             if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
             {
-                return;
+                return false;
             }
 
-            if(ortoDatasOptions == null)
+            if (ortoDatasOptions == null)
             {
                 ortoDatasOptions = new OrtoDatasOptions();
             }
@@ -59,7 +59,9 @@ namespace DiGi.GIS.UI
                 }
             };
 
-            MessageBox.Show("Finished!");
+            //MessageBox.Show("Finished!");
+
+            return true;
         }
     }
 }
