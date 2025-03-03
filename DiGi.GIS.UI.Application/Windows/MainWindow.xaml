@@ -6,20 +6,20 @@
         xmlns:local="clr-namespace:DiGi.GIS.UI.Application"
         xmlns:Controls="clr-namespace:DiGi.UI.WPF.Core.Controls;assembly=DiGi.UI.WPF.Core"
         mc:Ignorable="d"
-        Title="GIS" Height="293" Width="150" ResizeMode="NoResize" Icon="/DiGi.GIS.ico">
+        Title="GIS" Height="293" Width="190" ResizeMode="NoResize" Icon="/DiGi.GIS.ico">
     <DockPanel LastChildFill="True">
         <Grid DockPanel.Dock="Top" Height="230">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="31*"/>
                 <ColumnDefinition Width="44*"/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="Button_Convert" Content="Convert" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Width="130" Click="Button_Convert_Click" Grid.ColumnSpan="2"/>
-            <Button x:Name="Button_Write" Content="Write" HorizontalAlignment="Center" Margin="0,37,0,0" VerticalAlignment="Top" Width="130" Click="Button_Write_Click" Grid.ColumnSpan="2"/>
-            <Button x:Name="Button_Read" Content="Read" HorizontalAlignment="Center" Margin="0,64,0,0" VerticalAlignment="Top" Width="130" Click="Button_Read_Click" Grid.ColumnSpan="2"/>
-            <Button x:Name="Button_Analyse" Content="Analyse" HorizontalAlignment="Center" Margin="0,91,0,0" VerticalAlignment="Top" Width="130" Click="Button_Analyse_Click" Grid.ColumnSpan="2"/>
-            <Button x:Name="Button_Calculate" Content="Calculate" HorizontalAlignment="Center" Margin="0,118,0,0" VerticalAlignment="Top" Width="130" Click="Button_Calculate_Click" Grid.ColumnSpan="2"/>
-            <Button x:Name="Button_Reduce" Content="Reduce" HorizontalAlignment="Center" Margin="0,145,0,0" VerticalAlignment="Top" Width="130" Click="Button_Reduce_Click" Grid.ColumnSpan="2"/>
-            <Button x:Name="Button_YearBuilts" Content="Year Builts" HorizontalAlignment="Center" Margin="0,172,0,0" VerticalAlignment="Top" Width="130" Click="Button_YearBuilts_Click" Grid.ColumnSpan="2"/>
+            <Button x:Name="Button_ToDiGiGISModelFiles" Content="Convert from BDOT10k" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" Width="150" Click="Button_ToDiGiGISModelFiles_Click" Grid.ColumnSpan="2"/>
+            <Button x:Name="Button_CalculateGISModelFiles" Content="Calculate GISModels" HorizontalAlignment="Center" Margin="0,37,0,0" VerticalAlignment="Top" Width="150" Click="Button_CalculateGISModelFiles_Click" Grid.ColumnSpan="2"/>
+            <Button x:Name="Button_CalculateOrtoDatas" Content="Calculate OrtoDatas" HorizontalAlignment="Center" Margin="0,64,0,0" VerticalAlignment="Top" Width="150" Click="Button_CalculateOrtoDatas_Click" Grid.ColumnSpan="2"/>
+            <Button x:Name="Button_ResaveOrtoDatasFiles" Content="Resave OrtoDatas Files" HorizontalAlignment="Center" Margin="0,91,0,0" VerticalAlignment="Top" Width="150" Click="Button_ResaveOrtoDatasFiles_Click" Grid.ColumnSpan="2"/>
+            <Button x:Name="Button_Test" Content="Test" HorizontalAlignment="Center" Margin="0,118,0,0" VerticalAlignment="Top" Width="150" Click="Button_Test_Click" Grid.ColumnSpan="2" Visibility="Visible"/>
+            <Button x:Name="Button_Reduce" Content="Reduce" HorizontalAlignment="Center" Margin="0,145,0,0" VerticalAlignment="Top" Width="150" Click="Button_Reduce_Click" Grid.ColumnSpan="2" Visibility="Hidden"/>
+            <Button x:Name="Button_YearBuilts" Content="Year Builts" HorizontalAlignment="Center" Margin="0,172,0,0" VerticalAlignment="Top" Width="150" Click="Button_YearBuilts_Click" Grid.ColumnSpan="2"/>
         </Grid>
         <StatusBarItem DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" VerticalAlignment="Top">
             <TextBlock x:Name="TextBlock_Progress" Text="..." HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="3,0,0,0"/>

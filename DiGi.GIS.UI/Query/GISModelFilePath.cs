@@ -1,6 +1,4 @@
-﻿using Microsoft.Win32;
-
-namespace DiGi.GIS.UI
+﻿namespace DiGi.GIS.UI
 {
     public static partial class Query
     {

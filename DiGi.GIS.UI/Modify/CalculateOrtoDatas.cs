@@ -44,13 +44,15 @@ namespace DiGi.GIS.UI
                         List<Building2D> building2Ds = gISModel.GetObjects<Building2D>();
                         if (building2Ds != null)
                         {
+                            string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path_Input), string.Format("{0}.{1}", System.IO.Path.GetFileNameWithoutExtension(path_Input), FileExtension.OrtoDatasFile));
+                            
                             while (building2Ds.Count > 0)
                             {
                                 int count_Temp = building2Ds.Count > count ? count : building2Ds.Count;
 
                                 List<Building2D> building2Ds_Temp = building2Ds.GetRange(0, count_Temp);
 
-                                HashSet<GuidReference> guidReferences = await gISModelFile.CalculateOrtoDatas(building2Ds.GetRange(0, count_Temp), ortoDatasOptions);
+                                HashSet<GuidReference> guidReferences = await building2Ds.GetRange(0, count_Temp).CalculateOrtoDatas(path, ortoDatasOptions);
 
                                 building2Ds.RemoveRange(0, count_Temp);
                             }

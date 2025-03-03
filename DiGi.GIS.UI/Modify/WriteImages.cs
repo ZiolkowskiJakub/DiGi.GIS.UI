@@ -10,14 +10,19 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
-        public static bool WriteImages(this GISModelFile gISModelFile, Building2D building2D, string directory)
+        public static bool WriteImages(this Building2D building2D, string directory_OrtoDatasFiles, string directory_Output)
         {
-            if(gISModelFile == null || building2D == null || string.IsNullOrWhiteSpace(directory))
+            if(directory_OrtoDatasFiles == null || building2D == null || string.IsNullOrWhiteSpace(directory_Output))
             {
                 return false;
             }
 
-            OrtoDatas ortoDatas = gISModelFile.OrtoDatas(building2D);
+            if(!Directory.Exists(directory_OrtoDatasFiles) || !Directory.Exists(directory_Output))
+            {
+                return false;
+            }
+
+            OrtoDatas ortoDatas = building2D.OrtoDatas(directory_OrtoDatasFiles);
             if (ortoDatas == null)
             {
                 return false;
@@ -82,7 +87,7 @@ namespace DiGi.GIS.UI
                         }
                     }
 
-                    image.Save(Path.Combine(directory, fileName), ImageFormat.Jpeg);
+                    image.Save(Path.Combine(directory_Output, fileName), ImageFormat.Jpeg);
                     result = true;
                 }
             }
