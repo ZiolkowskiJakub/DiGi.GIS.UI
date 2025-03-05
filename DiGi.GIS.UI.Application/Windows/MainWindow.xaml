@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:DiGi.GIS.UI.Application"
         xmlns:Controls="clr-namespace:DiGi.UI.WPF.Core.Controls;assembly=DiGi.UI.WPF.Core"
         mc:Ignorable="d"
-        Title="GIS" Height="293" Width="190" ResizeMode="NoResize" Icon="/DiGi.GIS.ico">
+        Title="GIS" Height="293" Width="240" ResizeMode="NoResize" Icon="/DiGi.GIS.ico">
     <DockPanel LastChildFill="True">
         <Grid DockPanel.Dock="Top" Height="230">
             <Grid.ColumnDefinitions>
