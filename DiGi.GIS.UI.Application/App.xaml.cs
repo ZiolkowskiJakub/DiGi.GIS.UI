@@ -11,10 +11,12 @@ namespace DiGi.GIS.UI.Application
         void App_Startup(object sender, StartupEventArgs e)
         {
             MainWindow mainWindow = new MainWindow();
-            mainWindow.Show();
+            mainWindow.ShowDialog();
 
             //UI.Windows.GISWindow gISWindow = new UI.Windows.GISWindow();
             //gISWindow.Show();
+
+            Shutdown();
         }
     }
 

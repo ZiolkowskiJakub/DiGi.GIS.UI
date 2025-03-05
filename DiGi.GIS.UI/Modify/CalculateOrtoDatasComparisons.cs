@@ -45,22 +45,13 @@ namespace DiGi.GIS.UI
                                 ortoDatasComparisonOptions = new OrtoDatasComparisonOptions();
                             }
 
-                            while (building2Ds.Count > 0)
-                            {
-                                int count_Temp = building2Ds.Count > ortoDatasComparisonOptions.Count ? ortoDatasComparisonOptions.Count : building2Ds.Count;
+                            string path = string.Format("{0}.{1}", System.IO.Path.GetFileNameWithoutExtension(path_Input), Emgu.CV.Constans.FileExtension.OrtoDatasComparisonFile);
 
-                                List<Building2D> building2Ds_Temp = building2Ds.GetRange(0, count_Temp);
-
-                                HashSet<GuidReference> guidReferences = await Emgu.CV.Modify.CalculateOrtoDatasComparisons(gISModelFile, building2Ds.GetRange(0, count_Temp), ortoDatasComparisonOptions, ortoDatasComparisonOptions.Count);
-
-                                building2Ds.RemoveRange(0, count_Temp);
-                            }
+                            IEnumerable<GuidReference> guidReferences = Emgu.CV.Modify.CalculateOrtoDatasComparisons(gISModel, building2Ds, path, ortoDatasComparisonOptions);
                         }
                     }
                 }
             };
-
-            MessageBox.Show("Finished!");
         }
     }
 }

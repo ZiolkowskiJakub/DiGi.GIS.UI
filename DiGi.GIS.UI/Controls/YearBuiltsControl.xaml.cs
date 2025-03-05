@@ -1,7 +1,4 @@
 ﻿using DiGi.GIS.Classes;
-using DiGi.GIS.UI.Classes;
-using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -56,7 +53,19 @@ namespace DiGi.GIS.UI.Controls
 
             Building2DControl_Main.Building2D = building2D;
 
-            OrtoDatas ortoDatas = GIS.Query.OrtoDatas(gISModelFile, building2D);
+            string path = gISModelFile.Path;
+            if(string.IsNullOrWhiteSpace(path))
+            {
+                return;
+            }
+
+            string directory = System.IO.Path.GetDirectoryName(path);
+            if(!System.IO.Directory.Exists(directory))
+            {
+                return;
+            }
+
+            OrtoDatas ortoDatas = GIS.Query.OrtoDatas(building2D, directory);
             if(ortoDatas == null || ortoDatas.Count() == 0)
             {
                 return;
@@ -108,7 +117,7 @@ namespace DiGi.GIS.UI.Controls
                 dictionary[max] = yearBuiltControl;
             }
 
-            yearBuiltControl.BitmapImage = Create.BitmapImage(gISModelFile, building2D, DateTime.Now.Year);
+            yearBuiltControl.BitmapImage = Create.BitmapImage(building2D, directory, DateTime.Now.Year);
 
             foreach (YearBuiltControl yearBuiltControl_Temp in dictionary.Values)
             {

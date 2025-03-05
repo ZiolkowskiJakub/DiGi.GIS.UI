@@ -20,14 +20,14 @@ namespace DiGi.GIS.UI
             return DiGi.UI.WPF.Core.Create.BitmapImage(ortoData.Bytes);
         }
 
-        public static BitmapImage BitmapImage(this GISModelFile gISModelFile, Building2D building2D, int year)
+        public static BitmapImage BitmapImage(this Building2D building2D, string directory, int year)
         {
-            if (gISModelFile == null || building2D == null || year <= 0)
+            if (directory == null || building2D == null || year <= 0)
             {
                 return null;
             }
 
-            OrtoDatas ortoDatas = gISModelFile.OrtoDatas(building2D);
+            OrtoDatas ortoDatas = building2D.OrtoDatas(directory);
             if (ortoDatas == null)
             {
                 return null;
