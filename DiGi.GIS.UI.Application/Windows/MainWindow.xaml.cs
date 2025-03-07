@@ -1,4 +1,5 @@
-﻿using DiGi.Core;
+﻿using DiGi.BDL.Classes;
+using DiGi.Core;
 using DiGi.Core.Classes;
 using DiGi.Core.Interfaces;
 using DiGi.Core.IO.Table.Classes;
@@ -8,11 +9,12 @@ using DiGi.Geometry.Planar.Classes;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Constans;
 using DiGi.GIS.Emgu.CV.Classes;
+using Emgu.CV.XImgproc;
 using Microsoft.Win32;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-
+using System.Text.Json;
 using System.Windows;
 
 namespace DiGi.GIS.UI.Application.Windows
@@ -116,7 +118,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Button_Test_Click(object sender, RoutedEventArgs e)
         {
-            GISFileModelTest();
+            BDLMatchTest();
         }
 
         private void Button_ToDiGiGISModelFiles_Click(object sender, RoutedEventArgs e)
@@ -658,6 +660,106 @@ namespace DiGi.GIS.UI.Application.Windows
                 }
 
             }
+        }
+
+        private static async void BDLMatchTest()
+        {
+            OpenFileDialog openFileDialog_Json = new OpenFileDialog();
+            openFileDialog_Json.Filter = "json files (*.json)|*.json|All files (*.*)|*.*";
+            bool? openFileDialog_Json_Result = openFileDialog_Json.ShowDialog();
+            if (openFileDialog_Json_Result == null || !openFileDialog_Json_Result.HasValue || !openFileDialog_Json_Result.Value)
+            {
+                return;
+            }
+
+            string json = File.ReadAllText(openFileDialog_Json.FileName);
+            List<Unit> units = JsonSerializer.Deserialize<List<Unit>>(json);
+
+            StatisticalUnit statisticalUnit = GIS.Create.StatisticalUnit(units);
+
+            OpenFileDialog openFileDialog_GISModelFile = new OpenFileDialog();
+            openFileDialog_GISModelFile.Filter = "GISModelFile files (*.gmf)|*.gmf|All files (*.*)|*.*";
+            bool? openFileDialog_GISModelFile_Result = openFileDialog_GISModelFile.ShowDialog();
+            if (openFileDialog_GISModelFile_Result == null || !openFileDialog_GISModelFile_Result.HasValue || !openFileDialog_GISModelFile_Result.Value)
+            {
+                return;
+            }
+
+            GISModel gISModel = null;
+            using (GISModelFile gISModelFile = new GISModelFile(openFileDialog_GISModelFile.FileName))
+            {
+                gISModelFile.Open();
+                gISModel = gISModelFile.Value;
+            }
+
+            List<AdministrativeAreal2D> administrativeAreal2Ds = gISModel?.GetObjects<AdministrativeAreal2D>();
+            if (administrativeAreal2Ds == null)
+            {
+                return;
+            }
+
+            List<string> names = new List<string>();
+            foreach(AdministrativeAreal2D administrativeAreal2D in administrativeAreal2Ds)
+            {
+                names.Add(administrativeAreal2D.Name);
+            }
+
+        }
+
+        private static async void BDLTest()
+        {
+
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "json files (*.json)|*.json|All files (*.*)|*.*";
+            bool? openFileDialog_Result = openFileDialog.ShowDialog();
+            if (openFileDialog_Result == null || !openFileDialog_Result.HasValue || !openFileDialog_Result.Value)
+            {
+                return;
+            }
+
+            string json = File.ReadAllText(openFileDialog.FileName);
+            List<Unit> units = JsonSerializer.Deserialize<List<Unit>>(json);
+
+            StatisticalUnit statisticalUnit = GIS.Create.StatisticalUnit(units);
+
+
+
+            //SaveFileDialog saveFileDialog = new SaveFileDialog();
+            //saveFileDialog.Filter = "json files (*.json)|*.json|All files (*.*)|*.*";
+            //bool? saveFileDialog_Result = saveFileDialog.ShowDialog();
+            //if (saveFileDialog_Result == null || !saveFileDialog_Result.HasValue || !saveFileDialog_Result.Value)
+            //{
+            //    return;
+            //}
+
+            ////Write
+            ////List<Unit> units = await BDL.Create.Units();
+            ////string json = JsonSerializer.Serialize(units, new JsonSerializerOptions() { WriteIndented = true });
+            ////File.WriteAllText(saveFileDialog.FileName, json);
+
+            //IEnumerable<BDL.Enums.Variable> variables = Enum.GetValues(typeof(BDL.Enums.Variable)).Cast<BDL.Enums.Variable>();
+
+            //List<int> years = new List<int>();
+            //for (int i = 2008; i <= DateTime.Now.Year; i++)
+            //{
+            //    years.Add(i);
+            //}
+
+            //List<UnitYearlyValues> unitYearlyValuesList = new List<UnitYearlyValues>();
+            //foreach (Unit unit in units)
+            //{
+            //    UnitYearlyValues unitYearlyValues = await BDL.Create.UnitYearlyValues(unit.id, variables, years, 50);
+
+            //    if (unitYearlyValues == null)
+            //    {
+            //        continue;
+            //    }
+
+            //    unitYearlyValuesList.Add(unitYearlyValues);
+            //}
+
+            //json = JsonSerializer.Serialize(unitYearlyValuesList, new JsonSerializerOptions() { WriteIndented = true });
+            //File.WriteAllText(saveFileDialog.FileName, json);
         }
     }
 }
