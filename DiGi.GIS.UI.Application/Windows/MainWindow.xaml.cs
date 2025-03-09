@@ -1,15 +1,11 @@
 ﻿using DiGi.BDL.Classes;
+using DiGi.BDL.Enums;
 using DiGi.Core;
 using DiGi.Core.Classes;
-using DiGi.Core.Interfaces;
 using DiGi.Core.IO.Table.Classes;
-using DiGi.Geometry.Core.Enums;
-using DiGi.Geometry.Planar;
-using DiGi.Geometry.Planar.Classes;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Constans;
 using DiGi.GIS.Emgu.CV.Classes;
-using Emgu.CV.XImgproc;
 using Microsoft.Win32;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -116,9 +112,9 @@ namespace DiGi.GIS.UI.Application.Windows
             ResaveOrtoDatasFiles();
         }
 
-        private void Button_Test_Click(object sender, RoutedEventArgs e)
+        private async void Button_Test_Click(object sender, RoutedEventArgs e)
         {
-            BDLMatchTest();
+            await Modify.WriteStatisticalDataCollections(Enum.GetValues<Variable>(), new Range<int>(2008, DateTime.Now.Year));
         }
 
         private void Button_ToDiGiGISModelFiles_Click(object sender, RoutedEventArgs e)
@@ -662,6 +658,8 @@ namespace DiGi.GIS.UI.Application.Windows
             }
         }
 
+
+
         private static async void BDLMatchTest()
         {
             OpenFileDialog openFileDialog_Json = new OpenFileDialog();
@@ -706,6 +704,43 @@ namespace DiGi.GIS.UI.Application.Windows
 
         }
 
+        private static async void WriteStatisticalDataCollections()
+        {
+            bool? result;
+
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.StatisticalUnitFile, FileExtension.StatisticalUnitFile);
+            result = openFileDialog.ShowDialog();
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            StatisticalUnit statisticalUnit = null;
+
+            using (StatisticalUnitFile statisticalUnitFile = new StatisticalUnitFile(openFileDialog.FileName))
+            {
+                statisticalUnitFile.Open();
+                statisticalUnit = statisticalUnitFile.Value;
+            }
+
+            if(statisticalUnit == null)
+            {
+                return;
+            }
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.StatisticalDataCollectionFile, FileExtension.StatisticalDataCollectionFile);
+            result = saveFileDialog.ShowDialog();
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+
+
+        }
+
         private static async void BDLTest()
         {
 
@@ -721,6 +756,20 @@ namespace DiGi.GIS.UI.Application.Windows
             List<Unit> units = JsonSerializer.Deserialize<List<Unit>>(json);
 
             StatisticalUnit statisticalUnit = GIS.Create.StatisticalUnit(units);
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.StatisticalUnitFile, FileExtension.StatisticalUnitFile);
+            bool? saveFileDialog_Result = saveFileDialog.ShowDialog();
+            if (saveFileDialog_Result == null || !saveFileDialog_Result.HasValue || !saveFileDialog_Result.Value)
+            {
+                return;
+            }
+
+            using (StatisticalUnitFile statisticalUnitFile = new StatisticalUnitFile(saveFileDialog.FileName))
+            {
+                statisticalUnitFile.Value = statisticalUnit;
+                statisticalUnitFile.Save();
+            }
 
 
 
