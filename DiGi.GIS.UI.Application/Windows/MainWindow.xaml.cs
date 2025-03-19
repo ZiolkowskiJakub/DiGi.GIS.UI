@@ -5,7 +5,6 @@ using DiGi.Core.IO.Table.Classes;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Constans;
 using DiGi.GIS.Emgu.CV.Classes;
-using DiGi.GIS.Enums;
 using Microsoft.Win32;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -31,9 +30,228 @@ namespace DiGi.GIS.UI.Application.Windows
             this.Closed += MainWindow_Closed;
         }
 
-        private void MainWindow_Closed(object? sender, EventArgs e)
+        private static async void BDLMatchTest()
+        {
+            OpenFileDialog openFileDialog_Json = new OpenFileDialog();
+            openFileDialog_Json.Filter = "json files (*.json)|*.json|All files (*.*)|*.*";
+            bool? openFileDialog_Json_Result = openFileDialog_Json.ShowDialog();
+            if (openFileDialog_Json_Result == null || !openFileDialog_Json_Result.HasValue || !openFileDialog_Json_Result.Value)
+            {
+                return;
+            }
+
+            string json = File.ReadAllText(openFileDialog_Json.FileName);
+            List<Unit> units = JsonSerializer.Deserialize<List<Unit>>(json);
+
+            StatisticalUnit statisticalUnit = GIS.Create.StatisticalUnit(units);
+
+            OpenFileDialog openFileDialog_GISModelFile = new OpenFileDialog();
+            openFileDialog_GISModelFile.Filter = "GISModelFile files (*.gmf)|*.gmf|All files (*.*)|*.*";
+            bool? openFileDialog_GISModelFile_Result = openFileDialog_GISModelFile.ShowDialog();
+            if (openFileDialog_GISModelFile_Result == null || !openFileDialog_GISModelFile_Result.HasValue || !openFileDialog_GISModelFile_Result.Value)
+            {
+                return;
+            }
+
+            GISModel gISModel = null;
+            using (GISModelFile gISModelFile = new GISModelFile(openFileDialog_GISModelFile.FileName))
+            {
+                gISModelFile.Open();
+                gISModel = gISModelFile.Value;
+            }
+
+            List<AdministrativeAreal2D> administrativeAreal2Ds = gISModel?.GetObjects<AdministrativeAreal2D>();
+            if (administrativeAreal2Ds == null)
+            {
+                return;
+            }
+
+            List<string> names = new List<string>();
+            foreach (AdministrativeAreal2D administrativeAreal2D in administrativeAreal2Ds)
+            {
+                names.Add(administrativeAreal2D.Name);
+            }
+
+        }
+
+        private static async void BDLTest()
         {
 
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "json files (*.json)|*.json|All files (*.*)|*.*";
+            bool? openFileDialog_Result = openFileDialog.ShowDialog();
+            if (openFileDialog_Result == null || !openFileDialog_Result.HasValue || !openFileDialog_Result.Value)
+            {
+                return;
+            }
+
+            string json = File.ReadAllText(openFileDialog.FileName);
+            List<Unit> units = JsonSerializer.Deserialize<List<Unit>>(json);
+
+            StatisticalUnit statisticalUnit = GIS.Create.StatisticalUnit(units);
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.StatisticalUnitFile, FileExtension.StatisticalUnitFile);
+            bool? saveFileDialog_Result = saveFileDialog.ShowDialog();
+            if (saveFileDialog_Result == null || !saveFileDialog_Result.HasValue || !saveFileDialog_Result.Value)
+            {
+                return;
+            }
+
+            using (StatisticalUnitFile statisticalUnitFile = new StatisticalUnitFile(saveFileDialog.FileName))
+            {
+                statisticalUnitFile.Value = statisticalUnit;
+                statisticalUnitFile.Save();
+            }
+
+
+
+            //SaveFileDialog saveFileDialog = new SaveFileDialog();
+            //saveFileDialog.Filter = "json files (*.json)|*.json|All files (*.*)|*.*";
+            //bool? saveFileDialog_Result = saveFileDialog.ShowDialog();
+            //if (saveFileDialog_Result == null || !saveFileDialog_Result.HasValue || !saveFileDialog_Result.Value)
+            //{
+            //    return;
+            //}
+
+            ////Write
+            ////List<Unit> units = await BDL.Create.Units();
+            ////string json = JsonSerializer.Serialize(units, new JsonSerializerOptions() { WriteIndented = true });
+            ////File.WriteAllText(saveFileDialog.FileName, json);
+
+            //IEnumerable<BDL.Enums.Variable> variables = Enum.GetValues(typeof(BDL.Enums.Variable)).Cast<BDL.Enums.Variable>();
+
+            //List<int> years = new List<int>();
+            //for (int i = 2008; i <= DateTime.Now.Year; i++)
+            //{
+            //    years.Add(i);
+            //}
+
+            //List<UnitYearlyValues> unitYearlyValuesList = new List<UnitYearlyValues>();
+            //foreach (Unit unit in units)
+            //{
+            //    UnitYearlyValues unitYearlyValues = await BDL.Create.UnitYearlyValues(unit.id, variables, years, 50);
+
+            //    if (unitYearlyValues == null)
+            //    {
+            //        continue;
+            //    }
+
+            //    unitYearlyValuesList.Add(unitYearlyValues);
+            //}
+
+            //json = JsonSerializer.Serialize(unitYearlyValuesList, new JsonSerializerOptions() { WriteIndented = true });
+            //File.WriteAllText(saveFileDialog.FileName, json);
+        }
+
+        private static void CreateAdministrativeAreal2DModel()
+        {
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog();
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
+            if (paths_Input == null || paths_Input.Length == 0)
+            {
+                return;
+            }
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.GISModelFile, FileExtension.GISModelFile);
+            result = saveFileDialog.ShowDialog();
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            Dictionary<string, AdministrativeAreal2D> dictionary = new Dictionary<string, AdministrativeAreal2D>();
+
+            for (int i = 0; i < paths_Input.Length; i++)
+            {
+                string path_Input = paths_Input[i];
+
+                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                {
+                    gISModelFile.Open();
+
+                    List<AdministrativeAreal2D> administrativeAreal2Ds = gISModelFile.Value.GetObjects<AdministrativeAreal2D>();
+                    if (administrativeAreal2Ds != null)
+                    {
+                        foreach (AdministrativeAreal2D administrativeAreal2D in administrativeAreal2Ds)
+                        {
+                            if (string.IsNullOrWhiteSpace(administrativeAreal2D?.Reference))
+                            {
+                                continue;
+                            }
+
+                            dictionary[administrativeAreal2D.Reference] = administrativeAreal2D;
+                        }
+                    }
+
+                }
+            }
+
+
+            GISModel gISModel = new GISModel();
+            foreach (AdministrativeAreal2D administrativeAreal2D in dictionary.Values)
+            {
+                gISModel.Update(administrativeAreal2D);
+            }
+
+            gISModel.CalculateAdministrativeAreal2DGeometries();
+            gISModel.CalculateAdministrativeAreal2DAdministrativeAreal2Ds();
+
+            using (GISModelFile gISModelFile = new GISModelFile(saveFileDialog.FileName))
+            {
+                gISModelFile.Value = gISModel;
+                gISModelFile.Save();
+            }
+
+            MessageBox.Show("Finished!");
+        }
+
+        private static void GISFileModelTest()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "GIS Model files (*.gmf)|*.gmf|All files (*.*)|*.*";
+            bool? result = openFileDialog.ShowDialog();
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string path = openFileDialog.FileName;
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            {
+                return;
+            }
+
+            using (GISModelFile gISModelFile = new GISModelFile(path))
+            {
+                gISModelFile.Open();
+
+                GISModel gISModel = gISModelFile.Value;
+
+                List<Building2D> building2Ds = gISModel.GetObjects<Building2D>();
+                if (building2Ds != null && building2Ds.Count > 0)
+                {
+                    Building2D building2D = building2Ds[0];
+
+                    List<AdministrativeAreal2D> administrativeAreal2Ds = GIS.Query.AdministrativeAreal2Ds<AdministrativeAreal2D>(gISModel, building2D);
+
+
+                }
+
+            }
         }
 
         private void Analyse_OrtoDatasComparisons_Table()
@@ -92,6 +310,11 @@ namespace DiGi.GIS.UI.Application.Windows
             //Calculate_OrtoDatas();
         }
 
+        private void Button_CalculateAdministrativeAreal2DStatisticalUnits_Click(object sender, RoutedEventArgs e)
+        {
+            CalculateAdministrativeAreal2DStatisticalUnits();
+        }
+
         private void Button_CalculateGISModelFiles_Click(object sender, RoutedEventArgs e)
         {
             CalculateGISModelFiles();
@@ -116,7 +339,7 @@ namespace DiGi.GIS.UI.Application.Windows
         {
             //CreateAdministrativeAreal2DModel();
 
-            CalculateAdministrativeAreal2DStatisticalUnits();
+            //CalculateAdministrativeAreal2DStatisticalUnits();
         }
 
         private void Button_ToDiGiGISModelFiles_Click(object sender, RoutedEventArgs e)
@@ -136,6 +359,20 @@ namespace DiGi.GIS.UI.Application.Windows
             Close();
         }
 
+        private void CalculateAdministrativeAreal2DStatisticalUnits()
+        {
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Calculating...";
+
+            Modify.CalculateAdministrativeAreal2DStatisticalUnits(this, true, "_StatisticalUnits");
+
+            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+
+        }
+
         private async void CalculateGISModelFiles()
         {
             DateTime dateTime = DateTime.Now;
@@ -147,19 +384,6 @@ namespace DiGi.GIS.UI.Application.Windows
             TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
-        }
-
-        private async void WriteStatisticalDataCollections()
-        {
-            DateTime dateTime = DateTime.Now;
-
-            TextBlock_Progress.Text = "Writing...";
-
-            await Modify.WriteStatisticalDataCollections(Enum.GetValues<Variable>(), new Range<int>(2008, DateTime.Now.Year));
-
-            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
-
-            TextBlock_Progress.Text = string.Format("Done Writing! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
         private async void CalculateOrtoDatas(int count = 100)
@@ -291,6 +515,10 @@ namespace DiGi.GIS.UI.Application.Windows
             }
         }
 
+        private void MainWindow_Closed(object? sender, EventArgs e)
+        {
+
+        }
         private void Read_FromZip()
         {
             bool? result;
@@ -638,242 +866,17 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = string.Format("Done Converting! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
-        private void CalculateAdministrativeAreal2DStatisticalUnits()
+        private async void WriteStatisticalDataCollections()
         {
             DateTime dateTime = DateTime.Now;
 
-            TextBlock_Progress.Text = "Calculating...";
+            TextBlock_Progress.Text = "Writing...";
 
-            Modify.CalculateAdministrativeAreal2DStatisticalUnits(this, true, "_StatisticalUnits");
+            await Modify.WriteStatisticalDataCollections(Enum.GetValues<Variable>(), new Range<int>(2008, DateTime.Now.Year));
 
             TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
 
-            TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
-
-        }
-
-        private static void GISFileModelTest()
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "GIS Model files (*.gmf)|*.gmf|All files (*.*)|*.*";
-            bool? result = openFileDialog.ShowDialog();
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-            string path = openFileDialog.FileName;
-            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
-            {
-                return;
-            }
-
-            using (GISModelFile gISModelFile = new GISModelFile(path))
-            {
-                gISModelFile.Open();
-
-                GISModel gISModel = gISModelFile.Value;
-
-                List<Building2D> building2Ds = gISModel.GetObjects<Building2D>();
-                if(building2Ds != null && building2Ds.Count > 0)
-                {
-                    Building2D building2D = building2Ds[0];
-
-                    List<AdministrativeAreal2D> administrativeAreal2Ds = GIS.Query.AdministrativeAreal2Ds<AdministrativeAreal2D>(gISModel, building2D);
-
-
-                }
-
-            }
-        }
-
-        private static void CreateAdministrativeAreal2DModel()
-        {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            bool? result = openFolderDialog.ShowDialog();
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-            string directory = openFolderDialog.FolderName;
-            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
-            {
-                return;
-            }
-
-            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
-            if (paths_Input == null || paths_Input.Length == 0)
-            {
-                return;
-            }
-
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.GISModelFile, FileExtension.GISModelFile);
-            result = saveFileDialog.ShowDialog();
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-            Dictionary<string, AdministrativeAreal2D> dictionary = new Dictionary<string, AdministrativeAreal2D>();
-
-            for (int i = 0; i < paths_Input.Length; i++)
-            {
-                string path_Input = paths_Input[i];
-
-                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
-                {
-                    gISModelFile.Open();
-
-                    List<AdministrativeAreal2D> administrativeAreal2Ds = gISModelFile.Value.GetObjects<AdministrativeAreal2D>();
-                    if (administrativeAreal2Ds != null)
-                    {
-                        foreach (AdministrativeAreal2D administrativeAreal2D in administrativeAreal2Ds)
-                        {
-                            if (string.IsNullOrWhiteSpace(administrativeAreal2D?.Reference))
-                            {
-                                continue;
-                            }
-
-                            dictionary[administrativeAreal2D.Reference] = administrativeAreal2D;
-                        }
-                    }
-
-                }
-            }
-
-
-            GISModel gISModel = new GISModel();
-            foreach (AdministrativeAreal2D administrativeAreal2D in dictionary.Values)
-            {
-                gISModel.Update(administrativeAreal2D);
-            }
-
-            gISModel.CalculateAdministrativeAreal2DGeometries();
-            gISModel.CalculateAdministrativeAreal2DAdministrativeAreal2Ds();
-
-            using (GISModelFile gISModelFile = new GISModelFile(saveFileDialog.FileName))
-            {
-                gISModelFile.Value = gISModel;
-                gISModelFile.Save();
-            }
-
-            MessageBox.Show("Finished!");
-        }
-
-        private static async void BDLMatchTest()
-        {
-            OpenFileDialog openFileDialog_Json = new OpenFileDialog();
-            openFileDialog_Json.Filter = "json files (*.json)|*.json|All files (*.*)|*.*";
-            bool? openFileDialog_Json_Result = openFileDialog_Json.ShowDialog();
-            if (openFileDialog_Json_Result == null || !openFileDialog_Json_Result.HasValue || !openFileDialog_Json_Result.Value)
-            {
-                return;
-            }
-
-            string json = File.ReadAllText(openFileDialog_Json.FileName);
-            List<Unit> units = JsonSerializer.Deserialize<List<Unit>>(json);
-
-            StatisticalUnit statisticalUnit = GIS.Create.StatisticalUnit(units);
-
-            OpenFileDialog openFileDialog_GISModelFile = new OpenFileDialog();
-            openFileDialog_GISModelFile.Filter = "GISModelFile files (*.gmf)|*.gmf|All files (*.*)|*.*";
-            bool? openFileDialog_GISModelFile_Result = openFileDialog_GISModelFile.ShowDialog();
-            if (openFileDialog_GISModelFile_Result == null || !openFileDialog_GISModelFile_Result.HasValue || !openFileDialog_GISModelFile_Result.Value)
-            {
-                return;
-            }
-
-            GISModel gISModel = null;
-            using (GISModelFile gISModelFile = new GISModelFile(openFileDialog_GISModelFile.FileName))
-            {
-                gISModelFile.Open();
-                gISModel = gISModelFile.Value;
-            }
-
-            List<AdministrativeAreal2D> administrativeAreal2Ds = gISModel?.GetObjects<AdministrativeAreal2D>();
-            if (administrativeAreal2Ds == null)
-            {
-                return;
-            }
-
-            List<string> names = new List<string>();
-            foreach(AdministrativeAreal2D administrativeAreal2D in administrativeAreal2Ds)
-            {
-                names.Add(administrativeAreal2D.Name);
-            }
-
-        }
-
-        private static async void BDLTest()
-        {
-
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "json files (*.json)|*.json|All files (*.*)|*.*";
-            bool? openFileDialog_Result = openFileDialog.ShowDialog();
-            if (openFileDialog_Result == null || !openFileDialog_Result.HasValue || !openFileDialog_Result.Value)
-            {
-                return;
-            }
-
-            string json = File.ReadAllText(openFileDialog.FileName);
-            List<Unit> units = JsonSerializer.Deserialize<List<Unit>>(json);
-
-            StatisticalUnit statisticalUnit = GIS.Create.StatisticalUnit(units);
-
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.StatisticalUnitFile, FileExtension.StatisticalUnitFile);
-            bool? saveFileDialog_Result = saveFileDialog.ShowDialog();
-            if (saveFileDialog_Result == null || !saveFileDialog_Result.HasValue || !saveFileDialog_Result.Value)
-            {
-                return;
-            }
-
-            using (StatisticalUnitFile statisticalUnitFile = new StatisticalUnitFile(saveFileDialog.FileName))
-            {
-                statisticalUnitFile.Value = statisticalUnit;
-                statisticalUnitFile.Save();
-            }
-
-
-
-            //SaveFileDialog saveFileDialog = new SaveFileDialog();
-            //saveFileDialog.Filter = "json files (*.json)|*.json|All files (*.*)|*.*";
-            //bool? saveFileDialog_Result = saveFileDialog.ShowDialog();
-            //if (saveFileDialog_Result == null || !saveFileDialog_Result.HasValue || !saveFileDialog_Result.Value)
-            //{
-            //    return;
-            //}
-
-            ////Write
-            ////List<Unit> units = await BDL.Create.Units();
-            ////string json = JsonSerializer.Serialize(units, new JsonSerializerOptions() { WriteIndented = true });
-            ////File.WriteAllText(saveFileDialog.FileName, json);
-
-            //IEnumerable<BDL.Enums.Variable> variables = Enum.GetValues(typeof(BDL.Enums.Variable)).Cast<BDL.Enums.Variable>();
-
-            //List<int> years = new List<int>();
-            //for (int i = 2008; i <= DateTime.Now.Year; i++)
-            //{
-            //    years.Add(i);
-            //}
-
-            //List<UnitYearlyValues> unitYearlyValuesList = new List<UnitYearlyValues>();
-            //foreach (Unit unit in units)
-            //{
-            //    UnitYearlyValues unitYearlyValues = await BDL.Create.UnitYearlyValues(unit.id, variables, years, 50);
-
-            //    if (unitYearlyValues == null)
-            //    {
-            //        continue;
-            //    }
-
-            //    unitYearlyValuesList.Add(unitYearlyValues);
-            //}
-
-            //json = JsonSerializer.Serialize(unitYearlyValuesList, new JsonSerializerOptions() { WriteIndented = true });
-            //File.WriteAllText(saveFileDialog.FileName, json);
+            TextBlock_Progress.Text = string.Format("Done Writing! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
     }
 }
