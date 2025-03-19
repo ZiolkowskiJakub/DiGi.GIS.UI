@@ -1,11 +1,11 @@
 ﻿using DiGi.BDL.Classes;
 using DiGi.BDL.Enums;
-using DiGi.Core;
 using DiGi.Core.Classes;
 using DiGi.Core.IO.Table.Classes;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Constans;
 using DiGi.GIS.Emgu.CV.Classes;
+using DiGi.GIS.Enums;
 using Microsoft.Win32;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -114,7 +114,9 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private async void Button_Test_Click(object sender, RoutedEventArgs e)
         {
-            await Modify.WriteStatisticalDataCollections(Enum.GetValues<Variable>(), new Range<int>(2008, DateTime.Now.Year));
+            //CreateAdministrativeAreal2DModel();
+
+            CalculateAdministrativeAreal2DStatisticalUnits();
         }
 
         private void Button_ToDiGiGISModelFiles_Click(object sender, RoutedEventArgs e)
@@ -145,6 +147,19 @@ namespace DiGi.GIS.UI.Application.Windows
             TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
+
+        private async void WriteStatisticalDataCollections()
+        {
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Writing...";
+
+            await Modify.WriteStatisticalDataCollections(Enum.GetValues<Variable>(), new Range<int>(2008, DateTime.Now.Year));
+
+            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Writing! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
         private async void CalculateOrtoDatas(int count = 100)
@@ -623,6 +638,20 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = string.Format("Done Converting! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
+        private void CalculateAdministrativeAreal2DStatisticalUnits()
+        {
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Calculating...";
+
+            Modify.CalculateAdministrativeAreal2DStatisticalUnits(this, true, "_StatisticalUnits");
+
+            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+
+        }
+
         private static void GISFileModelTest()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -658,7 +687,80 @@ namespace DiGi.GIS.UI.Application.Windows
             }
         }
 
+        private static void CreateAdministrativeAreal2DModel()
+        {
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog();
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
 
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
+            if (paths_Input == null || paths_Input.Length == 0)
+            {
+                return;
+            }
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.GISModelFile, FileExtension.GISModelFile);
+            result = saveFileDialog.ShowDialog();
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            Dictionary<string, AdministrativeAreal2D> dictionary = new Dictionary<string, AdministrativeAreal2D>();
+
+            for (int i = 0; i < paths_Input.Length; i++)
+            {
+                string path_Input = paths_Input[i];
+
+                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                {
+                    gISModelFile.Open();
+
+                    List<AdministrativeAreal2D> administrativeAreal2Ds = gISModelFile.Value.GetObjects<AdministrativeAreal2D>();
+                    if (administrativeAreal2Ds != null)
+                    {
+                        foreach (AdministrativeAreal2D administrativeAreal2D in administrativeAreal2Ds)
+                        {
+                            if (string.IsNullOrWhiteSpace(administrativeAreal2D?.Reference))
+                            {
+                                continue;
+                            }
+
+                            dictionary[administrativeAreal2D.Reference] = administrativeAreal2D;
+                        }
+                    }
+
+                }
+            }
+
+
+            GISModel gISModel = new GISModel();
+            foreach (AdministrativeAreal2D administrativeAreal2D in dictionary.Values)
+            {
+                gISModel.Update(administrativeAreal2D);
+            }
+
+            gISModel.CalculateAdministrativeAreal2DGeometries();
+            gISModel.CalculateAdministrativeAreal2DAdministrativeAreal2Ds();
+
+            using (GISModelFile gISModelFile = new GISModelFile(saveFileDialog.FileName))
+            {
+                gISModelFile.Value = gISModel;
+                gISModelFile.Save();
+            }
+
+            MessageBox.Show("Finished!");
+        }
 
         private static async void BDLMatchTest()
         {
@@ -701,43 +803,6 @@ namespace DiGi.GIS.UI.Application.Windows
             {
                 names.Add(administrativeAreal2D.Name);
             }
-
-        }
-
-        private static async void WriteStatisticalDataCollections()
-        {
-            bool? result;
-
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.StatisticalUnitFile, FileExtension.StatisticalUnitFile);
-            result = openFileDialog.ShowDialog();
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-            StatisticalUnit statisticalUnit = null;
-
-            using (StatisticalUnitFile statisticalUnitFile = new StatisticalUnitFile(openFileDialog.FileName))
-            {
-                statisticalUnitFile.Open();
-                statisticalUnit = statisticalUnitFile.Value;
-            }
-
-            if(statisticalUnit == null)
-            {
-                return;
-            }
-
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.StatisticalDataCollectionFile, FileExtension.StatisticalDataCollectionFile);
-            result = saveFileDialog.ShowDialog();
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-
 
         }
 
