@@ -37,7 +37,7 @@
 
   <ItemGroup>
     <Reference Include="DiGi.BDL">
-      <HintPath>..\references\DiGi.BDL.dll</HintPath>
+      <HintPath>..\bin\DiGi.BDL.dll</HintPath>
     </Reference>
     <Reference Include="DiGi.BDOT10k">
       <HintPath>..\references\DiGi.BDOT10k.dll</HintPath>

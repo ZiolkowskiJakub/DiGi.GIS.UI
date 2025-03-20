@@ -1,16 +1,23 @@
 ﻿using DiGi.BDL.Classes;
+using DiGi.BDL.Constans;
 using DiGi.BDL.Enums;
 using DiGi.Core.Classes;
+using DiGi.Core.Interfaces;
 using DiGi.Core.IO.Table.Classes;
+using DiGi.Geometry.Core.Enums;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Constans;
 using DiGi.GIS.Emgu.CV.Classes;
 using Microsoft.Win32;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Reflection;
 using System.Text.Json;
 using System.Windows;
+using System.Windows.Shapes;
+using static DiGi.BDL.Constans.Url;
 
 namespace DiGi.GIS.UI.Application.Windows
 {
@@ -142,6 +149,107 @@ namespace DiGi.GIS.UI.Application.Windows
 
             //json = JsonSerializer.Serialize(unitYearlyValuesList, new JsonSerializerOptions() { WriteIndented = true });
             //File.WriteAllText(saveFileDialog.FileName, json);
+        }
+
+        private static void CopyGISModelFiles()
+        {
+            bool? result;
+
+            string fileNameSufix = "_StatisticalUnits";
+
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            result = openFolderDialog.ShowDialog();
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+
+            List<string> paths_GISModelFile = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories).ToList();
+            if (paths_GISModelFile == null || paths_GISModelFile.Count == 0)
+            {
+                return;
+            }
+
+            Core.Query.Filter(paths_GISModelFile, x => System.IO.Path.GetFileNameWithoutExtension(x).EndsWith(fileNameSufix), out List<string> paths_GISModelFile_New, out List<string> paths_GISModelFile_Old);
+
+            if (paths_GISModelFile_New == null || paths_GISModelFile_Old == null)
+            {
+                return;
+            }
+
+            if (paths_GISModelFile_New.Count != paths_GISModelFile_Old.Count)
+            {
+                return;
+            }
+
+            foreach (string path_GISModelFile_Old in paths_GISModelFile_Old)
+            {
+                if (File.Exists(path_GISModelFile_Old))
+                {
+                    File.Delete(path_GISModelFile_Old);
+                }
+            }
+
+            foreach (string path_GISModelFile_New in paths_GISModelFile_New)
+            {
+                string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path_GISModelFile_New), System.IO.Path.GetFileNameWithoutExtension(path_GISModelFile_New).Replace(fileNameSufix, string.Empty) + System.IO.Path.GetExtension(path_GISModelFile_New));
+
+                File.Move(path_GISModelFile_New, path);
+            }
+
+
+        }
+
+        private static void CopyGISModelFiles_Cloud()
+        {
+            bool? result;
+
+            OpenFolderDialog openFolderDialog;
+
+
+            openFolderDialog = new OpenFolderDialog();
+            result = openFolderDialog.ShowDialog();
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory_Source = openFolderDialog.FolderName;
+
+            List<string> paths_GISModelFile_Source = Directory.GetFiles(directory_Source, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories).ToList();
+            if (paths_GISModelFile_Source == null || paths_GISModelFile_Source.Count == 0)
+            {
+                return;
+            }
+
+            openFolderDialog = new OpenFolderDialog();
+            result = openFolderDialog.ShowDialog();
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory_Destination = openFolderDialog.FolderName;
+
+            List<string> paths_GISModelFile_Destination = Directory.GetFiles(directory_Destination, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories).ToList();
+            if (paths_GISModelFile_Destination == null || paths_GISModelFile_Destination.Count == 0)
+            {
+                return;
+            }
+
+            foreach(string path_GISModelFile_Source in paths_GISModelFile_Source)
+            {
+                string fileName = System.IO.Path.GetFileNameWithoutExtension(path_GISModelFile_Source);
+
+                string path_GISModelFile_Destination = paths_GISModelFile_Destination.Find(x => System.IO.Path.GetFileNameWithoutExtension(x) == fileName);
+
+                if(File.Exists(path_GISModelFile_Source) && File.Exists(path_GISModelFile_Destination))
+                {
+                    File.Copy(path_GISModelFile_Source, path_GISModelFile_Destination, true);
+                }
+            }
         }
 
         private static void CreateAdministrativeAreal2DModel()
@@ -337,6 +445,10 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private async void Button_Test_Click(object sender, RoutedEventArgs e)
         {
+            //CategoryTest();
+
+            //CopyGISModelFiles_Cloud();
+
             //CreateAdministrativeAreal2DModel();
 
             //CalculateAdministrativeAreal2DStatisticalUnits();
@@ -519,6 +631,7 @@ namespace DiGi.GIS.UI.Application.Windows
         {
 
         }
+        
         private void Read_FromZip()
         {
             bool? result;
@@ -878,5 +991,14 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = string.Format("Done Writing! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
+
+        //private void CategoryTest()
+        //{
+        //    //string name = DiGi.BDL.Query.Name(typeof(Name.Category),"K12");
+
+        //    DiGi.BDL.Enums.Variable variable = DiGi.BDL.Enums.Variable.single_family_1_level_m3;
+
+        //    BDL.Classes.Category category = BDL.Query.Category(variable);
+        //}
     }
 }

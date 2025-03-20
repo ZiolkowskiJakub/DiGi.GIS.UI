@@ -39,6 +39,11 @@ namespace DiGi.GIS.UI
                 return;
             }
 
+            if (!string.IsNullOrEmpty(fileNameSufix))
+            {
+                paths_GISModelFile.RemoveAll(x => Path.GetFileNameWithoutExtension(x).EndsWith(fileNameSufix));
+            }
+
             StatisticalUnit statisticalUnit = null;
             using (StatisticalUnitFile statisticalUnitFile = new StatisticalUnitFile(path_StatisticalUnitFile))
             {
@@ -50,12 +55,6 @@ namespace DiGi.GIS.UI
             if (statisticalUnit == null)
             {
                 return;
-            }
-
-            Dictionary<string, List<AdministrativeAreal2D>> dictionary = new Dictionary<string, List<AdministrativeAreal2D>>();
-            foreach(string path_GISModelFile in paths_GISModelFile)
-            {
-                dictionary[path_GISModelFile] = null;
             }
 
 
@@ -70,14 +69,28 @@ namespace DiGi.GIS.UI
                 count = 1;
             }
 
+            //paths_GISModelFile.Sort((x, y) => new FileInfo(y).Length.CompareTo(new FileInfo(x).Length));
+
             ParallelOptions parallelOptions = new ParallelOptions()
             {
                 MaxDegreeOfParallelism = count
             };
 
+            string path_Report = Path.Combine(directory, "Report.txt");
+            if(File.Exists(path_Report))
+            {
+                File.Delete(path_Report);
+            }
+
             while (paths_GISModelFile.Count > 0)
             {
                 int count_Temp = Math.Min(count, paths_GISModelFile.Count);
+
+                Dictionary<string, List<AdministrativeAreal2D>> dictionary = new Dictionary<string, List<AdministrativeAreal2D>>();
+                for(int i=0; i < count_Temp; i++)
+                {
+                    dictionary[paths_GISModelFile[i]] = null;
+                }
 
                 Parallel.For(0, count_Temp, parallelOptions, i =>
                 {
@@ -115,29 +128,28 @@ namespace DiGi.GIS.UI
                 });
 
                 paths_GISModelFile.RemoveRange(0, count_Temp);
-            }
 
-            List<string> report = new List<string>();
-            foreach(KeyValuePair<string, List<AdministrativeAreal2D>> keyValuePair in dictionary)
-            {
-                if(keyValuePair.Value == null || keyValuePair.Value.Count == 0)
+                List<string> report = new List<string>();
+                foreach (KeyValuePair<string, List<AdministrativeAreal2D>> keyValuePair in dictionary)
                 {
-                    continue;
+                    if (keyValuePair.Value == null || keyValuePair.Value.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    string name = Path.GetFileNameWithoutExtension(keyValuePair.Key);
+
+                    foreach (AdministrativeAreal2D administrativeAreal2D in keyValuePair.Value)
+                    {
+                        report.Add(string.Format("{0}\t{1}\t{2}", name, administrativeAreal2D.Name, administrativeAreal2D.Reference));
+                    }
                 }
 
-                string name = Path.GetFileNameWithoutExtension(keyValuePair.Key);
-
-                foreach(AdministrativeAreal2D administrativeAreal2D in keyValuePair.Value)
+                if (report != null && report.Count != 0)
                 {
-                    report.Add(string.Format("{0}\t{1}\t{2}", name, administrativeAreal2D.Name, administrativeAreal2D.Reference));
+                    File.AppendAllLines(path_Report, report);
                 }
             }
-
-            if(report != null && report.Count != 0)
-            {
-                File.WriteAllLines(Path.Combine(directory, "Report.txt"), report);
-            }
-
         }
     }
 }
