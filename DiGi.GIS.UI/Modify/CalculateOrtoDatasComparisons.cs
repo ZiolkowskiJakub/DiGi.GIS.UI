@@ -10,7 +10,7 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
-        public static async void CalculateOrtoDatasComparisons(Window owner, OrtoDatasComparisonOptions ortoDatasComparisonOptions)
+        public static async void CalculateOrtoDatasComparisons(Window owner, OrtoDatasComparisonOptions ortoDatasComparisonOptions, int count)
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
             bool? result = openFolderDialog.ShowDialog(owner);
@@ -45,9 +45,18 @@ namespace DiGi.GIS.UI
                                 ortoDatasComparisonOptions = new OrtoDatasComparisonOptions();
                             }
 
-                            string path = string.Format("{0}.{1}", System.IO.Path.GetFileNameWithoutExtension(path_Input), Emgu.CV.Constans.FileExtension.OrtoDatasComparisonFile);
+                            string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path_Input), string.Format("{0}.{1}", System.IO.Path.GetFileNameWithoutExtension(path_Input), Emgu.CV.Constans.FileExtension.OrtoDatasComparisonFile));
 
-                            IEnumerable<GuidReference> guidReferences = Emgu.CV.Modify.CalculateOrtoDatasComparisons(gISModel, building2Ds, path, ortoDatasComparisonOptions);
+                            while(building2Ds.Count > 0)
+                            {
+                                int count_Temp = Math.Min(building2Ds.Count, count);
+
+                                List<Building2D> building2Ds_Temp = building2Ds.GetRange(0, count_Temp);
+
+                                IEnumerable<GuidReference> guidReferences = Emgu.CV.Modify.CalculateOrtoDatasComparisons(gISModel, building2Ds_Temp, path, ortoDatasComparisonOptions);
+
+                                building2Ds.RemoveRange(0, count_Temp);
+                            }
                         }
                     }
                 }
