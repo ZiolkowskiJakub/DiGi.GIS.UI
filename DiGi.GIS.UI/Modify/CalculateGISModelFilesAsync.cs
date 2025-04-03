@@ -39,11 +39,7 @@ namespace DiGi.GIS.UI
 
             paths_Input.Sort((x, y) => new FileInfo(y).Length.CompareTo(new FileInfo(x).Length));
 
-            int count = System.Convert.ToInt32(Environment.ProcessorCount * 0.9);
-            if(count <= 0)
-            {
-                count = 1;
-            }
+            int count = GIS.Query.DefaultProcessorCount();
 
             ParallelOptions parallelOptions = new ParallelOptions()
             {

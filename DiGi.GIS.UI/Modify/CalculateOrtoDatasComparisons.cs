@@ -10,7 +10,7 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
-        public static async void CalculateOrtoDatasComparisons(Window owner, OrtoDatasComparisonOptions ortoDatasComparisonOptions, int count)
+        public static async void CalculateOrtoDatasComparisons(Window owner, OrtoDatasComparisonOptions ortoDatasComparisonOptions, int? count = null)
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
             bool? result = openFolderDialog.ShowDialog(owner);
@@ -24,6 +24,9 @@ namespace DiGi.GIS.UI
             {
                 return;
             }
+
+
+            int count_Temp = count == null || !count.HasValue ? GIS.Query.DefaultProcessorCount() : count.Value;
 
             string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
@@ -45,17 +48,19 @@ namespace DiGi.GIS.UI
                                 ortoDatasComparisonOptions = new OrtoDatasComparisonOptions();
                             }
 
+                            //building2Ds = new List<Building2D>() { building2Ds[0] };
+
                             string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path_Input), string.Format("{0}.{1}", System.IO.Path.GetFileNameWithoutExtension(path_Input), Emgu.CV.Constans.FileExtension.OrtoDatasComparisonFile));
 
                             while(building2Ds.Count > 0)
                             {
-                                int count_Temp = Math.Min(building2Ds.Count, count);
+                                int count_Min = Math.Min(building2Ds.Count, count_Temp);
 
-                                List<Building2D> building2Ds_Temp = building2Ds.GetRange(0, count_Temp);
+                                List<Building2D> building2Ds_Temp = building2Ds.GetRange(0, count_Min);
 
                                 IEnumerable<GuidReference> guidReferences = Emgu.CV.Modify.CalculateOrtoDatasComparisons(gISModel, building2Ds_Temp, path, ortoDatasComparisonOptions);
 
-                                building2Ds.RemoveRange(0, count_Temp);
+                                building2Ds.RemoveRange(0, count_Min);
                             }
                         }
                     }

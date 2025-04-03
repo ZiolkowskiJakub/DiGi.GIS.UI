@@ -40,6 +40,7 @@ namespace DiGi.GIS.UI
 
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.StatisticalDataCollectionFile, FileExtension.StatisticalDataCollectionFile);
+            saveFileDialog.FileName = string.Format("{0}.{1}", "StatisticalDataCollections", FileExtension.StatisticalDataCollectionFile);
             dialogResult = saveFileDialog.ShowDialog();
             if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
             {

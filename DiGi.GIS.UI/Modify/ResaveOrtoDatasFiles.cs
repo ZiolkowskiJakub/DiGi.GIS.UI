@@ -23,11 +23,7 @@ namespace DiGi.GIS.UI
                 return;
             }
 
-            int count = System.Convert.ToInt32(Environment.ProcessorCount * 0.9);
-            if (count <= 0)
-            {
-                count = 1;
-            }
+            int count = GIS.Query.DefaultProcessorCount();
 
             ParallelOptions parallelOptions = new ParallelOptions()
             {

@@ -414,7 +414,18 @@ namespace DiGi.GIS.UI.Application.Windows
 
             //CalculateAdministrativeAreal2DStatisticalUnits();
 
-            CalculateOrtoDatasComparisons();
+            //string path = @"C:\Users\jakub\Downloads\GIS\Statistics\StatisticalDataCollections.sdcf";
+
+            //using (StatisticalDataCollectionFile statisticalDataCollectionFile = new StatisticalDataCollectionFile(path))
+            //{
+            //    statisticalDataCollectionFile.Open();
+
+            //    IEnumerable<StatisticalDataCollection> statisticalDataCollection = statisticalDataCollectionFile.Values;
+            //}
+
+            WriteStatisticalDataCollections();
+
+                //Modify.AppendTable(this);
         }
 
         private void Button_ToDiGiGISModelFiles_Click(object sender, RoutedEventArgs e)
@@ -481,12 +492,18 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private async void CalculateOrtoDatasComparisons()
         {
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Calculating...";
+
             OrtoDatasComparisonOptions ortoDatasComparisonOptions = new OrtoDatasComparisonOptions();
             //ortoDatasComparisonOptions.OrtoDatasOptions.MaxFileSize = (1024UL * 1024UL * 1024UL * 5) / 10;
 
-            Modify.CalculateOrtoDatasComparisons(this, ortoDatasComparisonOptions, 100);
+            Modify.CalculateOrtoDatasComparisons(this, ortoDatasComparisonOptions);
 
-            Modify.
+            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
         private void Convert_ToFiles(int count = 10)
@@ -950,11 +967,18 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = "Writing...";
 
+            //Enum.GetValues<Variable>()
+
             await Modify.WriteStatisticalDataCollections(Enum.GetValues<Variable>(), new Range<int>(2008, DateTime.Now.Year));
 
             TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Writing! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
+
+        private void Button_CalculateOrtoDatasComparisons_Click(object sender, RoutedEventArgs e)
+        {
+            CalculateOrtoDatasComparisons();
         }
 
         //private void CategoryTest()
