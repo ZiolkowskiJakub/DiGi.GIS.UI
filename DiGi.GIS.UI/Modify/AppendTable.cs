@@ -1,10 +1,9 @@
 ﻿using System.IO;
-using DiGi.Core.Classes;
-using DiGi.GIS.Emgu.CV.Classes;
 using Microsoft.Win32;
 using DiGi.Core.IO.Table.Classes;
 using System.Windows;
 using DiGi.GIS.Classes;
+using DiGi.Core.Classes;
 
 namespace DiGi.GIS.UI
 {
@@ -14,15 +13,33 @@ namespace DiGi.GIS.UI
         {
             bool? result;
 
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            OpenFolderDialog openFolderDialog;
+
+            openFolderDialog = new OpenFolderDialog();
+            openFolderDialog.Title = "Select GIS Model Files directory";
             result = openFolderDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {
                 return;
             }
 
-            string directory = openFolderDialog.FolderName;
-            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            string directory_GISModelFiles = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory_GISModelFiles) || !Directory.Exists(directory_GISModelFiles))
+            {
+                return;
+            }
+
+
+            openFolderDialog = new OpenFolderDialog();
+            openFolderDialog.Title = "Select Statistical Data Directory";
+            result = openFolderDialog.ShowDialog(owner);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory_Statistical = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory_Statistical) || !Directory.Exists(directory_Statistical))
             {
                 return;
             }
@@ -34,7 +51,18 @@ namespace DiGi.GIS.UI
                 return;
             }
 
-            string[] paths_Input = Directory.GetFiles(directory, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
+            TableConversionOptions tableConversionOptions = new TableConversionOptions()
+            {
+                IncludeModel = true,
+                IncludeStatistical = true,
+                IncludeYearBuilt = true,
+                YearBuiltOnly = true,
+                IncludeOrtoDatasComparison = true,
+                Years = new Range<int>(2008, DateTime.Now.Year),
+                StatisticalDirectory = directory_Statistical
+            };
+
+            string[] paths_Input = Directory.GetFiles(directory_GISModelFiles, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
             {
                 string path_Input = paths_Input[i];
@@ -44,7 +72,7 @@ namespace DiGi.GIS.UI
                 {
                     gISModelFile.Open();
 
-                    table = Convert.ToDiGi_Table(gISModelFile);
+                    table = Convert.ToDiGi_Table(gISModelFile, tableConversionOptions: tableConversionOptions);
                 }
 
                 if(table != null)

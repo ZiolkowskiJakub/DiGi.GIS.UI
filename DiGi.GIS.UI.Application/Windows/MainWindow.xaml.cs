@@ -369,6 +369,26 @@ namespace DiGi.GIS.UI.Application.Windows
             MessageBox.Show("Finished!");
         }
 
+        private void AppendTable()
+        {
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Appending...";
+
+
+
+            Modify.AppendTable(this);
+
+            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Appending! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
+
+        private void Button_AppentTable_Click(object sender, RoutedEventArgs e)
+        {
+            AppendTable();
+        }
+
         private void Button_Calculate_Click(object sender, RoutedEventArgs e)
         {
             //Calculate();
@@ -392,6 +412,11 @@ namespace DiGi.GIS.UI.Application.Windows
         private void Button_CalculateOrtoDatas_Click(object sender, RoutedEventArgs e)
         {
             CalculateOrtoDatas(100);
+        }
+
+        private void Button_CalculateOrtoDatasComparisons_Click(object sender, RoutedEventArgs e)
+        {
+            CalculateOrtoDatasComparisons();
         }
 
         private void Button_Reduce_Click(object sender, RoutedEventArgs e)
@@ -423,14 +448,19 @@ namespace DiGi.GIS.UI.Application.Windows
             //    IEnumerable<StatisticalDataCollection> statisticalDataCollection = statisticalDataCollectionFile.Values;
             //}
 
-            WriteStatisticalDataCollections();
 
-                //Modify.AppendTable(this);
+
+                //
         }
 
         private void Button_ToDiGiGISModelFiles_Click(object sender, RoutedEventArgs e)
         {
             ToDiGiGISModelFiles();
+        }
+
+        private void Button_WriteStatisticalDataCollections_Click(object sender, RoutedEventArgs e)
+        {
+            WriteStatisticalDataCollections();
         }
 
         private void Button_YearBuilts_Click(object sender, RoutedEventArgs e)
@@ -975,12 +1005,6 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = string.Format("Done Writing! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
-
-        private void Button_CalculateOrtoDatasComparisons_Click(object sender, RoutedEventArgs e)
-        {
-            CalculateOrtoDatasComparisons();
-        }
-
         //private void CategoryTest()
         //{
         //    //string name = DiGi.BDL.Query.Name(typeof(Name.Category),"K12");
