@@ -375,8 +375,6 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = "Appending...";
 
-
-
             Modify.AppendTable(this);
 
             TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
