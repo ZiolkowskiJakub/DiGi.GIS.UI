@@ -22,34 +22,31 @@
 
   <ItemGroup>
     <Reference Include="DiGi.BDL">
-      <HintPath>..\references\DiGi.BDL.dll</HintPath>
+      <HintPath>..\..\DiGi.BDL\bin\DiGi.BDL.dll</HintPath>
     </Reference>
     <Reference Include="DiGi.BDOT10k">
-      <HintPath>..\references\DiGi.BDOT10k.dll</HintPath>
+      <HintPath>..\..\DiGi.BDOT10k\bin\DiGi.BDOT10k.dll</HintPath>
     </Reference>
     <Reference Include="DiGi.Core">
-      <HintPath>..\references\DiGi.Core.dll</HintPath>
+      <HintPath>..\..\DiGi.Core\bin\DiGi.Core.dll</HintPath>
     </Reference>
     <Reference Include="DiGi.Core.Drawing">
-      <HintPath>..\references\DiGi.Core.Drawing.dll</HintPath>
+      <HintPath>..\..\DiGi.Core\bin\DiGi.Core.Drawing.dll</HintPath>
     </Reference>
     <Reference Include="DiGi.Core.IO">
-      <HintPath>..\references\DiGi.Core.IO.dll</HintPath>
+      <HintPath>..\..\DiGi.Core\bin\DiGi.Core.IO.dll</HintPath>
     </Reference>
     <Reference Include="DiGi.Core.Relation">
-      <HintPath>..\references\DiGi.Core.Relation.dll</HintPath>
+      <HintPath>..\..\DiGi.Core\bin\DiGi.Core.Relation.dll</HintPath>
     </Reference>
     <Reference Include="DiGi.Geometry">
-      <HintPath>..\references\DiGi.Geometry.dll</HintPath>
+      <HintPath>..\..\DiGi.Geometry\bin\DiGi.Geometry.dll</HintPath>
     </Reference>
     <Reference Include="DiGi.Geometry.Drawing">
-      <HintPath>..\references\DiGi.Geometry.Drawing.dll</HintPath>
-    </Reference>
-    <Reference Include="DiGi.GML">
-      <HintPath>..\references\DiGi.GML.dll</HintPath>
+      <HintPath>..\..\DiGi.Geometry\bin\DiGi.Geometry.Drawing.dll</HintPath>
     </Reference>
     <Reference Include="DiGi.UI.WPF.Core">
-      <HintPath>..\references\DiGi.UI.WPF.Core.dll</HintPath>
+      <HintPath>..\..\DiGi.UI.WPF\bin\DiGi.UI.WPF.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
 

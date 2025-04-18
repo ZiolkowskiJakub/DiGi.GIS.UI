@@ -1,23 +1,15 @@
 ﻿using DiGi.BDL.Classes;
-using DiGi.BDL.Constans;
 using DiGi.BDL.Enums;
 using DiGi.Core.Classes;
-using DiGi.Core.Interfaces;
-using DiGi.Core.IO.Table.Classes;
-using DiGi.Geometry.Core.Enums;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Constans;
 using DiGi.GIS.Emgu.CV.Classes;
 using Microsoft.Win32;
-using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Reflection;
 using System.Text.Json;
 using System.Windows;
-using System.Windows.Shapes;
-using static DiGi.BDL.Constans.Url;
 
 namespace DiGi.GIS.UI.Application.Windows
 {
@@ -446,9 +438,56 @@ namespace DiGi.GIS.UI.Application.Windows
             //    IEnumerable<StatisticalDataCollection> statisticalDataCollection = statisticalDataCollectionFile.Values;
             //}
 
+            List<Building2D> building2Ds = null;
 
+            string directory = @"C:\Users\jakub\Downloads\GIS\0201_GML\";
 
-                //
+            string path = System.IO.Path.Combine(directory, "0201_GML.gmf");
+            using (GISModelFile gISModelFile = new GISModelFile(path))
+            {
+                gISModelFile.Open();
+
+                GISModel gISModel = gISModelFile.Value;
+
+                building2Ds = gISModel.GetObjects<Building2D>();
+            }
+
+            if(building2Ds == null)
+            {
+                return;
+            }
+
+            OrtoDatasComparisonOptions ortoDatasComparisonOptions = new OrtoDatasComparisonOptions()
+            {
+                OverrideExisting = true
+            };
+
+            foreach (Building2D building2D in building2Ds)
+            {
+                string reference = building2D.Reference;
+
+                Dictionary<string, OrtoDatasComparison> dictionary;
+                OrtoDatasComparison ortoDatasComparison;
+
+                dictionary = Emgu.CV.Query.OrtoDatasComparisonDictionary(directory, [reference]);
+                if(dictionary == null || !dictionary.TryGetValue(reference, out ortoDatasComparison))
+                {
+                    continue;
+                }
+
+                HashSet<string> references = await Modify.CalculateOrtoDatasComparisons(directory, ortoDatasComparisonOptions, [reference]);
+                if(references == null || !references.Contains(reference))
+                {
+                    continue;
+                }
+
+                dictionary = Emgu.CV.Query.OrtoDatasComparisonDictionary(directory, [reference]);
+                if (dictionary == null || !dictionary.TryGetValue(reference, out ortoDatasComparison))
+                {
+                    continue;
+                }
+
+            }
         }
 
         private void Button_ToDiGiGISModelFiles_Click(object sender, RoutedEventArgs e)

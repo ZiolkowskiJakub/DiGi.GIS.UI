@@ -1,14 +1,7 @@
 ﻿using DiGi.GIS.Classes;
-using System.IO;
-using System.Drawing;
-using DiGi.Geometry.Planar;
-using DiGi.Geometry.Planar.Classes;
-using System.Drawing.Imaging;
-using DiGi.Core;
 using Microsoft.Win32;
 using DiGi.GIS.Constans;
 using DiGi.BDL.Classes;
-using System.DirectoryServices.ActiveDirectory;
 
 namespace DiGi.GIS.UI
 {

@@ -257,9 +257,21 @@ namespace DiGi.GIS.UI
                                 row = rows.Find(x => x.TryGetValue(index_Year, out int year) && year == i);
                                 if (row == null)
                                 {
-                                    row = new Row(rows[0]);
-                                    row.SetValue(index_Year, i);
-                                    rows.Add(row);
+                                    Row row_Template = rows[0];
+                                    if(row_Template != null)
+                                    {
+                                        int count_Template = rows[0].Indexes.Count;
+                                        row = new Row(row_Template);
+                                        row.SetValue(index_Year, i);
+
+                                        int count = row.Indexes.Count;
+                                        if(count_Template != count)
+                                        {
+                                            rows.RemoveAt(0);
+                                        }
+
+                                        rows.Add(row);
+                                    }
                                 }
                             }
 
