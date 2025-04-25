@@ -5,11 +5,11 @@ using System.Windows.Media.Imaging;
 namespace DiGi.GIS.UI.Controls
 {
     /// <summary>
-    /// Interaction logic for YearBuiltControl.xaml
+    /// Interaction logic for OrtoDataControl.xaml
     /// </summary>
-    public partial class YearBuiltControl : UserControl
+    public partial class OrtoDataControl : UserControl
     {
-        public YearBuiltControl()
+        public OrtoDataControl()
         {
             InitializeComponent();
         }
@@ -86,6 +86,27 @@ namespace DiGi.GIS.UI.Controls
 
             return result;
 
+        }
+
+        private void UserControl_PreviewMouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            FrameworkElement frameworkElement = sender as FrameworkElement;
+
+            ContextMenu contextMenu = new ContextMenu();
+
+            MenuItem menuItem = new MenuItem { Header = "Save As..." };
+            menuItem.Click += (s, args) => 
+            {
+                DiGi.UI.WPF.Core.Modify.Write(GetBitmapImage());
+            };
+           
+            contextMenu.Items.Add(menuItem);
+
+            frameworkElement.ContextMenu = contextMenu;
+            contextMenu.PlacementTarget = frameworkElement;
+            contextMenu.IsOpen = true;
+
+            e.Handled = true;
         }
     }
 }

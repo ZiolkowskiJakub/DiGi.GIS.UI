@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="DiGi.GIS.UI.Controls.OrtoDatasListControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DiGi.GIS.UI.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <ListBox x:Name="ListBox_Main" Grid.Row="0" SelectionMode="Single" SelectionChanged="ListBox_Main_SelectionChanged"/>
+
+        </Grid>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="97*"/>
+                <RowDefinition Height="353*"/>
+            </Grid.RowDefinitions>
+            <local:OrtoDatasControl x:Name="OrtoDatasControl_Main" Grid.Row="0" Grid.RowSpan="2"/>
+
+        </Grid>
+    </Grid>
+</UserControl>

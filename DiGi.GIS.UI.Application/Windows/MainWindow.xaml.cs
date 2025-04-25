@@ -399,14 +399,36 @@ namespace DiGi.GIS.UI.Application.Windows
             CalculateGISModelFiles();
         }
 
-        private void Button_CalculateOrtoDatas_Click(object sender, RoutedEventArgs e)
+        private void Button_CalculateOrtoDatas_Building2D_Click(object sender, RoutedEventArgs e)
         {
-            CalculateOrtoDatas(100);
+            CalculateOrtoDatas_Building2D(100);
+        }
+
+        private void Button_CalculateOrtoDatas_OrtoRange_Click(object sender, RoutedEventArgs e)
+        {
+            CalculateOrtoDatas_OrtoRange(100);
         }
 
         private void Button_CalculateOrtoDatasComparisons_Click(object sender, RoutedEventArgs e)
         {
             CalculateOrtoDatasComparisons();
+        }
+
+        private void Button_CalculateOrtoRanges_Click(object sender, RoutedEventArgs e)
+        {
+            CalculateOrtoRanges();
+        }
+
+        private void Button_OrtoDatas_Click(object sender, RoutedEventArgs e)
+        {
+            Hide();
+
+            UI.Windows.OrtoDatasWindow yearBuiltsWindow = new UI.Windows.OrtoDatasWindow();
+            yearBuiltsWindow.WindowState = WindowState.Maximized;
+
+            yearBuiltsWindow.ShowDialog();
+
+            Close();
         }
 
         private void Button_Reduce_Click(object sender, RoutedEventArgs e)
@@ -539,18 +561,36 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
-        private async void CalculateOrtoDatas(int count = 100)
+        private async void CalculateOrtoDatas_Building2D(int count = 100)
         {
             DateTime dateTime = DateTime.Now;
 
             TextBlock_Progress.Text = "Calculating...";
 
-            OrtoDatasOptions ortoDatasOptions = new OrtoDatasOptions()
+            OrtoDatasBuilding2DOptions ortoDatasBuilding2DOptions = new OrtoDatasBuilding2DOptions()
             {
                 MaxFileSize = (1024UL * 1024UL * 1024UL * 5) / 10
             };
 
-            bool result = await Modify.CalculateOrtoDatas(this, ortoDatasOptions, count);
+            bool result = await Modify.CalculateOrtoDatas(this, ortoDatasBuilding2DOptions, count);
+
+            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
+
+        private async void CalculateOrtoDatas_OrtoRange(int count = 100)
+        {
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Calculating...";
+
+            OrtoDatasOrtoRangeOptions ortoDatasOrtoRangeOptions = new OrtoDatasOrtoRangeOptions()
+            {
+                MaxFileSize = (1024UL * 1024UL * 1024UL * 5) / 10
+            };
+
+            bool result = await Modify.CalculateOrtoDatas(this, ortoDatasOrtoRangeOptions, count);
 
             TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
 
@@ -573,6 +613,23 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
+        private async void CalculateOrtoRanges()
+        {
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Calculating...";
+
+            OrtoRangeOptions ortoRangeOptions = new OrtoRangeOptions()
+            {
+
+            };
+
+            Modify.CalculateOrtoRanges(this, ortoRangeOptions);
+
+            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
         private void Convert_ToFiles(int count = 10)
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
@@ -1042,13 +1099,5 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = string.Format("Done Writing! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
-        //private void CategoryTest()
-        //{
-        //    //string name = DiGi.BDL.Query.Name(typeof(Name.Category),"K12");
-
-        //    DiGi.BDL.Enums.Variable variable = DiGi.BDL.Enums.Variable.single_family_1_level_m3;
-
-        //    BDL.Classes.Category category = BDL.Query.Category(variable);
-        //}
     }
 }

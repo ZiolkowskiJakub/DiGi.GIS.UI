@@ -1,11 +1,11 @@
-﻿<UserControl x:Class="DiGi.GIS.UI.Controls.YearBuiltControl"
+﻿<UserControl x:Class="DiGi.GIS.UI.Controls.OrtoDataControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DiGi.GIS.UI.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="200">
+             d:DesignHeight="200" d:DesignWidth="200" PreviewMouseRightButtonDown="UserControl_PreviewMouseRightButtonDown">
     <Border x:Name="Border_Main" BorderBrush="Black" BorderThickness="1">
         <Grid>
             <Grid.ColumnDefinitions>

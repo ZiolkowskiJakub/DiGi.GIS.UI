@@ -1,5 +1,6 @@
 ﻿using DiGi.GIS.Classes;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace DiGi.GIS.UI.Windows
 {
@@ -46,7 +47,7 @@ namespace DiGi.GIS.UI.Windows
 
             set
             {
-                if(YearBuiltsControl_Main != null)
+                if (YearBuiltsControl_Main != null)
                 {
                     YearBuiltsControl_Main.GISModelFile = value;
                 }

@@ -219,140 +219,28 @@ namespace DiGi.GIS.UI
                 }
             }
 
-            if (tableConversionOptions.IncludeOrtoDatasComparison && tableConversionOptions.Years != null)
-            {
-                string directory = System.IO.Path.GetDirectoryName(path);
-
-                Range<int> range_Years = tableConversionOptions.Years;
-
-                Dictionary<string, OrtoDatasComparison> dictionary_OrtoDatasComparison = Emgu.CV.Query.OrtoDatasComparisonDictionary(directory, references);
-                if (dictionary_OrtoDatasComparison != null)
-                {
-                    foreach (KeyValuePair<string, OrtoDatasComparison> keyValuePair in dictionary_OrtoDatasComparison)
-                    {
-                        string reference = keyValuePair.Key;
-                        OrtoDatasComparison ortoDatasComparison = keyValuePair.Value;
-
-                        if (!dictionary_Rows.TryGetValue(reference, out List<Row> rows) || rows == null)
-                        {
-                            rows = new List<Row>();
-                            dictionary_Rows[reference] = rows;
-                        }
-
-                        int index_Year = updateColumn.Invoke(columnName_Year);
-
-                        for (int i = range_Years.Min; i <= range_Years.Max; i++)
-                        {
-                            DateTime dateTime_1 = new DateTime(i, 1, 1);
-
-                            Row row = null;
-                            if (rows.Count == 0)
-                            {
-                                row = new Row(-1);
-                                row.SetValue(index_Year, i);
-                                rows.Add(row);
-                            }
-                            else
-                            {
-                                row = rows.Find(x => x.TryGetValue(index_Year, out int year) && year == i);
-                                if (row == null)
-                                {
-                                    Row row_Template = rows[0];
-                                    if(row_Template != null)
-                                    {
-                                        int count_Template = rows[0].Indexes.Count;
-                                        row = new Row(row_Template);
-                                        row.SetValue(index_Year, i);
-
-                                        int count = row.Indexes.Count;
-                                        if(count_Template != count)
-                                        {
-                                            rows.RemoveAt(0);
-                                        }
-
-                                        rows.Add(row);
-                                    }
-                                }
-                            }
-
-                            OrtoDataComparison ortoDataComparison = ortoDatasComparison.GetOrtoDataComparison(dateTime_1);
-                            if (ortoDataComparison == null)
-                            {
-                                continue;
-                            }
-
-                            foreach (OrtoImageComparisonGroup ortoImageComparisonGroup in ortoDataComparison.OrtoImageComparisonGroups)
-                            {
-                                string name = ortoImageComparisonGroup.Name;
-
-                                for (int j = range_Years.Min; j <= range_Years.Max; j++)
-                                {
-                                    DateTime dateTime_2 = new DateTime(j, 1, 1);
-
-                                    OrtoImageComparison ortoImageComparison = ortoImageComparisonGroup.GetOrtoImageComparison(dateTime_2);
-                                    if (ortoImageComparison == null)
-                                    {
-                                        continue;
-                                    }
-
-                                    string prefix = string.Format("{0} {1}", name, j);
-
-                                    int index_AverageColorSimilarity = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Average Color Similarity"));
-                                    int index_ColorDistributionShift = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Color Distribution Shift"));
-                                    int index_GrayHistogramsFactor = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Gray Histograms Factor"));
-                                    int index_HammingDistance = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Hamming Distance"));
-                                    int index_HistogramCorrelation = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Histogram Correlation"));
-                                    int index_ShapeComparisonFactor = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Shape Comparison Factor"));
-                                    int index_StructuralSimilarityIndex_AbsoluteDifference = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Structural Similarity Index (Absolute Difference)"));
-                                    int index_StructuralSimilarityIndex_MatchTemplate = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Structural Similarity Index (Match Template)"));
-                                    int index_MeanLaplacianFactor = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Mean Laplacian Factor"));
-                                    int index_StandardDeviationLaplacianFactor = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Standard Deviation Laplacian Factor"));
-                                    int index_OpticalFlowAverageMagnitude = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Optical Flow Average Magnitude"));
-                                    int index_ORBFeatureMatchingFactor = updateColumn.Invoke(string.Format("{0} {1}", prefix, "ORB Feature Matching Factor"));
-
-
-                                    row.SetValue(index_AverageColorSimilarity, double.IsNaN(ortoImageComparison.AverageColorSimilarity) ? 0 : ortoImageComparison.AverageColorSimilarity);
-                                    row.SetValue(index_ColorDistributionShift, double.IsNaN(ortoImageComparison.ColorDistributionShift) ? 0 : ortoImageComparison.ColorDistributionShift);
-                                    row.SetValue(index_GrayHistogramsFactor, double.IsNaN(ortoImageComparison.GrayHistogramsFactor) ? 0 : ortoImageComparison.GrayHistogramsFactor);
-                                    row.SetValue(index_HammingDistance, ortoImageComparison.HammingDistance);
-                                    row.SetValue(index_HistogramCorrelation, double.IsNaN(ortoImageComparison.HistogramCorrelation) ? 0 : ortoImageComparison.HistogramCorrelation);
-                                    row.SetValue(index_ShapeComparisonFactor, double.IsNaN(ortoImageComparison.ShapeComparisonFactor) ? 0 : ortoImageComparison.ShapeComparisonFactor);
-                                    row.SetValue(index_StructuralSimilarityIndex_AbsoluteDifference, double.IsNaN(ortoImageComparison.StructuralSimilarityIndex_AbsoluteDifference) ? 0 : ortoImageComparison.StructuralSimilarityIndex_AbsoluteDifference);
-                                    row.SetValue(index_StructuralSimilarityIndex_MatchTemplate, double.IsNaN(ortoImageComparison.StructuralSimilarityIndex_MatchTemplate) ? 0 : ortoImageComparison.StructuralSimilarityIndex_MatchTemplate);
-                                    row.SetValue(index_MeanLaplacianFactor, double.IsNaN(ortoImageComparison.MeanLaplacianFactor) ? 0 : ortoImageComparison.MeanLaplacianFactor);
-                                    row.SetValue(index_StandardDeviationLaplacianFactor, double.IsNaN(ortoImageComparison.StandardDeviationLaplacianFactor) ? 0 : ortoImageComparison.StandardDeviationLaplacianFactor);
-                                    row.SetValue(index_OpticalFlowAverageMagnitude, double.IsNaN(ortoImageComparison.OpticalFlowAverageMagnitude) ? 0 : ortoImageComparison.OpticalFlowAverageMagnitude);
-                                    row.SetValue(index_ORBFeatureMatchingFactor, double.IsNaN(ortoImageComparison.ORBFeatureMatchingFactor) ? 0 : ortoImageComparison.ORBFeatureMatchingFactor);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
             if (tableConversionOptions.IncludeStatistical && Directory.Exists(tableConversionOptions.StatisticalDirectory))
             {
                 if (building2Ds != null)
                 {
                     List<Tuple<StatisticalUnit, List<Building2D>>> tuples = new List<Tuple<StatisticalUnit, List<Building2D>>>();
 
-
                     foreach (Building2D building2D in building2Ds)
                     {
-                        if(building2D == null)
+                        if (building2D == null)
                         {
                             continue;
                         }
 
                         GuidReference guidReference = new GuidReference(building2D);
 
-                        if(!dictionary.TryGetValue(guidReference, out List<AdministrativeAreal2D> administrativeAreal2Ds) || administrativeAreal2Ds == null)
+                        if (!dictionary.TryGetValue(guidReference, out List<AdministrativeAreal2D> administrativeAreal2Ds) || administrativeAreal2Ds == null)
                         {
                             continue;
                         }
 
                         List<AdministrativeSubdivision> administrativeSubdivisions = administrativeAreal2Ds.OfType<AdministrativeSubdivision>().ToList();
-                        if(administrativeSubdivisions == null || administrativeSubdivisions.Count == 0)
+                        if (administrativeSubdivisions == null || administrativeSubdivisions.Count == 0)
                         {
                             continue;
                         }
@@ -413,19 +301,21 @@ namespace DiGi.GIS.UI
                                             StatisticalDataCollection statisticalDataCollection = keyValuePair.Value;
 
                                             Variable[] variables =
-                                            { 
-                                                Variable.population_thousand_persons 
+                                            {
+                                                Variable.population_thousand_persons
                                             };
 
-                                            if(range_Years != null)
+                                            if (range_Years != null)
                                             {
                                                 foreach (Variable variable in variables)
                                                 {
-                                                    string name = Query.ColumnName(variable);
+                                                    string description = Core.Query.Description(variable);
 
-                                                    StatisticalYearlyDoubleData statisticalYearlyDoubleData = statisticalDataCollection[name] as StatisticalYearlyDoubleData;
+                                                    StatisticalYearlyDoubleData statisticalYearlyDoubleData = statisticalDataCollection[description] as StatisticalYearlyDoubleData;
                                                     if (statisticalYearlyDoubleData != null)
                                                     {
+                                                        string name = Query.ColumnName(variable);
+
                                                         foreach (Building2D building2D in tuple.Item2)
                                                         {
                                                             string reference = building2D.Reference;
@@ -449,16 +339,16 @@ namespace DiGi.GIS.UI
                                                                     short year = System.Convert.ToInt16(i);
 
                                                                     double? value = null;
-                                                                    if(statisticalYearlyDoubleData.TryGetValue(year, out double value_Temp))
+                                                                    if (statisticalYearlyDoubleData.TryGetValue(year, out double value_Temp))
                                                                     {
                                                                         value = value_Temp;
-                                                                        if(variable == Variable.population_thousand_persons)
+                                                                        if (variable == Variable.population_thousand_persons)
                                                                         {
                                                                             value *= 1000;
                                                                         }
                                                                     }
 
-                                                                    int index_Year = updateColumn.Invoke(string.Format("{0} [{1}]", name, year));
+                                                                    int index_Year = updateColumn.Invoke(string.Format("{0} {1}", name, year));
                                                                     row.SetValue(index_Year, value);
                                                                 }
                                                             }
@@ -469,6 +359,116 @@ namespace DiGi.GIS.UI
                                         }
                                     }
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (tableConversionOptions.IncludeOrtoDatasComparison && tableConversionOptions.Years != null)
+            {
+                string directory = System.IO.Path.GetDirectoryName(path);
+
+                Range<int> range_Years = tableConversionOptions.Years;
+
+                Dictionary<string, OrtoDatasComparison> dictionary_OrtoDatasComparison = Emgu.CV.Query.OrtoDatasComparisonDictionary(directory, references);
+                if (dictionary_OrtoDatasComparison != null)
+                {
+                    foreach (KeyValuePair<string, OrtoDatasComparison> keyValuePair in dictionary_OrtoDatasComparison)
+                    {
+                        string reference = keyValuePair.Key;
+                        OrtoDatasComparison ortoDatasComparison = keyValuePair.Value;
+
+                        if (!dictionary_Rows.TryGetValue(reference, out List<Row> rows) || rows == null)
+                        {
+                            rows = new List<Row>();
+                            dictionary_Rows[reference] = rows;
+                        }
+
+                        int index_Year = updateColumn.Invoke(columnName_Year);
+
+                        for (int i = range_Years.Min; i <= range_Years.Max; i++)
+                        {
+                            DateTime dateTime_1 = new DateTime(i, 1, 1);
+
+                            Row row = null;
+                            if (rows.Count == 0)
+                            {
+                                row = new Row(-1);
+                                row.SetValue(index_Year, i);
+                                rows.Add(row);
+                            }
+                            else
+                            {
+                                row = rows.Find(x => x.TryGetValue(index_Year, out int year) && year == i);
+                                if (row == null)
+                                {
+                                    Row row_Template = rows[0];
+                                    if(row_Template != null)
+                                    {
+                                        int count_Template = rows[0].Indexes.Count;
+                                        row = new Row(row_Template);
+                                        row.SetValue(index_Year, i);
+
+                                        int count = row.Indexes.Count;
+                                        if(count_Template != count)
+                                        {
+                                            rows.RemoveAt(0);
+                                        }
+
+                                        rows.Add(row);
+                                    }
+                                }
+                            }
+
+                            for (int j = range_Years.Min; j <= range_Years.Max; j++)
+                            {
+                                if(j == i)
+                                {
+                                    continue;
+                                }
+
+                                DateTime dateTime_2 = new DateTime(j, 1, 1);
+
+                                Dictionary<string, OrtoImageComparison> dictionary_OrtoImageComparison = Emgu.CV.Query.OrtoImageComparisonDictionary(ortoDatasComparison, dateTime_1, dateTime_2);
+                                if(dictionary_OrtoImageComparison == null)
+                                {
+                                    continue;
+                                }
+
+                                foreach(KeyValuePair<string, OrtoImageComparison> keyValuePair_OrtoImageComparison in dictionary_OrtoImageComparison)
+                                {
+                                    string prefix = string.Format("{0} {1} {2}", keyValuePair_OrtoImageComparison.Key, dateTime_1.Year, dateTime_2.Year);
+
+                                    int index_AverageColorSimilarity = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Average Color Similarity"));
+                                    int index_ColorDistributionShift = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Color Distribution Shift"));
+                                    int index_GrayHistogramsFactor = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Gray Histograms Factor"));
+                                    int index_HammingDistance = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Hamming Distance"));
+                                    int index_HistogramCorrelation = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Histogram Correlation"));
+                                    int index_ShapeComparisonFactor = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Shape Comparison Factor"));
+                                    int index_StructuralSimilarityIndex_AbsoluteDifference = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Structural Similarity Index (Absolute Difference)"));
+                                    int index_StructuralSimilarityIndex_MatchTemplate = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Structural Similarity Index (Match Template)"));
+                                    int index_MeanLaplacianFactor = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Mean Laplacian Factor"));
+                                    int index_StandardDeviationLaplacianFactor = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Standard Deviation Laplacian Factor"));
+                                    int index_OpticalFlowAverageMagnitude = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Optical Flow Average Magnitude"));
+                                    int index_ORBFeatureMatchingFactor = updateColumn.Invoke(string.Format("{0} {1}", prefix, "ORB Feature Matching Factor"));
+
+                                    OrtoImageComparison ortoImageComparison = keyValuePair_OrtoImageComparison.Value;
+
+                                    row.SetValue(index_AverageColorSimilarity, double.IsNaN(ortoImageComparison.AverageColorSimilarity) ? 0 : ortoImageComparison.AverageColorSimilarity);
+                                    row.SetValue(index_ColorDistributionShift, double.IsNaN(ortoImageComparison.ColorDistributionShift) ? 0 : ortoImageComparison.ColorDistributionShift);
+                                    row.SetValue(index_GrayHistogramsFactor, double.IsNaN(ortoImageComparison.GrayHistogramsFactor) ? 0 : ortoImageComparison.GrayHistogramsFactor);
+                                    row.SetValue(index_HammingDistance, ortoImageComparison.HammingDistance);
+                                    row.SetValue(index_HistogramCorrelation, double.IsNaN(ortoImageComparison.HistogramCorrelation) ? 0 : ortoImageComparison.HistogramCorrelation);
+                                    row.SetValue(index_ShapeComparisonFactor, double.IsNaN(ortoImageComparison.ShapeComparisonFactor) ? 0 : ortoImageComparison.ShapeComparisonFactor);
+                                    row.SetValue(index_StructuralSimilarityIndex_AbsoluteDifference, double.IsNaN(ortoImageComparison.StructuralSimilarityIndex_AbsoluteDifference) ? 0 : ortoImageComparison.StructuralSimilarityIndex_AbsoluteDifference);
+                                    row.SetValue(index_StructuralSimilarityIndex_MatchTemplate, double.IsNaN(ortoImageComparison.StructuralSimilarityIndex_MatchTemplate) ? 0 : ortoImageComparison.StructuralSimilarityIndex_MatchTemplate);
+                                    row.SetValue(index_MeanLaplacianFactor, double.IsNaN(ortoImageComparison.MeanLaplacianFactor) ? 0 : ortoImageComparison.MeanLaplacianFactor);
+                                    row.SetValue(index_StandardDeviationLaplacianFactor, double.IsNaN(ortoImageComparison.StandardDeviationLaplacianFactor) ? 0 : ortoImageComparison.StandardDeviationLaplacianFactor);
+                                    row.SetValue(index_OpticalFlowAverageMagnitude, double.IsNaN(ortoImageComparison.OpticalFlowAverageMagnitude) ? 0 : ortoImageComparison.OpticalFlowAverageMagnitude);
+                                    row.SetValue(index_ORBFeatureMatchingFactor, double.IsNaN(ortoImageComparison.ORBFeatureMatchingFactor) ? 0 : ortoImageComparison.ORBFeatureMatchingFactor);
+                                }
+
                             }
                         }
                     }
@@ -501,6 +501,19 @@ namespace DiGi.GIS.UI
                             }
                         }
                     }
+                }
+            }
+
+            foreach(KeyValuePair<string, List<Row>> keyValuePair in dictionary_Rows)
+            {
+                if(keyValuePair.Value == null)
+                {
+                    continue;
+                }
+
+                foreach(Row row in keyValuePair.Value)
+                {
+                    result.AddRow(row);
                 }
             }
 
