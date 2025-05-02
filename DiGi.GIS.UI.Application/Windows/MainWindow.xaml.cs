@@ -603,7 +603,10 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = "Calculating...";
 
-            OrtoDatasComparisonOptions ortoDatasComparisonOptions = new OrtoDatasComparisonOptions();
+            OrtoDatasComparisonOptions ortoDatasComparisonOptions = new OrtoDatasComparisonOptions()
+            {
+                DirectoryNames = GIS.Query.DirectoryNames_Building2D()
+            };
             //ortoDatasComparisonOptions.OrtoDatasOptions.MaxFileSize = (1024UL * 1024UL * 1024UL * 5) / 10;
 
             Modify.CalculateOrtoDatasComparisons(this, ortoDatasComparisonOptions);
@@ -944,11 +947,13 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = "Resaving...";
 
-            Modify.ResaveOrtoDatasFiles(this);
+            Modify.ResaveOrtoDatasFiles(this, true);
 
             TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Resaving! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+
+            MessageBox.Show("Finished!");
         }
 
         private void Test_CalculateConstructionDate()
@@ -1100,4 +1105,4 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = string.Format("Done Writing! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
     }
-}
+} 

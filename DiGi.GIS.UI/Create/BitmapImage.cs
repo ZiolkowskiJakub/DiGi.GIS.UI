@@ -90,7 +90,7 @@ namespace DiGi.GIS.UI
 
 
                 result = DiGi.UI.WPF.Core.Create.BitmapImage(image);
-                //image.Save(Path.Combine(directory, fileName), ImageFormat.Jpeg);
+                //image.Save(Path.Combine(directory, @"C:\Users\jakub\Downloads\Test\AAA\BBB\test.jpeg"), System.Drawing.Imaging.ImageFormat.Jpeg);
                 //result = true;
             }
 

@@ -8,7 +8,7 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
-        public static async void ResaveOrtoDatasFiles(Window owner)
+        public static void ResaveOrtoDatasFiles(Window owner, bool updateScale)
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
             bool? result = openFolderDialog.ShowDialog(owner);
@@ -23,41 +23,83 @@ namespace DiGi.GIS.UI
                 return;
             }
 
-            int count = GIS.Query.DefaultProcessorCount();
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.OrtoDatasFile, SearchOption.TopDirectoryOnly);
 
-            ParallelOptions parallelOptions = new ParallelOptions()
+            if(paths_Input != null && paths_Input.Length != 0)
             {
-                MaxDegreeOfParallelism = count
-            };
-
-            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.OrtoDatasFile, SearchOption.AllDirectories);
-            //for (int i = 0; i < paths_Input.Length; i++)
-            Parallel.For(0, paths_Input.Length, parallelOptions, i =>
-            {
-                string path_Input = paths_Input[i];
-
-                IEnumerable<OrtoDatas> ortoDatas = null;
-
-                using (OrtoDatasFile ortoDatasFile = new OrtoDatasFile(path_Input))
+                Action<string> resave = new Action<string>(x =>
                 {
-                    ortoDatas = ortoDatasFile.Values;
-                }
+                    string path_Input = x;
 
-                if(ortoDatas == null || ortoDatas.Count() == 0)
+                    List<OrtoDatas> ortoDatas_Temp = null;
+
+                    using (OrtoDatasFile ortoDatasFile = new OrtoDatasFile(path_Input))
+                    {
+                        IEnumerable<OrtoDatas> ortoDatas_Temp_Temp = ortoDatasFile.Values;
+                        if (ortoDatas_Temp_Temp != null)
+                        {
+                            ortoDatas_Temp = new List<OrtoDatas>(ortoDatas_Temp_Temp);
+                        }
+                    }
+
+                    if (ortoDatas_Temp == null)
+                    {
+                        return;
+                    }
+
+                    int count = ortoDatas_Temp.Count;
+
+                    if (count == 0)
+                    {
+                        return;
+                    }
+
+                    if (updateScale)
+                    {
+                        for (int j = 0; j < count; j++)
+                        {
+                            OrtoDatas ortoDatas = ortoDatas_Temp[j];
+
+                            List<OrtoData> ortoDatas_New = new List<OrtoData>();
+                            foreach (OrtoData ortoData in ortoDatas)
+                            {
+                                ortoDatas_New.Add(new OrtoData(ortoData.DateTime, ortoData.Bytes, 1 / ortoData.Scale, ortoData.Location));
+                            }
+
+                            ortoDatas = new OrtoDatas(ortoDatas.Reference, ortoDatas_New);
+                            ortoDatas_Temp[j] = ortoDatas;
+                        }
+                    }
+
+                    File.Delete(path_Input);
+
+                    string directory_New = GIS.Query.Directory_Building2D(Path.GetDirectoryName(path_Input));
+                    if (!Directory.Exists(directory_New))
+                    {
+                        Directory.CreateDirectory(directory_New);
+                    }
+
+                    string path_Output = Path.Combine(directory_New, Path.GetFileName(path_Input));
+
+                    using (OrtoDatasFile ortoDatasFile = new OrtoDatasFile(path_Output))
+                    {
+                        ortoDatasFile.Values = ortoDatas_Temp;
+                        ortoDatasFile.Save();
+                    }
+                });
+
+                resave.Invoke(paths_Input[0]);
+
+                ParallelOptions parallelOptions = new ParallelOptions()
                 {
-                    return;
-                }
+                    MaxDegreeOfParallelism = GIS.Query.DefaultProcessorCount()
+                };
 
-                File.Delete(path_Input);
-
-                using (OrtoDatasFile ortoDatasFile = new OrtoDatasFile(path_Input))
+                Parallel.For(1, paths_Input.Length, parallelOptions, i =>
                 {
-                    ortoDatasFile.Values = ortoDatas;
-                    ortoDatasFile.Save();
-                }
-            });
-
-            MessageBox.Show("Finished!");
+                    resave(paths_Input[i]);
+                });
+            }
         }
     }
 }
