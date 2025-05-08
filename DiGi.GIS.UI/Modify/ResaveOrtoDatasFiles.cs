@@ -73,7 +73,7 @@ namespace DiGi.GIS.UI
 
                     File.Delete(path_Input);
 
-                    string directory_New = GIS.Query.Directory_Building2D(Path.GetDirectoryName(path_Input));
+                    string directory_New = GIS.Query.OrtoDatasDirectory_Building2D(Path.GetDirectoryName(path_Input));
                     if (!Directory.Exists(directory_New))
                     {
                         Directory.CreateDirectory(directory_New);
@@ -88,14 +88,14 @@ namespace DiGi.GIS.UI
                     }
                 });
 
-                resave.Invoke(paths_Input[0]);
+                //resave.Invoke(paths_Input[0]);
 
                 ParallelOptions parallelOptions = new ParallelOptions()
                 {
                     MaxDegreeOfParallelism = GIS.Query.DefaultProcessorCount()
                 };
 
-                Parallel.For(1, paths_Input.Length, parallelOptions, i =>
+                Parallel.For(0, paths_Input.Length, parallelOptions, i =>
                 {
                     resave(paths_Input[i]);
                 });

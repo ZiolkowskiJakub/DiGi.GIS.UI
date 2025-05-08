@@ -48,6 +48,9 @@
     <Reference Include="DiGi.UI.WPF.Core">
       <HintPath>..\..\DiGi.UI.WPF\bin\DiGi.UI.WPF.Core.dll</HintPath>
     </Reference>
+    <Reference Include="DiGi.VoTT">
+      <HintPath>..\..\DiGi.VoTT\bin\DiGi.VoTT.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

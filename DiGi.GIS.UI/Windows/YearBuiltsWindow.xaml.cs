@@ -1,6 +1,5 @@
 ﻿using DiGi.GIS.Classes;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace DiGi.GIS.UI.Windows
 {

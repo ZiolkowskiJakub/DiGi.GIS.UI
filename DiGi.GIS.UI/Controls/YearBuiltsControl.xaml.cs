@@ -65,7 +65,7 @@ namespace DiGi.GIS.UI.Controls
                 return;
             }
 
-            directory = GIS.Query.Directory_Building2D(directory);
+            directory = GIS.Query.OrtoDatasDirectory_Building2D(directory);
 
             OrtoDatas ortoDatas = GIS.Query.OrtoDatas(building2D, directory);
             if(ortoDatas == null || ortoDatas.Count() == 0)

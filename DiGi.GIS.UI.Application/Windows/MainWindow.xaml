@@ -6,9 +6,9 @@
         xmlns:local="clr-namespace:DiGi.GIS.UI.Application"
         xmlns:Controls="clr-namespace:DiGi.UI.WPF.Core.Controls;assembly=DiGi.UI.WPF.Core"
         mc:Ignorable="d"
-        Title="GIS" Height="500" Width="240" ResizeMode="NoResize" Icon="/DiGi.GIS.ico">
+        Title="GIS" Height="550" Width="240" ResizeMode="NoResize" Icon="/DiGi.GIS.ico">
     <DockPanel LastChildFill="True">
-        <Grid DockPanel.Dock="Top" Height="430">
+        <Grid DockPanel.Dock="Top" Height="480">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="31*"/>
                 <ColumnDefinition Width="44*"/>
@@ -22,12 +22,13 @@
             <Button x:Name="Button_ResaveOrtoDatasFiles" Content="Resave OrtoDatas Files" HorizontalAlignment="Center" Margin="0,199,0,0" VerticalAlignment="Top" Width="190" Click="Button_ResaveOrtoDatasFiles_Click" Grid.ColumnSpan="2" IsEnabled="True"/>
             <Button x:Name="Button_CalculateAdministrativeAreal2DStatisticalUnits" Content="Calculate StatisticalUnits" HorizontalAlignment="Center" Margin="0,226,0,0" VerticalAlignment="Top" Width="190" Click="Button_CalculateAdministrativeAreal2DStatisticalUnits_Click" Grid.ColumnSpan="2" Visibility="Visible"/>
             <Button x:Name="Button_CalculateOrtoDatasComparisons" Content="Calculate OrtoDatasComparisons" HorizontalAlignment="Center" Margin="0,252,0,0" VerticalAlignment="Top" Width="190" Click="Button_CalculateOrtoDatasComparisons_Click" Grid.ColumnSpan="2" Visibility="Visible"/>
-            <Button x:Name="Button_AppentTable" Content="Append Table (Machine Learing)" HorizontalAlignment="Center" Margin="0,279,0,0" VerticalAlignment="Top" Width="190" Click="Button_AppentTable_Click" Grid.ColumnSpan="2" Visibility="Visible"/>
+            <Button x:Name="Button_AppendTable" Content="Append Table (Machine Learing)" HorizontalAlignment="Center" Margin="0,279,0,0" VerticalAlignment="Top" Width="190" Click="Button_AppendTable_Click" Grid.ColumnSpan="2" Visibility="Visible"/>
+            <Button x:Name="Button_AppendVoTTModel" Content="Append VoTT Model" HorizontalAlignment="Center" Margin="0,306,0,0" VerticalAlignment="Top" Width="190" Click="Button_AppendVoTTModel_Click" Grid.ColumnSpan="2" Visibility="Visible"/>
+            
+            <Button x:Name="Button_Test" Content="Test" HorizontalAlignment="Center" Margin="0,360,0,0" VerticalAlignment="Top" Width="190" Click="Button_Test_Click" Grid.ColumnSpan="2" Visibility="Visible"/>
 
-            <Button x:Name="Button_Test" Content="Test" HorizontalAlignment="Center" Margin="0,333,0,0" VerticalAlignment="Top" Width="190" Click="Button_Test_Click" Grid.ColumnSpan="2" Visibility="Visible"/>
-
-            <Button x:Name="Button_YearBuilts" Content="Year Builts" HorizontalAlignment="Center" Margin="0,360,0,0" VerticalAlignment="Top" Width="190" Click="Button_YearBuilts_Click" Grid.ColumnSpan="2"/>
-            <Button x:Name="Button_OrtoDatas" Content="OrtoDatas" HorizontalAlignment="Center" Margin="0,387,0,0" VerticalAlignment="Top" Width="190" Click="Button_OrtoDatas_Click" Grid.ColumnSpan="2"/>
+            <Button x:Name="Button_YearBuilts" Content="Year Builts" HorizontalAlignment="Center" Margin="0,387,0,0" VerticalAlignment="Top" Width="190" Click="Button_YearBuilts_Click" Grid.ColumnSpan="2"/>
+            <Button x:Name="Button_OrtoDatas" Content="OrtoDatas" HorizontalAlignment="Center" Margin="0,414,0,0" VerticalAlignment="Top" Width="190" Click="Button_OrtoDatas_Click" Grid.ColumnSpan="2"/>
         </Grid>
         <StatusBarItem DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" VerticalAlignment="Top">
             <TextBlock x:Name="TextBlock_Progress" Text="..." HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="3,0,0,0"/>

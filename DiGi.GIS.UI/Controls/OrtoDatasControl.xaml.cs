@@ -1,7 +1,6 @@
 ﻿using DiGi.Core;
 using DiGi.GIS.Classes;
 using DiGi.GIS.UI.Delegates;
-using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;

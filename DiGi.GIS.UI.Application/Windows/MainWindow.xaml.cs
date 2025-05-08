@@ -374,9 +374,14 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = string.Format("Done Appending! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
-        private void Button_AppentTable_Click(object sender, RoutedEventArgs e)
+        private void Button_AppendTable_Click(object sender, RoutedEventArgs e)
         {
             AppendTable();
+        }
+
+        private void Button_AppendVoTTModel_Click(object sender, RoutedEventArgs e)
+        {
+            Modify.AppendVoTTModel_OrtoRange(this);
         }
 
         private void Button_Calculate_Click(object sender, RoutedEventArgs e)
@@ -605,7 +610,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             OrtoDatasComparisonOptions ortoDatasComparisonOptions = new OrtoDatasComparisonOptions()
             {
-                DirectoryNames = GIS.Query.DirectoryNames_Building2D()
+                DirectoryNames = GIS.Query.OrtoDatasDirectoryNames_Building2D()
             };
             //ortoDatasComparisonOptions.OrtoDatasOptions.MaxFileSize = (1024UL * 1024UL * 1024UL * 5) / 10;
 

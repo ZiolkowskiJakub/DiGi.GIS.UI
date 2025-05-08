@@ -1,6 +1,5 @@
 ﻿using DiGi.GIS.Classes;
 using DiGi.GIS.UI.Delegates;
-using System.ComponentModel;
 using System.Windows.Controls;
 
 
