@@ -270,8 +270,10 @@ namespace DiGi.GIS.UI
                     Directory.CreateDirectory(directory_VoTT);
                 }
 
-                foreach (OrtoRange ortoRange in ortoRanges)
+                for(int j = 0; j < ortoRanges.Count(); j++)
                 {
+                    OrtoRange ortoRange = ortoRanges.ElementAt(j);
+
                     HashSet<string> references_Inside = ortoRange?.References_Inside;
                     if(references_Inside == null || references_Inside.Count == 0)
                     {

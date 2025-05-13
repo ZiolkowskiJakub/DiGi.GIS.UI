@@ -374,6 +374,19 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = string.Format("Done Appending! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
+        private void AppendVoTTModel_OrtoRange()
+        {
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Appending VoTTModel...";
+
+            Modify.AppendVoTTModel_OrtoRange(this);
+
+            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Appending VoTTModel! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
+
         private void Button_AppendTable_Click(object sender, RoutedEventArgs e)
         {
             AppendTable();
@@ -381,9 +394,9 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Button_AppendVoTTModel_Click(object sender, RoutedEventArgs e)
         {
-            Modify.AppendVoTTModel_OrtoRange(this);
+            AppendVoTTModel_OrtoRange();
         }
-
+        
         private void Button_Calculate_Click(object sender, RoutedEventArgs e)
         {
             //Calculate();
