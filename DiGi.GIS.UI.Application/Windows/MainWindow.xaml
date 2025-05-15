@@ -24,11 +24,13 @@
             <Button x:Name="Button_CalculateOrtoDatasComparisons" Content="Calculate OrtoDatasComparisons" HorizontalAlignment="Center" Margin="0,252,0,0" VerticalAlignment="Top" Width="190" Click="Button_CalculateOrtoDatasComparisons_Click" Grid.ColumnSpan="2" Visibility="Visible"/>
             <Button x:Name="Button_AppendTable" Content="Append Table (Machine Learing)" HorizontalAlignment="Center" Margin="0,279,0,0" VerticalAlignment="Top" Width="190" Click="Button_AppendTable_Click" Grid.ColumnSpan="2" Visibility="Visible"/>
             <Button x:Name="Button_AppendVoTTModel" Content="Append VoTT Model" HorizontalAlignment="Center" Margin="0,306,0,0" VerticalAlignment="Top" Width="190" Click="Button_AppendVoTTModel_Click" Grid.ColumnSpan="2" Visibility="Visible"/>
+            <Button x:Name="Button_AppendYOLOModel" Content="Append YOLO Model" HorizontalAlignment="Center" Margin="0,333,0,0" VerticalAlignment="Top" Width="190" Click="Button_AppendYOLOModel_Click"  Grid.ColumnSpan="2" Visibility="Visible"/>
             
-            <Button x:Name="Button_Test" Content="Test" HorizontalAlignment="Center" Margin="0,360,0,0" VerticalAlignment="Top" Width="190" Click="Button_Test_Click" Grid.ColumnSpan="2" Visibility="Visible"/>
+            
+            <Button x:Name="Button_Test" Content="Test" HorizontalAlignment="Center" Margin="0,387,0,0" VerticalAlignment="Top" Width="190" Click="Button_Test_Click" Grid.ColumnSpan="2" Visibility="Visible"/>
 
-            <Button x:Name="Button_YearBuilts" Content="Year Builts" HorizontalAlignment="Center" Margin="0,387,0,0" VerticalAlignment="Top" Width="190" Click="Button_YearBuilts_Click" Grid.ColumnSpan="2"/>
-            <Button x:Name="Button_OrtoDatas" Content="OrtoDatas" HorizontalAlignment="Center" Margin="0,414,0,0" VerticalAlignment="Top" Width="190" Click="Button_OrtoDatas_Click" Grid.ColumnSpan="2"/>
+            <Button x:Name="Button_YearBuilts" Content="Year Builts" HorizontalAlignment="Center" Margin="0,414,0,0" VerticalAlignment="Top" Width="190" Click="Button_YearBuilts_Click" Grid.ColumnSpan="2"/>
+            <Button x:Name="Button_OrtoDatas" Content="OrtoDatas" HorizontalAlignment="Center" Margin="0,441,0,0" VerticalAlignment="Top" Width="190" Click="Button_OrtoDatas_Click" Grid.ColumnSpan="2"/>
         </Grid>
         <StatusBarItem DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" VerticalAlignment="Top">
             <TextBlock x:Name="TextBlock_Progress" Text="..." HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="3,0,0,0"/>

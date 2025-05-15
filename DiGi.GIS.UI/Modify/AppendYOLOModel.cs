@@ -2,23 +2,20 @@
 using Microsoft.Win32;
 using System.Windows;
 using DiGi.GIS.Classes;
-using DiGi.VoTT.Classes;
 using System.Windows.Media.Imaging;
-using DiGi.VoTT;
 using DiGi.Geometry.Planar.Classes;
 using DiGi.GIS.UI.Classes;
+using DiGi.YOLO.Classes;
 
 namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
-        public static void AppendVoTTModel_Building2D(Window owner, VoTTConversionOptions voTTConversionOptions = null)
+        public static void AppendYOLOModel_Building2D(Window owner, YOLOConversionOptions yOLOConversionOptions = null)
         {
             bool? result;
 
-            OpenFolderDialog openFolderDialog;
-
-            openFolderDialog = new OpenFolderDialog();
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
             openFolderDialog.Title = "Select GIS Model Files directory";
             result = openFolderDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
@@ -33,9 +30,9 @@ namespace DiGi.GIS.UI
             }
 
             SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", "VoTT json File", "json");
-            saveFileDialog.FileName = "VoTT.json";
-            saveFileDialog.Title = "Select VoTT File";
+            saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", "YOLO yaml File", "yaml");
+            saveFileDialog.FileName = "conf.yaml";
+            saveFileDialog.Title = "Select YOLO yaml file";
             saveFileDialog.OverwritePrompt = false;
             result = saveFileDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
@@ -43,20 +40,17 @@ namespace DiGi.GIS.UI
                 return;
             }
 
-            if(voTTConversionOptions == null)
+            if(yOLOConversionOptions == null)
             {
-                voTTConversionOptions = new VoTTConversionOptions();
+                yOLOConversionOptions = new YOLOConversionOptions();
             }
 
-            string path_VoTT = saveFileDialog.FileName;
+            string path_YOLO = saveFileDialog.FileName;
 
-            VoTTModel voTTModel = VoTT.Modify.Read(path_VoTT);
-            if (voTTModel == null)
+            YOLOModel yOLOModel = YOLO.Modify.Read(path_YOLO);
+            if (yOLOModel == null)
             {
-                voTTModel = new VoTTModel()
-                {
-                    name = "Building2D VoTT",
-                };
+                yOLOModel = new YOLOModel(Path.GetDirectoryName(path_YOLO));
             }
 
             string[] paths_Input = Directory.GetFiles(directory_GISModelFiles, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
@@ -87,7 +81,6 @@ namespace DiGi.GIS.UI
                             tuples.Add(new Tuple<Building2D, short>(building2D, yearBuilt.Value));
                         }
                     }
-
                 }
 
                 if (tuples == null || tuples.Count == 0)
@@ -95,14 +88,31 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                string directory_VoTT = Path.GetDirectoryName(path_VoTT);
-                if (!Directory.Exists(directory_VoTT))
-                {
-                    Directory.CreateDirectory(directory_VoTT);
-                }
+                Random random = new Random(tuples.Count);
+
+                //int maxCount = 6;
+                //int start = 5;
+                //int count = 0;
 
                 foreach (Tuple<Building2D, short> tuple in tuples)
                 {
+                    //count++;
+                    //if(count > maxCount)
+                    //{
+                    //    break;
+                    //}
+
+                    //if (start > count - 1)
+                    //{
+                    //    continue;
+                    //}
+
+                    YOLO.Enums.Category? category = yOLOConversionOptions.Category(random);
+                    if(category == null || !category.HasValue)
+                    {
+                        category = YOLO.Enums.Category.Train;
+                    }
+
                     Building2D building2D = tuple.Item1;
 
                     int yearBuilt = tuple.Item2;
@@ -119,16 +129,17 @@ namespace DiGi.GIS.UI
                         continue;
                     }
 
-                    string pathPrefix = Path.Combine(directory_VoTT, building2D.Reference);
+                    string directory = yOLOModel.GetDirectory_Images(category.Value);
+                    if (!Directory.Exists(directory))
+                    {
+                        Directory.CreateDirectory(directory);
+                    }
+
+                    string pathPrefix = Path.Combine(directory, building2D.Reference);
 
                     foreach (OrtoData ortoData in ortoDatas)
                     {
                         int year = ortoData.DateTime.Year;
-
-                        if (year < yearBuilt)
-                        {
-                            continue;
-                        }
 
                         BitmapImage bitmapImage = ortoData.BitmapImage();
                         if (bitmapImage == null)
@@ -136,40 +147,40 @@ namespace DiGi.GIS.UI
                             continue;
                         }
 
-                        string path_OrtoData = string.Format("{0}_{1}.jpeg", pathPrefix, year);
+                        string path_Image = string.Format("{0}_{1}.jpeg", pathPrefix, year);
 
                         JpegBitmapEncoder jpegBitmapEncoder = new JpegBitmapEncoder();
                         jpegBitmapEncoder.Frames.Add(BitmapFrame.Create(bitmapImage));
-                        using (FileStream fileStream = new FileStream(path_OrtoData, FileMode.Create))
+                        using (FileStream fileStream = new FileStream(path_Image, FileMode.Create))
                         {
                             jpegBitmapEncoder.Save(fileStream);
                         }
 
-                        BoundingBox2D boundingBox2D = building2DGeometryCalculationResult.BoundingBox;
-
-                        if (voTTConversionOptions != null)
+                        yOLOModel.Add(path_Image, category.Value);
+                        if (year < yearBuilt)
                         {
-                            boundingBox2D.Offset(voTTConversionOptions.Offset);
+                            continue;
                         }
 
-                        Point2D min = ortoData.ToOrto(boundingBox2D.Min);
-                        Point2D max = ortoData.ToOrto(boundingBox2D.Max);
+                        BoundingBox2D boundingBox2D = building2DGeometryCalculationResult.BoundingBox;
 
-                        Asset asset = VoTT.Create.Asset(path_OrtoData);
+                        if (yOLOConversionOptions != null)
+                        {
+                            boundingBox2D.Offset(yOLOConversionOptions.Offset);
+                        }
 
-                        voTTModel.Add(asset);
+                        Point2D topLeft = ortoData.ToOrto(boundingBox2D.TopLeft);
+                        Point2D bottomRight = ortoData.ToOrto(boundingBox2D.BottomRight);
 
-                        voTTModel.Add(asset.id, VoTT.Create.Region(min.X, min.Y, max.X, max.Y, year.ToString()));
+                        yOLOModel.Add(path_Image, "Building", YOLO.Create.BoundingBox(bitmapImage.Width, bitmapImage.Height, topLeft.X, topLeft.Y, bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y));
                     }
-
-                    break;
                 }
 
-                VoTT.Modify.Write(voTTModel, path_VoTT);
+                YOLO.Modify.Write(yOLOModel);
             }
         }
 
-        public static void AppendVoTTModel_OrtoRange(Window owner, VoTTConversionOptions voTTConversionOptions = null)
+        public static void AppendYOLOModel_OrtoRange(Window owner, YOLOConversionOptions yOLOConversionOptions = null)
         {
             bool? result;
 
@@ -190,9 +201,9 @@ namespace DiGi.GIS.UI
             }
 
             SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", "VoTT json File", "json");
-            saveFileDialog.FileName = "VoTT.json";
-            saveFileDialog.Title = "Select VoTT File";
+            saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", "YOLO yaml File", "yaml");
+            saveFileDialog.FileName = "conf.yaml";
+            saveFileDialog.Title = "Select YOLO yaml file";
             saveFileDialog.OverwritePrompt = false;
             result = saveFileDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
@@ -200,20 +211,17 @@ namespace DiGi.GIS.UI
                 return;
             }
 
-            if (voTTConversionOptions == null)
+            if (yOLOConversionOptions == null)
             {
-                voTTConversionOptions = new VoTTConversionOptions();
+                yOLOConversionOptions = new YOLOConversionOptions();
             }
 
-            string path_VoTT = saveFileDialog.FileName;
+            string path_YOLO = saveFileDialog.FileName;
 
-            VoTTModel voTTModel = VoTT.Modify.Read(path_VoTT);
-            if (voTTModel == null)
+            YOLOModel yOLOModel = YOLO.Modify.Read(path_YOLO);
+            if (yOLOModel == null)
             {
-                voTTModel = new VoTTModel()
-                {
-                    name = "OrtoRange VoTT",
-                };
+                yOLOModel = new YOLOModel(Path.GetDirectoryName(path_YOLO));
             }
 
             string[] paths_Input = Directory.GetFiles(directory_GISModelFiles, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
@@ -255,7 +263,7 @@ namespace DiGi.GIS.UI
                 }
 
                 string path_OrtoRange = Path.Combine(directory_Input, string.Format("{0}.{1}", Path.GetFileNameWithoutExtension(path_Input), Constans.FileExtension.OrtoRangeFile));
-                if(!File.Exists(path_OrtoRange))
+                if (!File.Exists(path_OrtoRange))
                 {
                     continue;
                 }
@@ -266,19 +274,14 @@ namespace DiGi.GIS.UI
                     ortoRanges = ortoRangeFile.Values;
                 }
 
-                string directory_VoTT = Path.GetDirectoryName(path_VoTT);
-                if (!Directory.Exists(directory_VoTT))
-                {
-                    Directory.CreateDirectory(directory_VoTT);
-                }
+                Random random = new Random(tuples.Count);
 
-
-                for(int j = 0; j < ortoRanges.Count(); j++)
+                for (int j = 0; j < ortoRanges.Count(); j++)
                 {
                     OrtoRange ortoRange = ortoRanges.ElementAt(j);
 
                     HashSet<string> references_Inside = ortoRange?.References_Inside;
-                    if(references_Inside == null || references_Inside.Count == 0)
+                    if (references_Inside == null || references_Inside.Count == 0)
                     {
                         continue;
                     }
@@ -289,13 +292,30 @@ namespace DiGi.GIS.UI
                         continue;
                     }
 
-                    OrtoDatas ortoDatas = ortoRange.OrtoDatas(directory_OrtoDatas);
-                    if(ortoDatas == null)
+                    if(references_Inside.Count != tuples_OrtoRange.Count)
                     {
                         continue;
                     }
 
-                    string pathPrefix = Path.Combine(directory_VoTT, ortoRange.UniqueId);
+                    OrtoDatas ortoDatas = ortoRange.OrtoDatas(directory_OrtoDatas);
+                    if (ortoDatas == null)
+                    {
+                        continue;
+                    }
+
+                    YOLO.Enums.Category? category = yOLOConversionOptions.Category(random);
+                    if (category == null || !category.HasValue)
+                    {
+                        category = YOLO.Enums.Category.Train;
+                    }
+
+                    string directory = yOLOModel.GetDirectory_Images(category.Value);
+                    if (!Directory.Exists(directory))
+                    {
+                        Directory.CreateDirectory(directory);
+                    }
+
+                    string pathPrefix = Path.Combine(directory, ortoRange.UniqueId);
 
                     foreach (OrtoData ortoData in ortoDatas)
                     {
@@ -307,18 +327,16 @@ namespace DiGi.GIS.UI
 
                         int year = ortoData.DateTime.Year;
 
-                        string path_OrtoData = string.Format("{0}_{1}.jpeg", pathPrefix, year);
+                        string path_Image = string.Format("{0}_{1}.jpeg", pathPrefix, year);
 
                         JpegBitmapEncoder jpegBitmapEncoder = new JpegBitmapEncoder();
                         jpegBitmapEncoder.Frames.Add(BitmapFrame.Create(bitmapImage));
-                        using (FileStream fileStream = new FileStream(path_OrtoData, FileMode.Create))
+                        using (FileStream fileStream = new FileStream(path_Image, FileMode.Create))
                         {
                             jpegBitmapEncoder.Save(fileStream);
                         }
 
-                        Asset asset = VoTT.Create.Asset(path_OrtoData);
-
-                        voTTModel.Add(asset);
+                        yOLOModel.Add(path_Image, category.Value);
 
                         foreach (Tuple<Building2D, short> tuple in tuples_OrtoRange)
                         {
@@ -339,32 +357,20 @@ namespace DiGi.GIS.UI
 
                             BoundingBox2D boundingBox2D = building2DGeometryCalculationResult.BoundingBox;
 
-                            if(voTTConversionOptions != null)
+                            if (yOLOConversionOptions != null)
                             {
-                                boundingBox2D.Offset(voTTConversionOptions.Offset);
+                                boundingBox2D.Offset(yOLOConversionOptions.Offset);
                             }
 
-                            Point2D min = ortoData.ToOrto(boundingBox2D.Min);
-                            Point2D max = ortoData.ToOrto(boundingBox2D.Max);
+                            Point2D topLeft = ortoData.ToOrto(boundingBox2D.TopLeft);
+                            Point2D bottomRight = ortoData.ToOrto(boundingBox2D.BottomRight);
 
-                            voTTModel.Add(asset.id, VoTT.Create.Region(min.X, min.Y, max.X, max.Y, "Building"));
-                            break;
-                        }
-
-                        if(voTTModel.assets != null && voTTModel.assets.Count != 0)
-                        {
-                            if(voTTModel.assets.TryGetValue(asset.id, out AssetData assetData))
-                            {
-                                if(assetData.regions == null || assetData.regions.Count == 0)
-                                {
-                                    voTTModel.assets.Remove(asset.id);
-                                }
-                            }
+                            yOLOModel.Add(path_Image, "Building", YOLO.Create.BoundingBox(bitmapImage.Width, bitmapImage.Height, topLeft.X, topLeft.Y, bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y));
                         }
                     }
                 }
 
-                VoTT.Modify.Write(voTTModel, path_VoTT);
+                YOLO.Modify.Write(yOLOModel);
             }
         }
     }

@@ -4,6 +4,7 @@ using DiGi.Core.Classes;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Constans;
 using DiGi.GIS.Emgu.CV.Classes;
+using DiGi.GIS.UI.Classes;
 using Microsoft.Win32;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -378,13 +379,32 @@ namespace DiGi.GIS.UI.Application.Windows
         {
             DateTime dateTime = DateTime.Now;
 
-            TextBlock_Progress.Text = "Appending VoTTModel...";
+            TextBlock_Progress.Text = "Appending VoTT Model...";
 
             Modify.AppendVoTTModel_OrtoRange(this);
 
             TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
 
-            TextBlock_Progress.Text = string.Format("Done Appending VoTTModel! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+            TextBlock_Progress.Text = string.Format("Done Appending VoTT Model! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
+
+        private void AppendYOLOModel_Building()
+        {
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Appending YOLO Model...";
+
+            YOLOConversionOptions yOLOConversionOptions = new YOLOConversionOptions();
+            yOLOConversionOptions[YOLO.Enums.Category.Train] = 0.9;
+            yOLOConversionOptions[YOLO.Enums.Category.Validate] = 0.1;
+            yOLOConversionOptions[YOLO.Enums.Category.Test] = 0;
+
+            Modify.AppendYOLOModel_Building2D(this, yOLOConversionOptions);
+            Modify.AppendYOLOModel_OrtoRange(this, yOLOConversionOptions);
+
+            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Appending YOLO Model! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
         private void Button_AppendTable_Click(object sender, RoutedEventArgs e)
@@ -396,7 +416,12 @@ namespace DiGi.GIS.UI.Application.Windows
         {
             AppendVoTTModel_OrtoRange();
         }
-        
+
+        private void Button_AppendYOLOModel_Click(object sender, RoutedEventArgs e)
+        {
+            AppendYOLOModel_Building();
+        }
+
         private void Button_Calculate_Click(object sender, RoutedEventArgs e)
         {
             //Calculate();
