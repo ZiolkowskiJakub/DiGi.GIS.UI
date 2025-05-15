@@ -53,6 +53,11 @@ namespace DiGi.GIS.UI
                 yOLOModel = new YOLOModel(Path.GetDirectoryName(path_YOLO));
             }
 
+            if(yOLOConversionOptions.ClearData)
+            {
+                YOLO.Modify.ClearData(yOLOModel);
+            }
+
             string[] paths_Input = Directory.GetFiles(directory_GISModelFiles, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
             {
@@ -90,23 +95,8 @@ namespace DiGi.GIS.UI
 
                 Random random = new Random(tuples.Count);
 
-                //int maxCount = 6;
-                //int start = 5;
-                //int count = 0;
-
                 foreach (Tuple<Building2D, short> tuple in tuples)
                 {
-                    //count++;
-                    //if(count > maxCount)
-                    //{
-                    //    break;
-                    //}
-
-                    //if (start > count - 1)
-                    //{
-                    //    continue;
-                    //}
-
                     YOLO.Enums.Category? category = yOLOConversionOptions.Category(random);
                     if(category == null || !category.HasValue)
                     {
@@ -222,6 +212,11 @@ namespace DiGi.GIS.UI
             if (yOLOModel == null)
             {
                 yOLOModel = new YOLOModel(Path.GetDirectoryName(path_YOLO));
+            }
+
+            if (yOLOConversionOptions.ClearData)
+            {
+                YOLO.Modify.ClearData(yOLOModel);
             }
 
             string[] paths_Input = Directory.GetFiles(directory_GISModelFiles, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);

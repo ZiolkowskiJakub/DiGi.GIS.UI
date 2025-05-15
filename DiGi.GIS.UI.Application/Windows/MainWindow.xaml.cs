@@ -395,11 +395,16 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = "Appending YOLO Model...";
 
             YOLOConversionOptions yOLOConversionOptions = new YOLOConversionOptions();
+            yOLOConversionOptions.ClearData = true;
+
             yOLOConversionOptions[YOLO.Enums.Category.Train] = 0.9;
             yOLOConversionOptions[YOLO.Enums.Category.Validate] = 0.1;
             yOLOConversionOptions[YOLO.Enums.Category.Test] = 0;
 
             Modify.AppendYOLOModel_Building2D(this, yOLOConversionOptions);
+            
+            yOLOConversionOptions.ClearData = false;
+
             Modify.AppendYOLOModel_OrtoRange(this, yOLOConversionOptions);
 
             TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);

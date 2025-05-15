@@ -12,6 +12,9 @@ namespace DiGi.GIS.UI.Classes
         [JsonInclude, JsonPropertyName("Weights")]
         public Dictionary<YOLO.Enums.Category, double> Weights { get; set; } = Query.Weights();
 
+        [JsonInclude, JsonPropertyName("ClearData")]
+        public bool ClearData { get; set; } = false;
+
         public YOLOConversionOptions(double offset)
             : base()
         {
@@ -30,6 +33,7 @@ namespace DiGi.GIS.UI.Classes
             if (YOLOConversionOptions != null)
             {
                 Offset = YOLOConversionOptions.Offset;
+                ClearData = YOLOConversionOptions.ClearData;
             }
         }
 
