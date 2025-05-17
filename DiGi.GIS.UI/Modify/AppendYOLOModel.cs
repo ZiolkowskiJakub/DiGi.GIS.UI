@@ -11,41 +11,53 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
-        public static void AppendYOLOModel_Building2D(Window owner, YOLOConversionOptions yOLOConversionOptions = null)
+        public static bool AppendYOLOModel_Building2D(Window owner, YOLOConversionOptions yOLOConversionOptions = null)
         {
-            bool? result;
-
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            openFolderDialog.Title = "Select GIS Model Files directory";
-            result = openFolderDialog.ShowDialog(owner);
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-            string directory_GISModelFiles = openFolderDialog.FolderName;
-            if (string.IsNullOrWhiteSpace(directory_GISModelFiles) || !Directory.Exists(directory_GISModelFiles))
-            {
-                return;
-            }
-
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", "YOLO yaml File", "yaml");
-            saveFileDialog.FileName = "conf.yaml";
-            saveFileDialog.Title = "Select YOLO yaml file";
-            saveFileDialog.OverwritePrompt = false;
-            result = saveFileDialog.ShowDialog(owner);
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-            if(yOLOConversionOptions == null)
+            if (yOLOConversionOptions == null)
             {
                 yOLOConversionOptions = new YOLOConversionOptions();
             }
 
-            string path_YOLO = saveFileDialog.FileName;
+            if (string.IsNullOrWhiteSpace(yOLOConversionOptions.GISModelFilesDirectory) || !Directory.Exists(yOLOConversionOptions.GISModelFilesDirectory))
+            {
+                OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+                openFolderDialog.Title = "Select GIS Model Files directory";
+                bool? result = openFolderDialog.ShowDialog(owner);
+                if (result == null || !result.HasValue || !result.Value)
+                {
+                    return false;
+                }
+
+                yOLOConversionOptions.GISModelFilesDirectory = openFolderDialog.FolderName;
+            }
+
+            string directory_GISModelFiles = yOLOConversionOptions.GISModelFilesDirectory;
+            if (string.IsNullOrWhiteSpace(directory_GISModelFiles) || !Directory.Exists(directory_GISModelFiles))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(yOLOConversionOptions.ConfigurationFilePath) || !File.Exists(yOLOConversionOptions.ConfigurationFilePath))
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", "YOLO yaml File", "yaml");
+                saveFileDialog.FileName = "conf.yaml";
+                saveFileDialog.Title = "Select YOLO yaml file";
+                saveFileDialog.OverwritePrompt = false;
+                bool? result = saveFileDialog.ShowDialog(owner);
+                if (result == null || !result.HasValue || !result.Value)
+                {
+                    return false;
+                }
+
+                yOLOConversionOptions.ConfigurationFilePath = saveFileDialog.FileName;
+            }
+
+            string path_YOLO = yOLOConversionOptions.ConfigurationFilePath;
+            if(string.IsNullOrWhiteSpace(path_YOLO))
+            {
+                return false;
+            }
 
             YOLOModel yOLOModel = YOLO.Modify.Read(path_YOLO);
             if (yOLOModel == null)
@@ -168,45 +180,59 @@ namespace DiGi.GIS.UI
 
                 YOLO.Modify.Write(yOLOModel);
             }
+
+            return true;
         }
 
-        public static void AppendYOLOModel_OrtoRange(Window owner, YOLOConversionOptions yOLOConversionOptions = null)
+        public static bool AppendYOLOModel_OrtoRange(Window owner, YOLOConversionOptions yOLOConversionOptions = null)
         {
-            bool? result;
-
-            OpenFolderDialog openFolderDialog;
-
-            openFolderDialog = new OpenFolderDialog();
-            openFolderDialog.Title = "Select GIS Model Files directory";
-            result = openFolderDialog.ShowDialog(owner);
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-            string directory_GISModelFiles = openFolderDialog.FolderName;
-            if (string.IsNullOrWhiteSpace(directory_GISModelFiles) || !Directory.Exists(directory_GISModelFiles))
-            {
-                return;
-            }
-
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", "YOLO yaml File", "yaml");
-            saveFileDialog.FileName = "conf.yaml";
-            saveFileDialog.Title = "Select YOLO yaml file";
-            saveFileDialog.OverwritePrompt = false;
-            result = saveFileDialog.ShowDialog(owner);
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
             if (yOLOConversionOptions == null)
             {
                 yOLOConversionOptions = new YOLOConversionOptions();
             }
 
-            string path_YOLO = saveFileDialog.FileName;
+            if (string.IsNullOrWhiteSpace(yOLOConversionOptions.GISModelFilesDirectory) || !Directory.Exists(yOLOConversionOptions.GISModelFilesDirectory))
+            {
+                OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+                openFolderDialog.Title = "Select GIS Model Files directory";
+                bool? result = openFolderDialog.ShowDialog(owner);
+                if (result == null || !result.HasValue || !result.Value)
+                {
+                    return false;
+                }
+
+                yOLOConversionOptions.GISModelFilesDirectory = openFolderDialog.FolderName;
+            }
+
+            string directory_GISModelFiles = yOLOConversionOptions.GISModelFilesDirectory;
+            if (string.IsNullOrWhiteSpace(directory_GISModelFiles) || !Directory.Exists(directory_GISModelFiles))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(yOLOConversionOptions.ConfigurationFilePath) || !File.Exists(yOLOConversionOptions.ConfigurationFilePath))
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", "YOLO yaml File", "yaml");
+                saveFileDialog.FileName = "conf.yaml";
+                saveFileDialog.Title = "Select YOLO yaml file";
+                saveFileDialog.OverwritePrompt = false;
+                bool? result = saveFileDialog.ShowDialog(owner);
+                if (result == null || !result.HasValue || !result.Value)
+                {
+                    return false;
+                }
+
+                yOLOConversionOptions.ConfigurationFilePath = saveFileDialog.FileName;
+            }
+
+
+
+            string path_YOLO = yOLOConversionOptions.ConfigurationFilePath;
+            if (string.IsNullOrWhiteSpace(path_YOLO))
+            {
+                return false;
+            }
 
             YOLOModel yOLOModel = YOLO.Modify.Read(path_YOLO);
             if (yOLOModel == null)
@@ -367,6 +393,8 @@ namespace DiGi.GIS.UI
 
                 YOLO.Modify.Write(yOLOModel);
             }
+
+            return true;
         }
     }
 }

@@ -15,6 +15,12 @@ namespace DiGi.GIS.UI.Classes
         [JsonInclude, JsonPropertyName("ClearData")]
         public bool ClearData { get; set; } = false;
 
+        [JsonInclude, JsonPropertyName("ConfigurationFilePath")]
+        public string ConfigurationFilePath { get; set; } = null;
+
+        [JsonInclude, JsonPropertyName("GISModelFilesDirectory")]
+        public string GISModelFilesDirectory { get; set; } = null;
+
         public YOLOConversionOptions(double offset)
             : base()
         {
@@ -34,6 +40,8 @@ namespace DiGi.GIS.UI.Classes
             {
                 Offset = YOLOConversionOptions.Offset;
                 ClearData = YOLOConversionOptions.ClearData;
+                ConfigurationFilePath = YOLOConversionOptions.ConfigurationFilePath;
+                GISModelFilesDirectory = YOLOConversionOptions.GISModelFilesDirectory;
             }
         }
 
