@@ -388,8 +388,10 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = string.Format("Done Appending VoTT Model! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
-        private void AppendYOLOModel_Building()
+        private void AppendYOLOModel()
         {
+            bool includeOrtoRange = false;
+
             DateTime dateTime = DateTime.Now;
 
             TextBlock_Progress.Text = "Appending YOLO Model...";
@@ -403,9 +405,11 @@ namespace DiGi.GIS.UI.Application.Windows
 
             Modify.AppendYOLOModel_Building2D(this, yOLOConversionOptions);
             
-            yOLOConversionOptions.ClearData = false;
-
-            Modify.AppendYOLOModel_OrtoRange(this, yOLOConversionOptions);
+            if(includeOrtoRange)
+            {
+                yOLOConversionOptions.ClearData = false;
+                Modify.AppendYOLOModel_OrtoRange(this, yOLOConversionOptions);
+            }
 
             TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
 
@@ -424,7 +428,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Button_AppendYOLOModel_Click(object sender, RoutedEventArgs e)
         {
-            AppendYOLOModel_Building();
+            AppendYOLOModel();
         }
 
         private void Button_Calculate_Click(object sender, RoutedEventArgs e)
@@ -491,6 +495,8 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private async void Button_Test_Click(object sender, RoutedEventArgs e)
         {
+
+            Modify.WriteAdministrativeAreal2DNames(this, @"C:\Users\jakub\Downloads\GIS\AdministrativeAreal2D.txt");
             //CategoryTest();
 
             //CopyGISModelFiles_Cloud();
@@ -681,6 +687,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
+        
         private void Convert_ToFiles(int count = 10)
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
