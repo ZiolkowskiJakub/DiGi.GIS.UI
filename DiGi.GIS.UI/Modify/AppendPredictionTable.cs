@@ -9,7 +9,7 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
-        public static void AppendTable(Window owner)
+        public static void AppendPredictionTable(Window owner)
         {
             bool? result;
 
@@ -51,16 +51,25 @@ namespace DiGi.GIS.UI
                 return;
             }
 
-            TableConversionOptions tableConversionOptions = new TableConversionOptions()
+            PredictionTableConversionOptions predictionTableConversionOptions = new PredictionTableConversionOptions()
             {
                 IncludeModel = true,
                 IncludeStatistical = true,
                 IncludeYearBuilt = true,
                 YearBuiltOnly = true,
-                IncludeOrtoDatasComparison = true,
+                IncludeYearBuiltPredictions = true,
                 Years = new Range<int>(2008, DateTime.Now.Year),
                 StatisticalDirectory = directory_Statistical
             };
+
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Title = "Select Index Data File";
+            openFileDialog.Filter = "Index Data File (*.txt)|*.txt|All files (*.*)|*.*";
+            result = openFileDialog.ShowDialog();
+            if (result != null && result.HasValue && result.Value)
+            {
+                predictionTableConversionOptions.AdministrativeAreal2DsIndexDataFilePath = openFileDialog.FileName;
+            }
 
             string[] paths_Input = Directory.GetFiles(directory_GISModelFiles, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
@@ -72,7 +81,7 @@ namespace DiGi.GIS.UI
                 {
                     gISModelFile.Open();
 
-                    table = Convert.ToDiGi_Table(gISModelFile, tableConversionOptions: tableConversionOptions);
+                    table = Convert.ToDiGi_Table(gISModelFile, predictionTableConversionOptions: predictionTableConversionOptions);
                 }
 
                 if(table != null)

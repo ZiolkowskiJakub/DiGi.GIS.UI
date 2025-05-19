@@ -8,7 +8,7 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
-        public static bool WriteAdministrativeAreal2DNames(Window owner, string path)
+        public static bool WriteAdministrativeAreal2DsIndexData(Window owner, string path)
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
             bool? result = openFolderDialog.ShowDialog(owner);
@@ -30,7 +30,12 @@ namespace DiGi.GIS.UI
                 dictionary[path_Input] = null;
             }
 
-            Parallel.For(0, paths_Input.Length, i => 
+            ParallelOptions parallelOptions = new ParallelOptions()
+            {
+                MaxDegreeOfParallelism = GIS.Query.DefaultProcessorCount(0.5)
+            };
+
+            Parallel.For(0, paths_Input.Length, parallelOptions, i => 
             {
                 string path_Input = paths_Input[i];
 
@@ -54,15 +59,14 @@ namespace DiGi.GIS.UI
 
             administrativeAreal2Ds.Sort((x, y) => x.Name.CompareTo(y.Name));
 
-            List<string> values = new List<string>();
-            for(int i =0; i < administrativeAreal2Ds.Count; i++)
+            IndexDataFile indexDataFile = GIS.Create.IndexDataFile(administrativeAreal2Ds);
+            if(indexDataFile == null)
             {
-                values.Add(string.Join("/t", i, administrativeAreal2Ds[i].Reference, administrativeAreal2Ds[i].Name));
+                return false;
             }
 
-            File.WriteAllLines(path, values);
 
-            return true;
+            return indexDataFile.Write(path);
         }
     }
 }
