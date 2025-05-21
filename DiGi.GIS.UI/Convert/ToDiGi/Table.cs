@@ -559,19 +559,19 @@ namespace DiGi.GIS.UI
 
             Dictionary<string, Row> dictionary_Row = new Dictionary<string, Row>();
 
-            Func<string, int> updateColumn = new Func<string, int>(x =>
+            Func<string, Type, int> updateColumn = new Func<string, Type,int>((name, type) =>
             {
-                if (string.IsNullOrWhiteSpace(x))
+                if (string.IsNullOrWhiteSpace(name))
                 {
                     return -1;
                 }
 
-                if (result.TryGetColumn(x, out Column column))
+                if (result.TryGetColumn(name, out Column column))
                 {
                     return column.Index;
                 }
 
-                column = result.AddColumn(x, typeof(string));
+                column = result.AddColumn(name, type);
                 if (column == null)
                 {
                     return -1;
@@ -619,27 +619,58 @@ namespace DiGi.GIS.UI
                 }
             }
 
+            Dictionary<string, Building2DYearBuiltPredictions> dictionary_Building2DYearBuiltPredictions = null;
+            if (predictionTableConversionOptions.IncludeYearBuiltPredictions)
+            {
+                string directory = System.IO.Path.GetDirectoryName(path);
+
+                dictionary_Building2DYearBuiltPredictions = GIS.Query.Building2DYearBuiltPredictionsDictionary(directory, building2Ds.ConvertAll(x => x.Reference));
+            }
+
+            if (building2Ds != null && dictionary_Building2DYearBuiltPredictions != null)
+            {
+                for (int i = building2Ds.Count - 1; i >= 0; i--)
+                {
+                    if (!dictionary_Building2DYearBuiltPredictions.ContainsKey(building2Ds[i]?.Reference))
+                    {
+                        building2Ds.RemoveAt(i);
+                    }
+                }
+            }
+
             Dictionary<GuidReference, List<AdministrativeAreal2D>> dictionary = GIS.Query.AdministrativeAreal2DsDictionary<AdministrativeAreal2D>(gISModel, building2Ds);
 
             if (predictionTableConversionOptions.IncludeModel)
             {
                 if (building2Ds != null && building2Ds.Count != 0)
                 {
-                    int index_Reference = updateColumn.Invoke("Reference");
-                    int index_BuildingGeneralFunction = updateColumn.Invoke("Building General Function");
-                    int index_BuildingPhase = updateColumn.Invoke("Building Phase");
-                    int index_Storeys = updateColumn.Invoke("Storeys");
-                    int index_Area = updateColumn.Invoke("Area");
-                    int index_Location_X = updateColumn.Invoke("Location X");
-                    int index_Location_Y = updateColumn.Invoke("Location Y");
+                    int index_Reference = updateColumn.Invoke("Reference", typeof(string));
+                    int index_BuildingGeneralFunction = updateColumn.Invoke("Building General Function", typeof(int));
+                    int index_BuildingPhase = updateColumn.Invoke("Building Phase", typeof(int));
+                    int index_Storeys = updateColumn.Invoke("Storeys", typeof(int));
+                    int index_Area = updateColumn.Invoke("Area", typeof(double));
+                    int index_Location_X = updateColumn.Invoke("Location X", typeof(double));
+                    int index_Location_Y = updateColumn.Invoke("Location Y", typeof(double));
                     
-                    int index_Voivodeship = updateColumn.Invoke("Voivodeship");
-                    int index_County = updateColumn.Invoke("County");
-                    int index_Municipality = updateColumn.Invoke("Municipality");
-                    int index_Subdivision = updateColumn.Invoke("Subdivision");
+                    int index_Voivodeship = updateColumn.Invoke("Voivodeship", typeof(string));
+                    int index_County = updateColumn.Invoke("County", typeof(string));
+                    int index_Municipality = updateColumn.Invoke("Municipality", typeof(string));
+                    int index_Subdivision = updateColumn.Invoke("Subdivision", typeof(string));
                     
-                    int index_SubdivisionCalculatedOccupancy = updateColumn.Invoke("Subdivision Calculated Occupancy");
-                    int index_SubdivisionCalculatedOccupancyArea = updateColumn.Invoke("Subdivision Calculated Occupancy Area");
+                    int index_SubdivisionCalculatedOccupancy = updateColumn.Invoke("Subdivision Calculated Occupancy", typeof(double));
+                    int index_SubdivisionCalculatedOccupancyArea = updateColumn.Invoke("Subdivision Calculated Occupancy Area", typeof(double));
+
+                    int index_BoundingBox_X = updateColumn.Invoke("BoundingBox X", typeof(double));
+                    row.SetValue(index, yearBuiltPrediction.BoundingBox.GetCentroid().X);
+
+                    int index_BoundingBox_Y = updateColumn.Invoke("BoundingBox Y", typeof(double));
+                    row.SetValue(index, yearBuiltPrediction.BoundingBox.GetCentroid().Y);
+
+                    int index_BoundingBox_Width = updateColumn.Invoke("BoundingBox Width", typeof(double));
+                    row.SetValue(index, yearBuiltPrediction.BoundingBox.Width);
+
+                    int index_BoundingBox_Height = updateColumn.Invoke("BoundingBox Height", typeof(double));
+                    row.SetValue(index, yearBuiltPrediction.BoundingBox.Height);
 
                     foreach (Building2D building2D in building2Ds)
                     {
@@ -664,6 +695,12 @@ namespace DiGi.GIS.UI
                         string subdivision = null;
                         uint? subdivisionCalculatedOccupancy = null;
                         double? subdivisionCalculatedOccupancyArea = null;
+
+                        BoundingBox2D boundingBox2D = polygonalFace2D?.GetBoundingBox();
+                        double? boundingBox_X = boundingBox2D?.GetCentroid().X;
+                        double? boundingBox_Y = boundingBox2D?.GetCentroid().Y;
+                        double? boundingBox_Width = boundingBox2D?.Width;
+                        double? boundingBox_Height = boundingBox2D?.Height;
 
                         if (dictionary.TryGetValue(guidReference, out List<AdministrativeAreal2D> administrativeAreal2Ds) && administrativeAreal2Ds != null)
                         {
@@ -744,15 +781,20 @@ namespace DiGi.GIS.UI
                         row.SetValue(index_BuildingGeneralFunction, buildingGeneralFunction == null || !buildingGeneralFunction.HasValue ? -1 : ((int)buildingGeneralFunction.Value).ToString());
                         row.SetValue(index_BuildingPhase, buidlingPhase == null || !buidlingPhase.HasValue ? -1 : ((int)buidlingPhase.Value).ToString());
                         row.SetValue(index_Storeys, storeys.ToString());
-                        row.SetValue(index_Area, area == null || !area.HasValue ? null : Core.Query.Round(area.Value, Core.Constans.Tolerance.MacroDistance).ToString());
-                        row.SetValue(index_Location_X, location == null ? null : Core.Query.Round(location.X, Core.Constans.Tolerance.MacroDistance).ToString());
-                        row.SetValue(index_Location_Y, location == null ? null : Core.Query.Round(location.Y, Core.Constans.Tolerance.MacroDistance).ToString());
+                        row.SetValue(index_Area, area);
+                        row.SetValue(index_Location_X, location?.X);
+                        row.SetValue(index_Location_Y, location?.Y);
                         row.SetValue(index_Voivodeship, voivodeship);
                         row.SetValue(index_County, county);
                         row.SetValue(index_Municipality, municipality);
                         row.SetValue(index_Subdivision, subdivision);
                         row.SetValue(index_SubdivisionCalculatedOccupancy, subdivisionCalculatedOccupancy);
                         row.SetValue(index_SubdivisionCalculatedOccupancyArea, subdivisionCalculatedOccupancyArea);
+
+                        row.SetValue(index_BoundingBox_X, boundingBox_X);
+                        row.SetValue(index_BoundingBox_Y, boundingBox_Y);
+                        row.SetValue(index_BoundingBox_Width, boundingBox_Width);
+                        row.SetValue(index_BoundingBox_Height, boundingBox_Height);
 
                         dictionary_Row[reference] = row;
                     }
@@ -880,8 +922,8 @@ namespace DiGi.GIS.UI
                                                                     }
                                                                 }
 
-                                                                int index_Year = updateColumn.Invoke(string.Format("{0} {1}", name, year));
-                                                                row.SetValue(index_Year, value);
+                                                                int index_Year = updateColumn.Invoke(string.Format("{0} {1}", name, year), typeof(double));
+                                                                row.SetValue(index_Year, value == null || !value.HasValue ? null : value.Value);
                                                             }
                                                         }
                                                     }
@@ -896,57 +938,44 @@ namespace DiGi.GIS.UI
                 }
             }
 
-            if (predictionTableConversionOptions.IncludeYearBuiltPredictions)
+            if (dictionary_Building2DYearBuiltPredictions != null && dictionary_Building2DYearBuiltPredictions.Count != 0)
             {
                 Range<int> range_Years = predictionTableConversionOptions?.Years;
                 if(range_Years != null)
                 {
-                    string directory = System.IO.Path.GetDirectoryName(path);
-
-                    Dictionary<string, Building2DYearBuiltPredictions> dictionary_Building2DYearBuiltPredictions = GIS.Query.Building2DYearBuiltPredictionsDictionary(directory, references);
-                    if (dictionary_Building2DYearBuiltPredictions != null && dictionary_Building2DYearBuiltPredictions.Count != 0)
+                    foreach (KeyValuePair<string, Row> keyValuePair in dictionary_Row)
                     {
-                        foreach (KeyValuePair<string, Row> keyValuePair in dictionary_Row)
+                        if (!dictionary_Building2DYearBuiltPredictions.TryGetValue(keyValuePair.Key, out Building2DYearBuiltPredictions building2DYearBuiltPredictions) || building2DYearBuiltPredictions == null)
                         {
-                            if (!dictionary_Building2DYearBuiltPredictions.TryGetValue(keyValuePair.Key, out Building2DYearBuiltPredictions building2DYearBuiltPredictions) || building2DYearBuiltPredictions == null)
+                            continue;
+                        }
+
+                        Row row = keyValuePair.Value;
+
+                        for (int i = range_Years.Min; i <= range_Years.Max; i++)
+                        {
+                            YearBuiltPrediction yearBuiltPrediction = building2DYearBuiltPredictions.GetYearBuiltPrediction((ushort)i);
+                            if (yearBuiltPrediction == null)
                             {
                                 continue;
                             }
 
-                            List<ushort> years = building2DYearBuiltPredictions.Years;
-                            if(years == null || years.Count == 0)
-                            {
-                                continue;
-                            }
+                            int index = -1;
 
-                            Row row = keyValuePair.Value;
+                            index = updateColumn.Invoke(string.Format("Prediction Confidence {0}", i), typeof(double));
+                            row.SetValue(index, yearBuiltPrediction.Confidence);
 
-                            foreach (ushort year in years)
-                            {
-                                YearBuiltPrediction yearBuiltPrediction = building2DYearBuiltPredictions[year];
-                                if(yearBuiltPrediction == null)
-                                {
-                                    continue;
-                                }
+                            index = updateColumn.Invoke(string.Format("Prediction BoundingBox X {0}", i), typeof(double));
+                            row.SetValue(index, yearBuiltPrediction.BoundingBox.GetCentroid().X);
 
-                                int index = -1;
+                            index = updateColumn.Invoke(string.Format("Prediction BoundingBox Y {0}", i), typeof(double));
+                            row.SetValue(index, yearBuiltPrediction.BoundingBox.GetCentroid().Y);
 
-                                index = updateColumn.Invoke(string.Format("Prediction Confidence {0}", year));
-                                row.SetValue(index, yearBuiltPrediction.Confidence);
+                            index = updateColumn.Invoke(string.Format("Prediction BoundingBox Width {0}", i), typeof(double));
+                            row.SetValue(index, yearBuiltPrediction.BoundingBox.Width);
 
-                                index = updateColumn.Invoke(string.Format("Prediction BoundingBox X {0}", year));
-                                row.SetValue(index, yearBuiltPrediction.BoundingBox.GetCentroid().X);
-
-                                index = updateColumn.Invoke(string.Format("Prediction BoundingBox Y {0}", year));
-                                row.SetValue(index, yearBuiltPrediction.BoundingBox.GetCentroid().Y);
-
-                                index = updateColumn.Invoke(string.Format("Prediction BoundingBox Width {0}", year));
-                                row.SetValue(index, yearBuiltPrediction.BoundingBox.Width);
-
-                                index = updateColumn.Invoke(string.Format("Prediction BoundingBox Height {0}", year));
-                                row.SetValue(index, yearBuiltPrediction.BoundingBox.Height);
-
-                            }
+                            index = updateColumn.Invoke(string.Format("Prediction BoundingBox Height {0}", i), typeof(double));
+                            row.SetValue(index, yearBuiltPrediction.BoundingBox.Height);
                         }
                     }
                 }
@@ -954,7 +983,7 @@ namespace DiGi.GIS.UI
 
             if (dictionary_YearBuilt != null && dictionary_YearBuilt.Count != 0)
             {
-                int index_YearBuilt = updateColumn.Invoke("Year Built");
+                int index_YearBuilt = updateColumn.Invoke("Year Built", typeof(int));
 
                 foreach (KeyValuePair<string, int> keyValuePair in dictionary_YearBuilt)
                 {
@@ -967,6 +996,7 @@ namespace DiGi.GIS.UI
                 }
             }
 
+            IEnumerable<Column> columns = result.Columns;
             foreach (KeyValuePair<string, Row> keyValuePair in dictionary_Row)
             {
                 if (keyValuePair.Value == null)
@@ -974,7 +1004,41 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                result.AddRow(keyValuePair.Value);
+                Row row = result.AddRow(keyValuePair.Value);
+                if(row == null)
+                {
+                    continue;
+                }
+
+                if (row.Count != columns.Count())
+                {
+                    foreach(Column column in columns)
+                    {
+                        if(column.Type == typeof(string))
+                        {
+                            if (!row.TryGetValue(column.Index, out string value) || value == null)
+                            {
+                                row.SetValue(column.Index, "null");
+                            }
+                        }
+                        else if (column.Type == typeof(double))
+                        {
+                            if (!row.TryGetValue(column.Index, out double value))
+                            {
+                                row.SetValue(column.Index, 0.0);
+                            }
+                        }
+                        else if (column.Type == typeof(int))
+                        {
+                            if (!row.TryGetValue(column.Index, out int value))
+                            {
+                                row.SetValue(column.Index, -1);
+                            }
+                        }
+                    }
+
+                    result.AddRow(row, false);
+                }
             }
 
             return result;

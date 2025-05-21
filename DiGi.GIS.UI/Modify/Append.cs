@@ -3,13 +3,13 @@ using DiGi.YOLO.Classes;
 
 namespace DiGi.GIS.UI
 {
-    public static partial class Convert
+    public static partial class Modify
     {
-        public static Building2DYearBuiltPredictionsFile ToDiGi(this BoundingBoxResultFile boundingBoxResultFile, string path)
+        public static bool Append(this Building2DYearBuiltPredictionsFile building2DYearBuiltPredictionsFile, BoundingBoxResultFile boundingBoxResultFile)
         {
-            if(boundingBoxResultFile == null || string.IsNullOrWhiteSpace(path))
+            if(boundingBoxResultFile == null || building2DYearBuiltPredictionsFile == null)
             {
-                return null;
+                return false;
             }
 
             Dictionary<string, List<YearBuiltPrediction>> dictionary = new Dictionary<string, List<YearBuiltPrediction>>();
@@ -40,10 +40,11 @@ namespace DiGi.GIS.UI
                 yearBuiltPredictions.Add(YearBuiltPrediction);
             }
 
-            Building2DYearBuiltPredictionsFile result = new Building2DYearBuiltPredictionsFile(path);
+            bool result = false;
             foreach (KeyValuePair<string, List<YearBuiltPrediction>> keyValuePair in dictionary)
             {
-                result.AddValue(new Building2DYearBuiltPredictions(keyValuePair.Key, keyValuePair.Value));
+                building2DYearBuiltPredictionsFile.AddValue(new Building2DYearBuiltPredictions(keyValuePair.Key, keyValuePair.Value));
+                result = true;
             }
 
             return result;

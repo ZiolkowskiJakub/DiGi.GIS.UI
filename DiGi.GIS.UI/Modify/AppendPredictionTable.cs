@@ -29,7 +29,6 @@ namespace DiGi.GIS.UI
                 return;
             }
 
-
             openFolderDialog = new OpenFolderDialog();
             openFolderDialog.Title = "Select Statistical Data Directory";
             result = openFolderDialog.ShowDialog(owner);
