@@ -661,16 +661,9 @@ namespace DiGi.GIS.UI
                     int index_SubdivisionCalculatedOccupancyArea = updateColumn.Invoke("Subdivision Calculated Occupancy Area", typeof(double));
 
                     int index_BoundingBox_X = updateColumn.Invoke("BoundingBox X", typeof(double));
-                    row.SetValue(index, yearBuiltPrediction.BoundingBox.GetCentroid().X);
-
                     int index_BoundingBox_Y = updateColumn.Invoke("BoundingBox Y", typeof(double));
-                    row.SetValue(index, yearBuiltPrediction.BoundingBox.GetCentroid().Y);
-
                     int index_BoundingBox_Width = updateColumn.Invoke("BoundingBox Width", typeof(double));
-                    row.SetValue(index, yearBuiltPrediction.BoundingBox.Width);
-
                     int index_BoundingBox_Height = updateColumn.Invoke("BoundingBox Height", typeof(double));
-                    row.SetValue(index, yearBuiltPrediction.BoundingBox.Height);
 
                     foreach (Building2D building2D in building2Ds)
                     {
