@@ -136,7 +136,7 @@ namespace DiGi.GIS.UI
                 building2Ds = building2Ds.GetRange(range.Min, range.Max - range.Min);
             }
 
-            string directory_OrtoDatas = GIS.Query.OrtoDatasDirectory_Building2D(System.IO.Path.GetDirectoryName(path_GISModel));
+            string directory_OrtoDatas = GIS.Query.OrtoDatasDirectory_Building2D(Path.GetDirectoryName(path_GISModel));
 
             Dictionary<Core.Classes.GuidReference, OrtoDatas> dictionary = GIS.Query.OrtoDatasDictionary(directory_OrtoDatas, building2Ds);
 
