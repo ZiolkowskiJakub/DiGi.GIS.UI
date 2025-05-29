@@ -26,8 +26,9 @@
             <Button x:Name="Button_AppendVoTTModel" Content="Append VoTT Model" HorizontalAlignment="Center" Margin="0,306,0,0" VerticalAlignment="Top" Width="190" Click="Button_AppendVoTTModel_Click" Grid.ColumnSpan="2" Visibility="Visible" IsEnabled="False"/>
             <Button x:Name="Button_AppendPredictions" Content="Append Predictions" HorizontalAlignment="Center" Margin="0,333,0,0" VerticalAlignment="Top" Width="190" Click="Button_AppendPredictions_Click" Grid.ColumnSpan="2" Visibility="Visible"/>
             <Button x:Name="Button_AppendTable" Content="Append Table (Machine Learing)" HorizontalAlignment="Center" Margin="0,360,0,0" VerticalAlignment="Top" Width="190" Click="Button_AppendTable_Click" Grid.ColumnSpan="2" Visibility="Visible"/>
-            
-            
+            <Button x:Name="Button_AppendPredictionYearBuilts" Content="Append Prediction Year Builts" HorizontalAlignment="Center" Margin="0,387,0,0" VerticalAlignment="Top" Width="190" Click="Button_AppendPredictionYearBuilts_Click" Grid.ColumnSpan="2" Visibility="Visible"/>
+
+
             <Button x:Name="Button_Test" Content="Test" HorizontalAlignment="Center" Margin="0,441,0,0" VerticalAlignment="Top" Width="190" Click="Button_Test_Click" Grid.ColumnSpan="2" Visibility="Visible"/>
 
             <Button x:Name="Button_YearBuilts" Content="Year Builts" HorizontalAlignment="Center" Margin="0,469,0,0" VerticalAlignment="Top" Width="190" Click="Button_YearBuilts_Click" Grid.ColumnSpan="2"/>

@@ -364,6 +364,21 @@ namespace DiGi.GIS.UI.Application.Windows
             MessageBox.Show("Finished!");
         }
 
+        private void AppendPredictionYearBuilts()
+        {
+            bool includeOrtoRange = false;
+
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Appending Prediction Year Builts...";
+
+            Modify.AppendPredictionYearBuilts(this);
+
+            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Appending Prediction Year Builts! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
+
         private void AppendTable()
         {
             DateTime dateTime = DateTime.Now;
@@ -417,7 +432,6 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = string.Format("Done Appending YOLO Model! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
-
         private void Button_AppendPredictions_Click(object sender, RoutedEventArgs e)
         {
             DateTime dateTime = DateTime.Now;
@@ -430,6 +444,11 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = string.Format("Done Appending Predictions! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
 
+        }
+
+        private void Button_AppendPredictionYearBuilts_Click(object sender, RoutedEventArgs e)
+        {
+            AppendPredictionYearBuilts();
         }
 
         private void Button_AppendTable_Click(object sender, RoutedEventArgs e)
