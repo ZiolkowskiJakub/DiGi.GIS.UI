@@ -1,6 +1,8 @@
 ﻿using DiGi.BDL.Classes;
 using DiGi.BDL.Enums;
 using DiGi.Core.Classes;
+using DiGi.Core.Interfaces;
+using DiGi.Geometry.Core.Enums;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Constans;
 using DiGi.GIS.Emgu.CV.Classes;
@@ -529,56 +531,98 @@ namespace DiGi.GIS.UI.Application.Windows
             //    IEnumerable<StatisticalDataCollection> statisticalDataCollection = statisticalDataCollectionFile.Values;
             //}
 
-            List<Building2D> building2Ds = null;
+            //List<Building2D> building2Ds = null;
 
-            string directory = @"C:\Users\jakub\Downloads\GIS\0201_GML\";
+            //string directory = @"C:\Users\jakub\Downloads\GIS\0201_GML\";
 
-            string path = System.IO.Path.Combine(directory, "0201_GML.gmf");
-            using (GISModelFile gISModelFile = new GISModelFile(path))
-            {
-                gISModelFile.Open();
+            //string path = System.IO.Path.Combine(directory, "0201_GML.gmf");
+            //using (GISModelFile gISModelFile = new GISModelFile(path))
+            //{
+            //    gISModelFile.Open();
 
-                GISModel gISModel = gISModelFile.Value;
+            //    GISModel gISModel = gISModelFile.Value;
 
-                building2Ds = gISModel.GetObjects<Building2D>();
-            }
+            //    building2Ds = gISModel.GetObjects<Building2D>();
+            //}
 
-            if(building2Ds == null)
+            //if(building2Ds == null)
+            //{
+            //    return;
+            //}
+
+            //OrtoDatasComparisonOptions ortoDatasComparisonOptions = new OrtoDatasComparisonOptions()
+            //{
+            //    OverrideExisting = true
+            //};
+
+            //foreach (Building2D building2D in building2Ds)
+            //{
+            //    string reference = building2D.Reference;
+
+            //    Dictionary<string, OrtoDatasComparison> dictionary;
+            //    OrtoDatasComparison ortoDatasComparison;
+
+            //    dictionary = Emgu.CV.Query.OrtoDatasComparisonDictionary(directory, [reference]);
+            //    if(dictionary == null || !dictionary.TryGetValue(reference, out ortoDatasComparison))
+            //    {
+            //        continue;
+            //    }
+
+            //    HashSet<string> references = await Modify.CalculateOrtoDatasComparisons(directory, ortoDatasComparisonOptions, [reference]);
+            //    if(references == null || !references.Contains(reference))
+            //    {
+            //        continue;
+            //    }
+
+            //    dictionary = Emgu.CV.Query.OrtoDatasComparisonDictionary(directory, [reference]);
+            //    if (dictionary == null || !dictionary.TryGetValue(reference, out ortoDatasComparison))
+            //    {
+            //        continue;
+            //    }
+
+            //}
+
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
             {
                 return;
             }
 
-            OrtoDatasComparisonOptions ortoDatasComparisonOptions = new OrtoDatasComparisonOptions()
+            string[] paths_Input = Directory.GetFiles(openFolderDialog.FolderName, "*." + FileExtension.YearBuiltDataFile, SearchOption.AllDirectories);
+            for (int i = 0; i < paths_Input.Length; i++)
             {
-                OverrideExisting = true
-            };
+                string path = paths_Input[i];
 
-            foreach (Building2D building2D in building2Ds)
-            {
-                string reference = building2D.Reference;
+                //File.Copy(path, path + ".bak", true);
 
-                Dictionary<string, OrtoDatasComparison> dictionary;
-                OrtoDatasComparison ortoDatasComparison;
-
-                dictionary = Emgu.CV.Query.OrtoDatasComparisonDictionary(directory, [reference]);
-                if(dictionary == null || !dictionary.TryGetValue(reference, out ortoDatasComparison))
+                using (YearBuiltDataFile yearBuiltDataFile = new YearBuiltDataFile(path))
                 {
-                    continue;
-                }
+                    IEnumerable<YearBuiltData> yearBuiltDatas =  yearBuiltDataFile.GetValues<YearBuiltData>();
+                    if(yearBuiltDatas == null || yearBuiltDatas.Count() == 0)
+                    {
+                        continue;
+                    }
 
-                HashSet<string> references = await Modify.CalculateOrtoDatasComparisons(directory, ortoDatasComparisonOptions, [reference]);
-                if(references == null || !references.Contains(reference))
-                {
-                    continue;
-                }
+                    foreach(YearBuiltData yearBuiltData in yearBuiltDatas)
+                    {
+                        //yearBuiltData.Add(new UserYearBuilt(yearBuiltData.Year));
 
-                dictionary = Emgu.CV.Query.OrtoDatasComparisonDictionary(directory, [reference]);
-                if (dictionary == null || !dictionary.TryGetValue(reference, out ortoDatasComparison))
-                {
-                    continue;
+                        //if (yearBuiltData.Year.Equals(yearBuiltData.GetUserYearBuilt().Year))
+                        //{
+                        //    continue;
+                        //}
+
+                        yearBuiltDataFile.AddValue(yearBuiltData);
+                    }
+
+                    yearBuiltDataFile.Save();
+
                 }
 
             }
+
+
         }
 
         private void Button_ToDiGiGISModelFiles_Click(object sender, RoutedEventArgs e)

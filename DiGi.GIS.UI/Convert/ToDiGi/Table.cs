@@ -5,6 +5,7 @@ using DiGi.Geometry.Planar.Classes;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Emgu.CV.Classes;
 using DiGi.GIS.Enums;
+using DiGi.GIS.Interfaces;
 using System.IO;
 
 namespace DiGi.GIS.UI
@@ -78,7 +79,18 @@ namespace DiGi.GIS.UI
 
                     foreach (KeyValuePair<string, YearBuiltData> keyValuePair in dictionary_YearBuiltData)
                     {
-                        dictionary_YearBuilt[keyValuePair.Key] = keyValuePair.Value.Year;
+                        IYearBuilt yearBuilt = keyValuePair.Value.GetUserYearBuilt();
+                        //if(yearBuilt == null)
+                        //{
+                        //    yearBuilt = keyValuePair.Value.GetPredictedYearBuilt();
+                        //}
+
+                        if(yearBuilt == null)
+                        {
+                            continue;
+                        }
+
+                        dictionary_YearBuilt[keyValuePair.Key] = yearBuilt.Year;
                     }
                 }
 
@@ -592,7 +604,18 @@ namespace DiGi.GIS.UI
 
                     foreach (KeyValuePair<string, YearBuiltData> keyValuePair in dictionary_YearBuiltData)
                     {
-                        dictionary_YearBuilt[keyValuePair.Key] = keyValuePair.Value.Year;
+                        IYearBuilt yearBuilt = keyValuePair.Value.GetUserYearBuilt();
+                        //if(yearBuilt == null)
+                        //{
+                        //    yearBuilt = keyValuePair.Value.GetPredictedYearBuilt();
+                        //}
+
+                        if (yearBuilt == null)
+                        {
+                            continue;
+                        }
+
+                        dictionary_YearBuilt[keyValuePair.Key] = yearBuilt.Year;
                     }
                 }
 

@@ -73,7 +73,7 @@ namespace DiGi.GIS.UI.Controls
                 return;
             }
 
-            short? year = GIS.Query.YearBuilt(gISModelFile, building2D);
+            short? year = GIS.Query.UserYearBuilt(gISModelFile, building2D);
 
             SortedDictionary<short, OrtoDataControl> dictionary = new SortedDictionary<short, OrtoDataControl>();
 
@@ -146,7 +146,7 @@ namespace DiGi.GIS.UI.Controls
             short? year = active ? null : ortoDataControl.Year;
             ortoDataControl.Active = !active;
 
-            GIS.Modify.UpdateYearBuilt(gISModelFile, Building2D, year);
+            GIS.Modify.UpdateUserYearBuilt(gISModelFile, Building2D, year);
 
             //ListBox_Main.Focus();
             e.Handled = true;

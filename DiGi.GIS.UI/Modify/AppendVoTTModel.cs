@@ -78,7 +78,7 @@ namespace DiGi.GIS.UI
                     {
                         foreach(Building2D building2D in building2Ds)
                         {
-                            short? yearBuilt = gISModelFile.YearBuilt(building2D);
+                            short? yearBuilt = gISModelFile.UserYearBuilt(building2D);
                             if(yearBuilt == null || !yearBuilt.HasValue)
                             {
                                 continue;
@@ -237,7 +237,7 @@ namespace DiGi.GIS.UI
                     {
                         foreach (Building2D building2D in building2Ds)
                         {
-                            short? yearBuilt = gISModelFile.YearBuilt(building2D);
+                            short? yearBuilt = gISModelFile.UserYearBuilt(building2D);
                             if (yearBuilt == null || !yearBuilt.HasValue)
                             {
                                 continue;
