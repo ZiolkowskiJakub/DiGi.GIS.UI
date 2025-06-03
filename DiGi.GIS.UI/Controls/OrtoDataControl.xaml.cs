@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
@@ -9,6 +10,9 @@ namespace DiGi.GIS.UI.Controls
     /// </summary>
     public partial class OrtoDataControl : UserControl
     {
+        private short year;
+        private short? predictedYear;
+        
         public OrtoDataControl()
         {
             InitializeComponent();
@@ -31,12 +35,26 @@ namespace DiGi.GIS.UI.Controls
         {
             get
             {
-                return GetYear();
+                return year;
             }
 
             set
             {
-                SetYear(value);
+                year = value;
+                SetText();
+            }
+        }
+
+        public short? PredictedYear
+        {
+            get
+            {
+                return predictedYear;
+            }
+            set
+            {
+                predictedYear = value;
+                SetText();
             }
         }
 
@@ -63,29 +81,19 @@ namespace DiGi.GIS.UI.Controls
         {
             return Image_Main.Source as BitmapImage;
         }
-        
-        private bool SetYear(int year)
+
+        private void SetText()
         {
-            TextBlock_Main.Text = year > 0 ? year.ToString() : null;
-
-            return !string.IsNullOrWhiteSpace(TextBlock_Main.Text);
-        }
-
-        private short GetYear()
-        {
-            string value = TextBlock_Main.Text;
-            if(string.IsNullOrWhiteSpace(value))
+            if(predictedYear == null || !predictedYear.HasValue)
             {
-                return -1;
+                TextBlock_Main.Text = year.ToString();
+                TextBlock_Main.FontWeight = FontWeights.Normal;
             }
-
-            if(!short.TryParse(value, out short result))
+            else 
             {
-                return -1;
+                TextBlock_Main.Text = year.Equals(predictedYear.Value) ? year.ToString() : string.Format("{0} ({1})", year, predictedYear);
+                TextBlock_Main.FontWeight = FontWeights.Bold;
             }
-
-            return result;
-
         }
 
         private void UserControl_PreviewMouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)

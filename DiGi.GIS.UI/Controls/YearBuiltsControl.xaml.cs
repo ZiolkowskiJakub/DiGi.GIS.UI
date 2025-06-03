@@ -73,7 +73,10 @@ namespace DiGi.GIS.UI.Controls
                 return;
             }
 
-            short? year = GIS.Query.UserYearBuilt(gISModelFile, building2D);
+            short? userYear = GIS.Query.UserYearBuilt(gISModelFile, building2D);
+
+            //TODO: Implement predicted year
+            short? predictedYear = GIS.Query.LatestPredictedYearBuilt(gISModelFile, building2D);
 
             SortedDictionary<short, OrtoDataControl> dictionary = new SortedDictionary<short, OrtoDataControl>();
 
@@ -88,7 +91,7 @@ namespace DiGi.GIS.UI.Controls
                     Year = year_Temp,
                     BitmapImage = ortoData.BitmapImage(),
                     Tag = ortoData,
-                    Active = year_Temp == year,
+                    Active = year_Temp == userYear,
                     Width = 300,
                     Height = 300,
                     Margin = new System.Windows.Thickness(5, 5, 5, 5),
@@ -108,7 +111,7 @@ namespace DiGi.GIS.UI.Controls
                     Year = max,
                     BitmapImage = null,
                     Tag = null,
-                    Active = max == year,
+                    Active = max == userYear,
                     Width = 300,
                     Height = 300,
                     Margin = new System.Windows.Thickness(5, 5, 5, 5),
@@ -124,6 +127,49 @@ namespace DiGi.GIS.UI.Controls
             foreach (OrtoDataControl ortoDataControl_Temp in dictionary.Values)
             {
                 WrapPanel_Main.Children.Add(ortoDataControl_Temp);
+            }
+
+            if(predictedYear != null && predictedYear.HasValue && dictionary.Count !=0)
+            {
+                List<short> years = dictionary.Keys.ToList();
+                if(years.Count == 1)
+                {
+                    dictionary.First().Value.PredictedYear = predictedYear.Value;
+                }
+
+                years.Sort();
+
+                if(years.First() >= predictedYear.Value)
+                {
+                    dictionary[years.First()].PredictedYear = predictedYear.Value;
+                }
+                else if (years.Last() <= predictedYear.Value)
+                {
+                    dictionary[years.Last()].PredictedYear = predictedYear.Value;
+                }
+                else
+                {
+                    for (int i = 0; i < years.Count - 1; i++)
+                    {
+                        if (years[i].Equals(predictedYear.Value))
+                        {
+                            dictionary[years[i]].PredictedYear = predictedYear.Value;
+                            break;
+                        }
+                        else if(years[i] < predictedYear.Value && years[i + 1] > predictedYear.Value)
+                        {
+                            if(predictedYear.Value - years[i] > years[i + 1] - predictedYear.Value)
+                            {
+                                dictionary[years[i + 1]].PredictedYear = predictedYear.Value;
+                            }
+                            else
+                            {
+                                dictionary[years[i]].PredictedYear = predictedYear.Value;
+                            }
+                            break;
+                        }
+                    }
+                }
             }
         }
 
