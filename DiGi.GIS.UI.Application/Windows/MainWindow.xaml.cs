@@ -1,8 +1,7 @@
-﻿using DiGi.BDL.Classes;
+﻿using DiGi.Analytical.Building.Classes;
+using DiGi.BDL.Classes;
 using DiGi.BDL.Enums;
 using DiGi.Core.Classes;
-using DiGi.Core.Interfaces;
-using DiGi.Geometry.Core.Enums;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Constans;
 using DiGi.GIS.Emgu.CV.Classes;
@@ -530,6 +529,40 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private async void Button_Test_Click(object sender, RoutedEventArgs e)
         {
+            List<BuildingModel> buildingModels = Create.BuildingModels(this);
+
+
+            //OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            //bool? result = openFolderDialog.ShowDialog(this);
+            //if (result == null || !result.HasValue || !result.Value)
+            //{
+            //    return;
+            //}
+
+            //string[] paths = Directory.GetFiles(openFolderDialog.FolderName, "*.zip");
+            //foreach(string path in paths)
+            //{
+            //    string fileName = System.IO.Path.GetFileNameWithoutExtension(path);
+            //    if(!fileName.EndsWith("_gml"))
+            //    {
+            //        continue;
+            //    }
+
+            //    fileName = fileName.Substring(0, fileName.Length - 4);
+
+            //    string path_New = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path), fileName + System.IO.Path.GetExtension(path));
+            //    if(File.Exists(path_New))
+            //    {
+            //        continue;
+            //    }
+
+            //    File.Copy(path, path_New, true);
+            //    File.Delete(path);
+            //}
+
+
+            //HashSet<string> paths = await Modify.Download3DModels(this);
+
             //WriteImages();
 
             //Modify.WriteAdministrativeAreal2DNames(this, @"C:\Users\jakub\Downloads\GIS\AdministrativeAreal2D.txt");
@@ -601,45 +634,45 @@ namespace DiGi.GIS.UI.Application.Windows
 
             //}
 
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            bool? result = openFolderDialog.ShowDialog(this);
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
+            //OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            //bool? result = openFolderDialog.ShowDialog(this);
+            //if (result == null || !result.HasValue || !result.Value)
+            //{
+            //    return;
+            //}
 
-            string[] paths_Input = Directory.GetFiles(openFolderDialog.FolderName, "*." + FileExtension.YearBuiltDataFile, SearchOption.AllDirectories);
-            for (int i = 0; i < paths_Input.Length; i++)
-            {
-                string path = paths_Input[i];
+            //string[] paths_Input = Directory.GetFiles(openFolderDialog.FolderName, "*." + FileExtension.YearBuiltDataFile, SearchOption.AllDirectories);
+            //for (int i = 0; i < paths_Input.Length; i++)
+            //{
+            //    string path = paths_Input[i];
 
-                //File.Copy(path, path + ".bak", true);
+            //    //File.Copy(path, path + ".bak", true);
 
-                using (YearBuiltDataFile yearBuiltDataFile = new YearBuiltDataFile(path))
-                {
-                    IEnumerable<YearBuiltData> yearBuiltDatas =  yearBuiltDataFile.GetValues<YearBuiltData>();
-                    if(yearBuiltDatas == null || yearBuiltDatas.Count() == 0)
-                    {
-                        continue;
-                    }
+            //    using (YearBuiltDataFile yearBuiltDataFile = new YearBuiltDataFile(path))
+            //    {
+            //        IEnumerable<YearBuiltData> yearBuiltDatas =  yearBuiltDataFile.GetValues<YearBuiltData>();
+            //        if(yearBuiltDatas == null || yearBuiltDatas.Count() == 0)
+            //        {
+            //            continue;
+            //        }
 
-                    foreach(YearBuiltData yearBuiltData in yearBuiltDatas)
-                    {
-                        //yearBuiltData.Add(new UserYearBuilt(yearBuiltData.Year));
+            //        foreach(YearBuiltData yearBuiltData in yearBuiltDatas)
+            //        {
+            //            //yearBuiltData.Add(new UserYearBuilt(yearBuiltData.Year));
 
-                        //if (yearBuiltData.Year.Equals(yearBuiltData.GetUserYearBuilt().Year))
-                        //{
-                        //    continue;
-                        //}
+            //            //if (yearBuiltData.Year.Equals(yearBuiltData.GetUserYearBuilt().Year))
+            //            //{
+            //            //    continue;
+            //            //}
 
-                        yearBuiltDataFile.AddValue(yearBuiltData);
-                    }
+            //            yearBuiltDataFile.AddValue(yearBuiltData);
+            //        }
 
-                    yearBuiltDataFile.Save();
+            //        yearBuiltDataFile.Save();
 
-                }
+            //    }
 
-            }
+            //}
 
 
         }

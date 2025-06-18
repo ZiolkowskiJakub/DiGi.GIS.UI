@@ -1,10 +1,10 @@
-﻿using DiGi.Geometry.Planar.Classes;
+﻿using DiGi.Core;
+using DiGi.Geometry.Planar;
+using DiGi.Geometry.Planar.Classes;
 using DiGi.GIS.Classes;
 using System.Drawing;
 using System.IO;
 using System.Windows.Media.Imaging;
-using DiGi.Geometry.Planar;
-using DiGi.Core;
 
 namespace DiGi.GIS.UI
 {

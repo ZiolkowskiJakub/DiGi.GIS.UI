@@ -1,11 +1,11 @@
-﻿using System.IO;
-using Microsoft.Win32;
-using System.Windows;
+﻿using DiGi.Geometry.Planar.Classes;
 using DiGi.GIS.Classes;
-using System.Windows.Media.Imaging;
-using DiGi.Geometry.Planar.Classes;
 using DiGi.GIS.UI.Classes;
 using DiGi.YOLO.Classes;
+using Microsoft.Win32;
+using System.IO;
+using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace DiGi.GIS.UI
 {

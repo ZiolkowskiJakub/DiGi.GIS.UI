@@ -12,20 +12,31 @@
 
   <ItemGroup>
     <PackageReference Include="NetTopologySuite" Version="2.6.0" />
-    <PackageReference Include="System.Drawing.Common" Version="9.0.5" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.6" />
+    <PackageReference Include="System.Text.Json" Version="9.0.6" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\DiGi.GIS.Analytical\DiGi.GIS.Analytical\DiGi.GIS.Analytical.csproj" />
     <ProjectReference Include="..\..\DiGi.GIS.Emgu.CV\DiGi.GIS.Emgu.CV\DiGi.GIS.Emgu.CV.csproj" />
     <ProjectReference Include="..\..\DiGi.GIS\DiGi.GIS\DiGi.GIS.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="DiGi.Analytical">
+      <HintPath>..\..\DiGi.Analytical\bin\DiGi.Analytical.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.Analytical.Building">
+      <HintPath>..\..\DiGi.Analytical\bin\DiGi.Analytical.Building.dll</HintPath>
+    </Reference>
     <Reference Include="DiGi.BDL">
       <HintPath>..\..\DiGi.BDL\bin\DiGi.BDL.dll</HintPath>
     </Reference>
     <Reference Include="DiGi.BDOT10k">
       <HintPath>..\..\DiGi.BDOT10k\bin\DiGi.BDOT10k.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.CityGML">
+      <HintPath>..\..\DiGi.CityGML\bin\DiGi.CityGML.dll</HintPath>
     </Reference>
     <Reference Include="DiGi.Core">
       <HintPath>..\..\DiGi.Core\bin\DiGi.Core.dll</HintPath>
@@ -36,6 +47,9 @@
     <Reference Include="DiGi.Core.IO">
       <HintPath>..\..\DiGi.Core\bin\DiGi.Core.IO.dll</HintPath>
     </Reference>
+    <Reference Include="DiGi.Core.Parameter">
+      <HintPath>..\..\DiGi.Core\bin\DiGi.Core.Parameter.dll</HintPath>
+    </Reference>
     <Reference Include="DiGi.Core.Relation">
       <HintPath>..\..\DiGi.Core\bin\DiGi.Core.Relation.dll</HintPath>
     </Reference>
@@ -44,6 +58,12 @@
     </Reference>
     <Reference Include="DiGi.Geometry.Drawing">
       <HintPath>..\..\DiGi.Geometry\bin\DiGi.Geometry.Drawing.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.Geometry.Object">
+      <HintPath>..\..\DiGi.Geometry\bin\DiGi.Geometry.Object.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.GML">
+      <HintPath>..\..\DiGi.GML\bin\DiGi.GML.dll</HintPath>
     </Reference>
     <Reference Include="DiGi.UI.WPF.Core">
       <HintPath>..\..\DiGi.UI.WPF\bin\DiGi.UI.WPF.Core.dll</HintPath>

@@ -1,7 +1,7 @@
-﻿using DiGi.GIS.Classes;
-using Microsoft.Win32;
+﻿using DiGi.BDL.Classes;
+using DiGi.GIS.Classes;
 using DiGi.GIS.Constans;
-using DiGi.BDL.Classes;
+using Microsoft.Win32;
 
 namespace DiGi.GIS.UI
 {
