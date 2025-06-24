@@ -1,7 +1,9 @@
 ﻿using DiGi.Analytical.Building.Classes;
 using DiGi.BDL.Classes;
 using DiGi.BDL.Enums;
+using DiGi.Core;
 using DiGi.Core.Classes;
+using DiGi.Geometry.Spatial.Classes;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Constans;
 using DiGi.GIS.Emgu.CV.Classes;
@@ -363,6 +365,19 @@ namespace DiGi.GIS.UI.Application.Windows
             MessageBox.Show("Finished!");
         }
 
+        private void AppendBuildingModels()
+        {
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Append Building Models...";
+
+            Modify.AppendBuildingModels(this);
+
+            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Appending! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
+
         private void AppendPredictionYearBuilts()
         {
             bool includeOrtoRange = false;
@@ -431,6 +446,12 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = string.Format("Done Appending YOLO Model! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
+        
+        private void Button_AppendBuildingModels_Click(object sender, RoutedEventArgs e)
+        {
+            AppendBuildingModels();
+        }
+
         private void Button_AppendPredictions_Click(object sender, RoutedEventArgs e)
         {
             DateTime dateTime = DateTime.Now;
@@ -529,7 +550,87 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private async void Button_Test_Click(object sender, RoutedEventArgs e)
         {
-            List<BuildingModel> buildingModels = Create.BuildingModels(this);
+            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string[] paths_GISModel = Directory.GetFiles(openFolderDialog.FolderName, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
+            for (int i = 0; i < paths_GISModel.Length; i++)
+            {
+                string path_GISModel = paths_GISModel[i];
+
+                string path_BuidlingModelsFile = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path_GISModel), System.IO.Path.GetFileNameWithoutExtension(path_GISModel) + "." + Analytical.Constans.FileExtension.BuildingModelsFile);
+
+                if(!File.Exists(path_BuidlingModelsFile))
+                {
+                    continue;
+                }
+
+                List<Building2D> building2Ds = null;
+                using (GISModelFile gISModelFile = new GISModelFile(path_GISModel))
+                {
+                    gISModelFile.Open();
+
+                    building2Ds = gISModelFile?.Value?.GetObjects<Building2D>();
+                }
+
+                if(building2Ds == null || building2Ds.Count == 0)
+                {
+                    continue;
+                }
+
+                List<Building2D> building2Ds_Invalid = new List<Building2D>();
+
+                Dictionary<Analytical.Enums.LOD, List<BuildingModel>> dictionary = new Dictionary<Analytical.Enums.LOD, List<BuildingModel>>();
+                using (BuildingModelsFile buildingModelsFile = new BuildingModelsFile(path_BuidlingModelsFile))
+                {
+                    buildingModelsFile.Open();
+
+                    foreach(Building2D building2D in building2Ds)
+                    {
+                        UniqueReference uniqueReference = BuildingModelsFile.GetUniqueReference(building2D?.Reference);
+                        if(uniqueReference == null)
+                        {
+                            continue;
+                        }
+
+                        BuildingModel buildingModel = buildingModelsFile.GetValue<BuildingModel>(uniqueReference);
+                        if(buildingModel == null)
+                        {
+                            building2Ds_Invalid.Add(building2D);
+                        }
+
+                        if (!buildingModel.TryGetValue(Analytical.Enums.BuildingModelParameter.LOD, out Analytical.Enums.LOD lOD, new Core.Parameter.Classes.GetValueSettings(true, false)))
+                        {
+                            lOD = Analytical.Enums.LOD.Undefined;
+                        }
+
+                        if (!dictionary.TryGetValue(lOD, out List<BuildingModel> buildingModels))
+                        {
+                            buildingModels = new List<BuildingModel>();
+                            dictionary[lOD] = buildingModels;
+                        }
+
+                        buildingModels.Add(buildingModel);
+
+                        Point3D point3D = GIS.Convert.ToEPSG4326(building2D.PolygonalFace2D.ExternalEdge.GetInternalPoint());
+
+                    }
+
+                }
+            }
+
+
+
+
+
+
+
+
+            //List<BuildingModel> buildingModels = Create.BuildingModels(this);
 
 
             //OpenFolderDialog openFolderDialog = new OpenFolderDialog();

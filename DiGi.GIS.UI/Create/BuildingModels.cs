@@ -8,7 +8,7 @@ namespace DiGi.GIS.UI
 {
     public static partial class Create
     {
-        public static List<BuildingModel> BuildingModels(this Window owner)
+        public static Dictionary<string, List<BuildingModel>> BuildingModels(this Window owner)
         {
             OpenFolderDialog openFolderDialog;
             bool? dialogResult;
@@ -47,9 +47,9 @@ namespace DiGi.GIS.UI
                 return null;
             }
 
-            List<BuildingModel> result = new List<BuildingModel>();
+            Dictionary<string, List<BuildingModel>> result = new Dictionary<string, List<BuildingModel>>();
             foreach (string path_GISModel in paths_GISModel)
-            {
+            {              
                 using (GISModelFile gISModelFile = new GISModelFile(path_GISModel))
                 {
                     gISModelFile.Open();
@@ -57,7 +57,7 @@ namespace DiGi.GIS.UI
                     List<BuildingModel> buildingModels = Analytical.Create.BuildingModels(gISModelFile, directory_CityGML);
                     if(buildingModels != null)
                     {
-                        result.AddRange(buildingModels);
+                        result[path_GISModel] = buildingModels;
                     }
                 }
             }
