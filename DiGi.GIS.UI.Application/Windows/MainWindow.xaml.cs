@@ -3,6 +3,8 @@ using DiGi.BDL.Classes;
 using DiGi.BDL.Enums;
 using DiGi.Core;
 using DiGi.Core.Classes;
+using DiGi.EPW.Classes;
+using DiGi.Geometry.Planar;
 using DiGi.Geometry.Spatial.Classes;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Constans;
@@ -550,8 +552,22 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private async void Button_Test_Click(object sender, RoutedEventArgs e)
         {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            bool? result = openFolderDialog.ShowDialog(this);
+            OpenFolderDialog openFolderDialog;
+            bool? result;
+
+            openFolderDialog = new OpenFolderDialog();
+            openFolderDialog.Title = "Select EPW files directory";
+            result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            Dictionary<string, EPWFile> dictionary_EPWFile =  EPW.Create.EPWFiles(openFolderDialog.FolderName, SearchOption.AllDirectories);
+
+            openFolderDialog = new OpenFolderDialog();
+            openFolderDialog.Title = "Select GISModel directory";
+            result = openFolderDialog.ShowDialog(this);
             if (result == null || !result.HasValue || !result.Value)
             {
                 return;
@@ -582,45 +598,53 @@ namespace DiGi.GIS.UI.Application.Windows
                     continue;
                 }
 
+                if(dictionary_EPWFile != null)
+                {
+                    foreach (Building2D building2D in building2Ds)
+                    {
+                        EPWFile ePWFile = GIS.Query.EPWFile(building2D.PolygonalFace2D.Centroid(), dictionary_EPWFile.Values, out double distance);
+                    }
+                }
+
                 List<Building2D> building2Ds_Invalid = new List<Building2D>();
 
-                Dictionary<Analytical.Enums.LOD, List<BuildingModel>> dictionary = new Dictionary<Analytical.Enums.LOD, List<BuildingModel>>();
-                using (BuildingModelsFile buildingModelsFile = new BuildingModelsFile(path_BuidlingModelsFile))
-                {
-                    buildingModelsFile.Open();
+                //Dictionary<Analytical.Enums.LOD, List<BuildingModel>> dictionary = new Dictionary<Analytical.Enums.LOD, List<BuildingModel>>();
+                //using (BuildingModelsFile buildingModelsFile = new BuildingModelsFile(path_BuidlingModelsFile))
+                //{
+                //    buildingModelsFile.Open();
 
-                    foreach(Building2D building2D in building2Ds)
-                    {
-                        UniqueReference uniqueReference = BuildingModelsFile.GetUniqueReference(building2D?.Reference);
-                        if(uniqueReference == null)
-                        {
-                            continue;
-                        }
+                //    foreach(Building2D building2D in building2Ds)
+                //    {
+                //        UniqueReference uniqueReference = BuildingModelsFile.GetUniqueReference(building2D?.Reference);
+                //        if(uniqueReference == null)
+                //        {
+                //            continue;
+                //        }
 
-                        BuildingModel buildingModel = buildingModelsFile.GetValue<BuildingModel>(uniqueReference);
-                        if(buildingModel == null)
-                        {
-                            building2Ds_Invalid.Add(building2D);
-                        }
+                //        BuildingModel buildingModel = buildingModelsFile.GetValue<BuildingModel>(uniqueReference);
+                //        if(buildingModel == null)
+                //        {
+                //            building2Ds_Invalid.Add(building2D);
+                //        }
 
-                        if (!buildingModel.TryGetValue(Analytical.Enums.BuildingModelParameter.LOD, out Analytical.Enums.LOD lOD, new Core.Parameter.Classes.GetValueSettings(true, false)))
-                        {
-                            lOD = Analytical.Enums.LOD.Undefined;
-                        }
+                //        if (!buildingModel.TryGetValue(Analytical.Enums.BuildingModelParameter.LOD, out Analytical.Enums.LOD lOD, new Core.Parameter.Classes.GetValueSettings(true, false)))
+                //        {
+                //            lOD = Analytical.Enums.LOD.Undefined;
+                //        }
 
-                        if (!dictionary.TryGetValue(lOD, out List<BuildingModel> buildingModels))
-                        {
-                            buildingModels = new List<BuildingModel>();
-                            dictionary[lOD] = buildingModels;
-                        }
+                //        if (!dictionary.TryGetValue(lOD, out List<BuildingModel> buildingModels))
+                //        {
+                //            buildingModels = new List<BuildingModel>();
+                //            dictionary[lOD] = buildingModels;
+                //        }
 
-                        buildingModels.Add(buildingModel);
+                //        buildingModels.Add(buildingModel);
 
-                        Point3D point3D = GIS.Convert.ToEPSG4326(building2D.PolygonalFace2D.ExternalEdge.GetInternalPoint());
+                //        Point3D point3D = GIS.Convert.ToEPSG4326(building2D.PolygonalFace2D.ExternalEdge.GetInternalPoint());
 
-                    }
+                //    }
 
-                }
+                //}
             }
 
 
