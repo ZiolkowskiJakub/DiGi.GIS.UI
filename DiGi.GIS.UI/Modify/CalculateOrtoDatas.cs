@@ -9,7 +9,7 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
-        public static async Task<bool> CalculateOrtoDatas(Window owner, OrtoDatasBuilding2DOptions ortoDatasBuilding2DOptions, int count)
+        public static async Task<bool> CalculateOrtoDatas(Window owner, OrtoDatasBuilding2DOptions ortoDatasBuilding2DOptions, int count, bool overrideExisting = false)
         {
             OpenFolderDialog openFolderDialog = new OpenFolderDialog();
             bool? result = openFolderDialog.ShowDialog(owner);
@@ -50,7 +50,7 @@ namespace DiGi.GIS.UI
                             {
                                 int count_Temp = building2Ds.Count > count ? count : building2Ds.Count;
 
-                                HashSet<GuidReference> guidReferences = await building2Ds.GetRange(0, count_Temp).CalculateOrtoDatas(path, ortoDatasBuilding2DOptions);
+                                HashSet<GuidReference> guidReferences = await building2Ds.GetRange(0, count_Temp).CalculateOrtoDatas(path, ortoDatasBuilding2DOptions, overrideExisting);
 
                                 building2Ds.RemoveRange(0, count_Temp);
                             }

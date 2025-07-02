@@ -1,11 +1,8 @@
-﻿using DiGi.Analytical.Building.Classes;
-using DiGi.BDL.Classes;
+﻿using DiGi.BDL.Classes;
 using DiGi.BDL.Enums;
-using DiGi.Core;
 using DiGi.Core.Classes;
 using DiGi.EPW.Classes;
 using DiGi.Geometry.Planar;
-using DiGi.Geometry.Spatial.Classes;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Constans;
 using DiGi.GIS.Emgu.CV.Classes;
@@ -862,7 +859,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 MaxFileSize = (1024UL * 1024UL * 1024UL * 5) / 10
             };
 
-            bool result = await Modify.CalculateOrtoDatas(this, ortoDatasBuilding2DOptions, count);
+            bool result = await Modify.CalculateOrtoDatas(this, ortoDatasBuilding2DOptions, count, false);
 
             TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
 
