@@ -63,14 +63,11 @@ namespace DiGi.GIS.UI
                 fileNameSufix = string.Empty;
             }
 
-            int count = GIS.Query.DefaultProcessorCount();
+            //int count = GIS.Query.DefaultProcessorCount();
 
             //paths_GISModelFile.Sort((x, y) => new FileInfo(y).Length.CompareTo(new FileInfo(x).Length));
 
-            ParallelOptions parallelOptions = new ParallelOptions()
-            {
-                MaxDegreeOfParallelism = count
-            };
+            ParallelOptions parallelOptions = Core.Create.ParallelOptions();
 
             string path_Report = Path.Combine(directory, "Report.txt");
             if(File.Exists(path_Report))
@@ -80,7 +77,7 @@ namespace DiGi.GIS.UI
 
             while (paths_GISModelFile.Count > 0)
             {
-                int count_Temp = Math.Min(count, paths_GISModelFile.Count);
+                int count_Temp = Math.Min(parallelOptions.MaxDegreeOfParallelism, paths_GISModelFile.Count);
 
                 Dictionary<string, List<AdministrativeAreal2D>> dictionary = new Dictionary<string, List<AdministrativeAreal2D>>();
                 for(int i=0; i < count_Temp; i++)

@@ -66,7 +66,7 @@ namespace DiGi.GIS.UI
                 }
 
                 //foreach (string path_GISModelFile in paths_GISModelFile)
-                Parallel.ForEach(paths_GISModelFile, GIS.Query.DefaultParallelOptions(), path_GISModelFile => 
+                Parallel.ForEach(paths_GISModelFile, Core.Create.ParallelOptions(), path_GISModelFile => 
                 {
                     List<Building2DYearBuiltPredictions> building2DYearBuiltPredictionsList = new List<Building2DYearBuiltPredictions>();
                     using (GISModelFile gISModelFile = new GISModelFile(path_GISModelFile))

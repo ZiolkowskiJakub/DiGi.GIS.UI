@@ -37,7 +37,8 @@ namespace DiGi.GIS.UI
 
             HashSet<string> references_Temp = references == null ? null : new HashSet<string>(references);
 
-            int count_Temp = count == null || !count.HasValue ? GIS.Query.DefaultProcessorCount() : count.Value;
+            //int count_Temp = count == null || !count.HasValue ? GIS.Query.DefaultProcessorCount() : count.Value;
+            int count_Temp = count == null || !count.HasValue ? Core.Create.ParallelOptions().MaxDegreeOfParallelism : count.Value;
 
             HashSet<string> result = new HashSet<string>();
 

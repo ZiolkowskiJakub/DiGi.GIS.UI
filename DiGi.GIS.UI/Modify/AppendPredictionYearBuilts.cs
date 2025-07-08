@@ -72,7 +72,7 @@ namespace DiGi.GIS.UI
                 return false;
             }
 
-            Parallel.ForEach(paths_GISModelFile, GIS.Query.DefaultParallelOptions(), path_GISModelFile => 
+            Parallel.ForEach(paths_GISModelFile, Core.Create.ParallelOptions(), path_GISModelFile => 
             {
                 Dictionary<string, short> dictionary_GISModelFile = new Dictionary<string, short>();
                 using (GISModelFile gISModelFile = new GISModelFile(path_GISModelFile))

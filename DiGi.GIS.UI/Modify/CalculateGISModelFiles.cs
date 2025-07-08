@@ -33,16 +33,19 @@ namespace DiGi.GIS.UI
 
             paths_Input.Sort((x, y) => new FileInfo(y).Length.CompareTo(new FileInfo(x).Length));
 
-            int count = GIS.Query.DefaultProcessorCount();
+            //int count = GIS.Query.DefaultProcessorCount();
 
-            ParallelOptions parallelOptions = new ParallelOptions()
-            {
-                MaxDegreeOfParallelism = count
-            };
+            //ParallelOptions parallelOptions = new ParallelOptions()
+            //{
+            //    MaxDegreeOfParallelism = count
+            //};
+
+            ParallelOptions parallelOptions = Core.Create.ParallelOptions();
 
             while (paths_Input.Count > 0)
             {
-                int count_Temp = Math.Min(count, paths_Input.Count);
+                int count_Temp = Math.Min(parallelOptions.MaxDegreeOfParallelism, paths_Input.Count);
+                //int count_Temp = Math.Min(count, paths_Input.Count);
 
                 List<Tuple<string, GISModel>> tuples = Enumerable.Repeat((Tuple<string, GISModel>)null, count_Temp).ToList();
                 for (int i = 0; i < count_Temp; i++)

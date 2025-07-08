@@ -30,10 +30,12 @@ namespace DiGi.GIS.UI
                 dictionary[path_Input] = null;
             }
 
-            ParallelOptions parallelOptions = new ParallelOptions()
-            {
-                MaxDegreeOfParallelism = GIS.Query.DefaultProcessorCount(0.5)
-            };
+            ParallelOptions parallelOptions = Core.Create.ParallelOptions(0.5);
+
+            //ParallelOptions parallelOptions = new ParallelOptions()
+            //{
+            //    MaxDegreeOfParallelism = GIS.Query.DefaultProcessorCount(0.5)
+            //};
 
             Parallel.For(0, paths_Input.Length, parallelOptions, i => 
             {
