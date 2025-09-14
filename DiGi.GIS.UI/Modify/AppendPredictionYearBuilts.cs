@@ -12,9 +12,11 @@ namespace DiGi.GIS.UI
         {
             bool? result;
 
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Title = "Year Built Prediction File (ML output)";
-            openFileDialog.Filter = "Tab-Separated Values File (*.tsv)|*.tsv|All files (*.*)|*.*";
+            OpenFileDialog openFileDialog = new()
+            {
+                Title = "Year Built Prediction File (ML output)",
+                Filter = "Tab-Separated Values File (*.tsv)|*.tsv|All files (*.*)|*.*"
+            };
             result = openFileDialog.ShowDialog();
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -27,7 +29,7 @@ namespace DiGi.GIS.UI
                 return false;
             }
 
-            Dictionary<string, short> dictionary = new Dictionary<string, short>();
+            Dictionary<string, short> dictionary = [];
             foreach (string line in lines)
             {
                 string[] values = line.Split('\t');
@@ -49,11 +51,13 @@ namespace DiGi.GIS.UI
                 return false;
             }
 
-            FileInfo fileInfo = new FileInfo(openFileDialog.FileName);
+            FileInfo fileInfo = new (openFileDialog.FileName);
             DateTime dateTime = fileInfo.LastWriteTimeUtc;
 
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            openFolderDialog.Title = "Select GIS Model Files directory";
+            OpenFolderDialog openFolderDialog = new()
+            {
+                Title = "Select GIS Model Files directory"
+            };
             result = openFolderDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -74,12 +78,17 @@ namespace DiGi.GIS.UI
 
             Parallel.ForEach(paths_GISModelFile, Core.Create.ParallelOptions(), path_GISModelFile => 
             {
-                Dictionary<string, short> dictionary_GISModelFile = new Dictionary<string, short>();
-                using (GISModelFile gISModelFile = new GISModelFile(path_GISModelFile))
+                if(Path.GetDirectoryName(path_GISModelFile) is not string directory)
+                {
+                    return;
+                }
+
+                Dictionary<string, short> dictionary_GISModelFile = [];
+                using (GISModelFile gISModelFile = new (path_GISModelFile))
                 {
                     gISModelFile.Open();
 
-                    HashSet<string> references = gISModelFile.Value?.GetReferences<Building2D>();
+                    HashSet<string>? references = gISModelFile.Value?.GetReferences<Building2D>();
                     if (references == null || references.Count == 0)
                     {
                         return;
@@ -87,9 +96,9 @@ namespace DiGi.GIS.UI
 
                     foreach (string reference in references)
                     {
-                        if (dictionary.ContainsKey(reference))
+                        if (dictionary.TryGetValue(reference, out short value))
                         {
-                            dictionary_GISModelFile[reference] = dictionary[reference];
+                            dictionary_GISModelFile[reference] = value;
                         }
                     }
                 }
@@ -99,24 +108,20 @@ namespace DiGi.GIS.UI
                     return;
                 }
 
-                string path = Path.Combine(Path.GetDirectoryName(path_GISModelFile), string.Format("{0}.{1}", Path.GetFileNameWithoutExtension(path_GISModelFile), FileExtension.YearBuiltDataFile));
-                using (YearBuiltDataFile yearBuiltDataFile = new YearBuiltDataFile(path))
+                string path = Path.Combine(directory, string.Format("{0}.{1}", Path.GetFileNameWithoutExtension(path_GISModelFile), FileExtension.YearBuiltDataFile));
+
+                using YearBuiltDataFile yearBuiltDataFile = new (path);
+                yearBuiltDataFile.Open();
+                foreach (KeyValuePair<string, short> keyValuePair in dictionary_GISModelFile)
                 {
-                    yearBuiltDataFile.Open();
-                    foreach (KeyValuePair<string, short> keyValuePair in dictionary_GISModelFile)
-                    {
-                        YearBuiltData yearBuiltData = yearBuiltDataFile.GetValue<YearBuiltData>(keyValuePair.Key);
-                        if (yearBuiltData == null)
-                        {
-                            yearBuiltData = new YearBuiltData(keyValuePair.Key);
-                        }
+                    YearBuiltData? yearBuiltData = yearBuiltDataFile.GetValue<YearBuiltData>(keyValuePair.Key);
+                    yearBuiltData ??= new YearBuiltData(keyValuePair.Key);
 
-                        yearBuiltData.SetPredictedYearBuilt(dateTime, keyValuePair.Value);
-                        yearBuiltDataFile.AddValue(yearBuiltData);
-                    }
-
-                    yearBuiltDataFile.Save();
+                    yearBuiltData.SetPredictedYearBuilt(dateTime, keyValuePair.Value);
+                    yearBuiltDataFile.AddValue(yearBuiltData);
                 }
+
+                yearBuiltDataFile.Save();
             });
 
             return true;

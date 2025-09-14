@@ -1,4 +1,5 @@
-﻿using DiGi.GIS.Classes;
+﻿using DiGi.Core;
+using DiGi.GIS.Classes;
 using System.Windows;
 
 namespace DiGi.GIS.UI.Windows
@@ -32,18 +33,18 @@ namespace DiGi.GIS.UI.Windows
 
         private void MenuItem_Load_Click(object sender, RoutedEventArgs e)
         {
-            string path = DiGi.UI.WPF.Core.Query.Path(this, Constans.FileFilter.OrtoDatasFile);
+            string? path = DiGi.UI.WPF.Core.Query.Path(this, Constans.FileFilter.OrtoDatasFile);
             if(string.IsNullOrWhiteSpace(path) || !System.IO.File.Exists(path))
             {
                 return;
             }
 
-            List<OrtoDatas> ortoDatasList = null;
-            using (OrtoDatasFile ortoDatasFile = new OrtoDatasFile(path))
+            List<OrtoDatas>? ortoDatasList = null;
+            using (OrtoDatasFile ortoDatasFile = new (path))
             {
                 ortoDatasFile.Open();
 
-                ortoDatasList = ortoDatasFile.Values?.ToList();
+                ortoDatasList = ortoDatasFile.Values?.FilterNulls();
             }
 
             OrtoDatasListControl_Main.OrtoDatasList = ortoDatasList;

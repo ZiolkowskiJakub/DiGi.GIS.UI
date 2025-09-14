@@ -1,4 +1,5 @@
 ﻿using DiGi.BDL.Enums;
+using DiGi.Core;
 using DiGi.Core.Classes;
 using DiGi.Core.IO.Table.Classes;
 using DiGi.Geometry.Planar.Classes;
@@ -12,46 +13,40 @@ namespace DiGi.GIS.UI
 {
     public static partial class Convert
     {
-        public static Table ToDiGi_Table(this GISModelFile gISModelFile, IEnumerable<string> references = null, ComparisonTableConversionOptions comparisonTableConversionOptions = null)
+        public static Table? ToDiGi_Table(this GISModelFile? gISModelFile, IEnumerable<string>? references = null, ComparisonTableConversionOptions? comparisonTableConversionOptions = null)
         {
             if (gISModelFile == null)
             {
                 return null;
             }
 
-            string path = gISModelFile.Path;
+            string? path = gISModelFile.Path;
             if (string.IsNullOrWhiteSpace(path))
             {
                 return null;
             }
 
-            if (references == null)
-            {
-                references = gISModelFile.Value.GetObjects<Building2D>()?.ConvertAll(x => x.Reference);
-            }
+            references ??= gISModelFile!.Value?.GetObjects<Building2D>()?.ConvertAll(x => x.Reference).FilterNulls();
 
             if (references == null)
             {
                 return null;
             }
 
-            if (comparisonTableConversionOptions == null)
-            {
-                comparisonTableConversionOptions = new ComparisonTableConversionOptions();
-            }
+            comparisonTableConversionOptions ??= new ComparisonTableConversionOptions();
 
-            Table result = new Table();
+            Table result = new();
 
-            Dictionary<string, List<Row>> dictionary_Rows = new Dictionary<string, List<Row>>();
+            Dictionary<string, List<Row>> dictionary_Rows = [];
 
-            Func<string, int> updateColumn = new Func<string, int>(x =>
+            Func<string, int> updateColumn = new(x =>
             {
                 if (string.IsNullOrWhiteSpace(x))
                 {
                     return -1;
                 }
 
-                if(result.TryGetColumn(x, out Column column))
+                if(result.TryGetColumn(x, out Column? column) && column is not null)
                 {
                     return column.Index;
                 }
@@ -67,45 +62,45 @@ namespace DiGi.GIS.UI
 
             string columnName_Year = "Year";
 
-            Dictionary<string, int> dictionary_YearBuilt = null;
+            Dictionary<string, int>? dictionary_YearBuilt = null;
             if (comparisonTableConversionOptions.IncludeYearBuilt)
             {
-                string directory = System.IO.Path.GetDirectoryName(path);
+                string? directory = System.IO.Path.GetDirectoryName(path);
 
-                Dictionary<string, YearBuiltData> dictionary_YearBuiltData = GIS.Query.YearBuiltDataDictionary<YearBuiltData>(directory, references);
+                Dictionary<string, YearBuiltData>? dictionary_YearBuiltData = GIS.Query.YearBuiltDataDictionary<YearBuiltData>(directory, references);
                 if (dictionary_YearBuiltData != null)
                 {
-                    dictionary_YearBuilt = new Dictionary<string, int>();
+                    dictionary_YearBuilt = [];
 
                     foreach (KeyValuePair<string, YearBuiltData> keyValuePair in dictionary_YearBuiltData)
                     {
-                        IYearBuilt yearBuilt = keyValuePair.Value.GetUserYearBuilt();
+                        UserYearBuilt? userYearBuilt = keyValuePair.Value.GetUserYearBuilt();
                         //if(yearBuilt == null)
                         //{
                         //    yearBuilt = keyValuePair.Value.GetPredictedYearBuilt();
                         //}
 
-                        if(yearBuilt == null)
+                        if(userYearBuilt == null)
                         {
                             continue;
                         }
 
-                        dictionary_YearBuilt[keyValuePair.Key] = yearBuilt.Year;
+                        dictionary_YearBuilt[keyValuePair.Key] = userYearBuilt.Year;
                     }
                 }
 
-                if (comparisonTableConversionOptions.YearBuiltOnly)
+                if (comparisonTableConversionOptions.YearBuiltOnly && dictionary_YearBuilt != null)
                 {
                     references = references.ToList().FindAll(dictionary_YearBuilt.ContainsKey);
-                    if (references.Count() == 0)
+                    if (!references.Any())
                     {
                         return result;
                     }
                 }
             }
 
-            GISModel gISModel = gISModelFile.Value;
-            List<Building2D> building2Ds = gISModel?.GetObjects<Building2D>();
+            GISModel? gISModel = gISModelFile.Value;
+            List<Building2D>? building2Ds = gISModel?.GetObjects<Building2D>();
             if(building2Ds != null)
             {
                 for(int i = building2Ds.Count - 1; i >= 0; i--)
@@ -117,7 +112,7 @@ namespace DiGi.GIS.UI
                 }
             }
 
-            Dictionary<GuidReference, List<AdministrativeAreal2D>> dictionary = GIS.Query.AdministrativeAreal2DsDictionary<AdministrativeAreal2D>(gISModel, building2Ds);
+            Dictionary<GuidReference, List<AdministrativeAreal2D>?>? dictionary = GIS.Query.AdministrativeAreal2DsDictionary<AdministrativeAreal2D>(gISModel, building2Ds);
 
             if (comparisonTableConversionOptions.IncludeModel)
             {
@@ -139,34 +134,34 @@ namespace DiGi.GIS.UI
 
                     foreach(Building2D building2D in building2Ds)
                     {
-                        string reference = building2D?.Reference;
+                        string? reference = building2D?.Reference;
                         if(string.IsNullOrWhiteSpace(reference))
                         {
                             continue;
                         }
 
-                        GuidReference guidReference = new GuidReference(building2D);
+                        GuidReference guidReference = new(building2D);
 
-                        PolygonalFace2D polygonalFace2D = building2D.PolygonalFace2D;
+                        PolygonalFace2D? polygonalFace2D = building2D!.PolygonalFace2D;
 
                         BuildingGeneralFunction? buildingGeneralFunction = building2D.BuildingGeneralFunction;
                         BuildingPhase? buidlingPhase = building2D.BuildingPhase;
                         ushort storeys = building2D.Storeys;
                         double? area = polygonalFace2D?.GetArea();
-                        Point2D location = polygonalFace2D?.GetInternalPoint();
-                        string voivodeshipName = null;
-                        string countyName = null;
-                        string municipalityName = null;
-                        string subdivisionName = null;
+                        Point2D? location = polygonalFace2D?.GetInternalPoint();
+                        string? voivodeshipName = null;
+                        string? countyName = null;
+                        string? municipalityName = null;
+                        string? subdivisionName = null;
                         uint? subdivisionCalculatedOccupancy = null;
                         double? subdivisionCalculatedOccupancyArea = null;
 
-                        if(dictionary.TryGetValue(guidReference, out List<AdministrativeAreal2D> administrativeAreal2Ds) && administrativeAreal2Ds != null)
+                        if(dictionary is not null && dictionary.TryGetValue(guidReference, out List<AdministrativeAreal2D>? administrativeAreal2Ds) && administrativeAreal2Ds != null)
                         {
-                            List<AdministrativeDivision> administrativeDivisions = administrativeAreal2Ds.OfType<AdministrativeDivision>().ToList();
+                            List<AdministrativeDivision> administrativeDivisions = [.. administrativeAreal2Ds.OfType<AdministrativeDivision>()];
                             if (administrativeDivisions != null)
                             {
-                                AdministrativeDivision administrativeDivision = null;
+                                AdministrativeDivision? administrativeDivision = null;
 
                                 administrativeDivision = administrativeDivisions.Find(x => x.AdministrativeDivisionType == AdministrativeDivisionType.voivodeship);
                                 if (administrativeDivision != null)
@@ -187,14 +182,14 @@ namespace DiGi.GIS.UI
                                 }
                             }
 
-                            AdministrativeSubdivision administrativeSubdivision = administrativeAreal2Ds.OfType<AdministrativeSubdivision>().FirstOrDefault();
+                            AdministrativeSubdivision? administrativeSubdivision = administrativeAreal2Ds.OfType<AdministrativeSubdivision>().FirstOrDefault();
                             if (administrativeSubdivision != null)
                             {
                                 subdivisionName = administrativeSubdivision.Name;
 
-                                if (gISModel.TryGetRelatedObjects<OccupancyCalculationResult, AdministrativeAreal2DOccupancyCalculationResultRelation>(administrativeSubdivision, out List<OccupancyCalculationResult> occupancyCalculationResults) && occupancyCalculationResults != null)
+                                if (gISModel!.TryGetRelatedObjects<OccupancyCalculationResult, AdministrativeAreal2DOccupancyCalculationResultRelation>(administrativeSubdivision, out List<OccupancyCalculationResult>? occupancyCalculationResults) && occupancyCalculationResults != null)
                                 {
-                                    OccupancyCalculationResult occupancyCalculationResult = occupancyCalculationResults.FirstOrDefault();
+                                    OccupancyCalculationResult? occupancyCalculationResult = occupancyCalculationResults.FirstOrDefault();
                                     if (occupancyCalculationResult != null)
                                     {
                                         subdivisionCalculatedOccupancy = occupancyCalculationResult.Occupancy;
@@ -205,7 +200,7 @@ namespace DiGi.GIS.UI
                             }
                         }
 
-                        Row row = new Row(-1);
+                        Row row = new (-1);
                         row.SetValue(index_Reference, reference);
                         row.SetValue(index_BuildingGeneralFunction, buildingGeneralFunction?.ToString());
                         row.SetValue(index_BuildingPhase, buidlingPhase?.ToString());
@@ -220,9 +215,9 @@ namespace DiGi.GIS.UI
                         row.SetValue(index_SubdivisionCalculatedOccupancy, subdivisionCalculatedOccupancy);
                         row.SetValue(index_SubdivisionCalculatedOccupancyArea, subdivisionCalculatedOccupancyArea);
 
-                        if (!dictionary_Rows.TryGetValue(reference, out List<Row> rows) || rows == null)
+                        if (!dictionary_Rows.TryGetValue(reference, out List<Row>? rows) || rows == null)
                         {
-                            rows = new List<Row>();
+                            rows = [];
                             dictionary_Rows[reference] = rows;
                         }
 
@@ -233,9 +228,9 @@ namespace DiGi.GIS.UI
 
             if (comparisonTableConversionOptions.IncludeStatistical && Directory.Exists(comparisonTableConversionOptions.StatisticalDirectory))
             {
-                if (building2Ds != null)
+                if (building2Ds != null && dictionary is not null)
                 {
-                    List<Tuple<StatisticalUnit, List<Building2D>>> tuples = new List<Tuple<StatisticalUnit, List<Building2D>>>();
+                    List<Tuple<StatisticalUnit, List<Building2D>>> tuples = [];
 
                     foreach (Building2D building2D in building2Ds)
                     {
@@ -244,14 +239,14 @@ namespace DiGi.GIS.UI
                             continue;
                         }
 
-                        GuidReference guidReference = new GuidReference(building2D);
+                        GuidReference guidReference = new (building2D);
 
-                        if (!dictionary.TryGetValue(guidReference, out List<AdministrativeAreal2D> administrativeAreal2Ds) || administrativeAreal2Ds == null)
+                        if (!dictionary.TryGetValue(guidReference, out List<AdministrativeAreal2D>? administrativeAreal2Ds) || administrativeAreal2Ds == null)
                         {
                             continue;
                         }
 
-                        List<AdministrativeSubdivision> administrativeSubdivisions = administrativeAreal2Ds.OfType<AdministrativeSubdivision>().ToList();
+                        List<AdministrativeSubdivision> administrativeSubdivisions = [.. administrativeAreal2Ds.OfType<AdministrativeSubdivision>()];
                         if (administrativeSubdivisions == null || administrativeSubdivisions.Count == 0)
                         {
                             continue;
@@ -259,11 +254,20 @@ namespace DiGi.GIS.UI
 
                         if (administrativeSubdivisions.Count != 1)
                         {
-                            List<Tuple<double, AdministrativeSubdivision>> tuples_AdministrativeSubdivision = new List<Tuple<double, AdministrativeSubdivision>>();
+                            List<Tuple<double, AdministrativeSubdivision>> tuples_AdministrativeSubdivision = [];
                             foreach (AdministrativeSubdivision administrativeSubdivision_Temp in administrativeSubdivisions)
                             {
-                                AdministrativeAreal2DGeometryCalculationResult administrativeAreal2DGeometryCalculationResult = gISModel.GetRelatedObject<AdministrativeAreal2DGeometryCalculationResult>(administrativeSubdivision_Temp);
-                                double area = administrativeAreal2DGeometryCalculationResult != null ? administrativeAreal2DGeometryCalculationResult.Area : administrativeSubdivision_Temp.PolygonalFace2D.GetArea();
+                                AdministrativeAreal2DGeometryCalculationResult? administrativeAreal2DGeometryCalculationResult = gISModel!.GetRelatedObject<AdministrativeAreal2DGeometryCalculationResult>(administrativeSubdivision_Temp);
+                                double area = 0;
+                                if (administrativeAreal2DGeometryCalculationResult != null)
+                                {
+                                    area = administrativeAreal2DGeometryCalculationResult.Area;
+                                }
+                                else if(administrativeSubdivision_Temp.PolygonalFace2D is PolygonalFace2D polygonalFace2D)
+                                {
+                                    area = polygonalFace2D.GetArea();
+                                }
+
                                 tuples_AdministrativeSubdivision.Add(new Tuple<double, AdministrativeSubdivision>(area, administrativeSubdivision_Temp));
                             }
 
@@ -271,15 +275,15 @@ namespace DiGi.GIS.UI
                             administrativeSubdivisions = tuples_AdministrativeSubdivision.ConvertAll(x => x.Item2);
                         }
 
-                        IEnumerable<StatisticalUnit> statisticalUnits = gISModel.GetRelatedObject<AdministrativeAreal2DStatisticalUnitsCalculcationResult>(administrativeSubdivisions[0])?.StatisticalUnits;
+                        IEnumerable<StatisticalUnit>? statisticalUnits = gISModel!.GetRelatedObject<AdministrativeAreal2DStatisticalUnitsCalculcationResult>(administrativeSubdivisions[0])?.StatisticalUnits;
                         if (statisticalUnits != null)
                         {
                             foreach (StatisticalUnit statisticalUnit in statisticalUnits)
                             {
-                                Tuple<StatisticalUnit, List<Building2D>> tuple = tuples.Find(x => x.Item1.Code == statisticalUnit.Code);
+                                Tuple<StatisticalUnit, List<Building2D>>? tuple = tuples.Find(x => x.Item1.Code == statisticalUnit.Code);
                                 if (tuple == null)
                                 {
-                                    tuple = new Tuple<StatisticalUnit, List<Building2D>>(statisticalUnit, new List<Building2D>());
+                                    tuple = new Tuple<StatisticalUnit, List<Building2D>>(statisticalUnit, []);
                                     tuples.Add(tuple);
                                 }
 
@@ -290,79 +294,85 @@ namespace DiGi.GIS.UI
 
                     if (tuples != null && tuples.Count != 0)
                     {
-                        Range<int> range_Years = comparisonTableConversionOptions?.Years;
+                        Range<int>? range_Years = comparisonTableConversionOptions?.Years;
 
-                        string[] paths_StatisticalDataCollectionFile = Directory.GetFiles(comparisonTableConversionOptions.StatisticalDirectory, string.Format("*.{0}", Constans.FileExtension.StatisticalDataCollectionFile));
+                        string[] paths_StatisticalDataCollectionFile = Directory.GetFiles(comparisonTableConversionOptions!.StatisticalDirectory, string.Format("*.{0}", Constans.FileExtension.StatisticalDataCollectionFile));
                         if (paths_StatisticalDataCollectionFile != null && paths_StatisticalDataCollectionFile.Length != 0)
                         {
                             foreach (string path_StatisticalDataCollectionFile in paths_StatisticalDataCollectionFile)
                             {
-                                using (StatisticalDataCollectionFile statisticalDataCollectionFile = new StatisticalDataCollectionFile(path_StatisticalDataCollectionFile))
+                                using StatisticalDataCollectionFile statisticalDataCollectionFile = new(path_StatisticalDataCollectionFile);
+
+                                Dictionary<string, StatisticalDataCollection>? dictionary_StatisticalDataCollection = GIS.Query.StatisticalDataCollectionDictionary(statisticalDataCollectionFile, tuples.ConvertAll(x => x.Item1.Code).FilterNulls());
+                                if (dictionary is not null && dictionary_StatisticalDataCollection is not null)
                                 {
-                                    Dictionary<string, StatisticalDataCollection> dictionary_StatisticalDataCollection = GIS.Query.StatisticalDataCollectionDictionary(statisticalDataCollectionFile, tuples.ConvertAll(x => x.Item1.Code));
-                                    if (dictionary != null)
+                                    foreach (KeyValuePair<string, StatisticalDataCollection> keyValuePair in dictionary_StatisticalDataCollection)
                                     {
-                                        foreach (KeyValuePair<string, StatisticalDataCollection> keyValuePair in dictionary_StatisticalDataCollection)
+                                        Tuple<StatisticalUnit, List<Building2D>>? tuple = tuples.Find(x => x.Item1.Code == keyValuePair.Key);
+                                        if (tuple == null)
                                         {
-                                            Tuple<StatisticalUnit, List<Building2D>> tuple = tuples.Find(x => x.Item1.Code == keyValuePair.Key);
-                                            if (tuple == null)
-                                            {
-                                                continue;
-                                            }
+                                            continue;
+                                        }
 
-                                            StatisticalDataCollection statisticalDataCollection = keyValuePair.Value;
+                                        StatisticalDataCollection statisticalDataCollection = keyValuePair.Value;
 
-                                            Variable[] variables =
-                                            {
+                                        Variable[] variables =
+                                        [
                                                 Variable.population_thousand_persons
-                                            };
+                                        ];
 
-                                            if (range_Years != null)
+                                        if (range_Years != null)
+                                        {
+                                            foreach (Variable variable in variables)
                                             {
-                                                foreach (Variable variable in variables)
+                                                string? description = Core.Query.Description(variable);
+                                                if(description == null)
                                                 {
-                                                    string description = Core.Query.Description(variable);
+                                                    continue;
+                                                }
 
-                                                    StatisticalYearlyDoubleData statisticalYearlyDoubleData = statisticalDataCollection[description] as StatisticalYearlyDoubleData;
-                                                    if (statisticalYearlyDoubleData != null)
+
+                                                if (statisticalDataCollection[description] is StatisticalYearlyDoubleData statisticalYearlyDoubleData)
+                                                {
+                                                    string? name = Query.ColumnName(variable);
+
+                                                    foreach (Building2D building2D in tuple.Item2)
                                                     {
-                                                        string name = Query.ColumnName(variable);
-
-                                                        foreach (Building2D building2D in tuple.Item2)
+                                                        if (building2D?.Reference is not string reference)
                                                         {
-                                                            string reference = building2D.Reference;
+                                                            continue;
+                                                        }
 
-                                                            if (!dictionary_Rows.TryGetValue(reference, out List<Row> rows) || rows == null)
-                                                            {
-                                                                rows = new List<Row>();
-                                                                dictionary_Rows[reference] = rows;
-                                                            }
+                                                        if (!dictionary_Rows.TryGetValue(reference, out List<Row>? rows) || rows == null)
+                                                        {
+                                                            rows = [];
+                                                            dictionary_Rows[reference] = rows;
+                                                        }
 
-                                                            if (rows.Count == 0)
-                                                            {
-                                                                Row row = new Row(-1);
-                                                                rows.Add(row);
-                                                            }
+                                                        if (rows.Count == 0)
+                                                        {
+                                                            Row row = new(-1);
+                                                            rows.Add(row);
+                                                        }
 
-                                                            foreach (Row row in rows)
+                                                        foreach (Row row in rows)
+                                                        {
+                                                            for (int i = range_Years.Min; i <= range_Years.Max; i++)
                                                             {
-                                                                for (int i = range_Years.Min; i <= range_Years.Max; i++)
+                                                                short year = System.Convert.ToInt16(i);
+
+                                                                double? value = null;
+                                                                if (statisticalYearlyDoubleData.TryGetValue(year, out double value_Temp))
                                                                 {
-                                                                    short year = System.Convert.ToInt16(i);
-
-                                                                    double? value = null;
-                                                                    if (statisticalYearlyDoubleData.TryGetValue(year, out double value_Temp))
+                                                                    value = value_Temp;
+                                                                    if (variable == Variable.population_thousand_persons)
                                                                     {
-                                                                        value = value_Temp;
-                                                                        if (variable == Variable.population_thousand_persons)
-                                                                        {
-                                                                            value *= 1000;
-                                                                        }
+                                                                        value *= 1000;
                                                                     }
-
-                                                                    int index_Year = updateColumn.Invoke(string.Format("{0} {1}", name, year));
-                                                                    row.SetValue(index_Year, value);
                                                                 }
+
+                                                                int index_Year = updateColumn.Invoke(string.Format("{0} {1}", name, year));
+                                                                row.SetValue(index_Year, value);
                                                             }
                                                         }
                                                     }
@@ -379,11 +389,11 @@ namespace DiGi.GIS.UI
 
             if (comparisonTableConversionOptions.IncludeOrtoDatasComparison && comparisonTableConversionOptions.Years != null)
             {
-                string directory = System.IO.Path.GetDirectoryName(path);
+                string? directory = System.IO.Path.GetDirectoryName(path);
 
                 Range<int> range_Years = comparisonTableConversionOptions.Years;
 
-                Dictionary<string, OrtoDatasComparison> dictionary_OrtoDatasComparison = Emgu.CV.Query.OrtoDatasComparisonDictionary(directory, references);
+                Dictionary<string, OrtoDatasComparison>? dictionary_OrtoDatasComparison = Emgu.CV.Query.OrtoDatasComparisonDictionary(directory, references);
                 if (dictionary_OrtoDatasComparison != null)
                 {
                     foreach (KeyValuePair<string, OrtoDatasComparison> keyValuePair in dictionary_OrtoDatasComparison)
@@ -391,9 +401,9 @@ namespace DiGi.GIS.UI
                         string reference = keyValuePair.Key;
                         OrtoDatasComparison ortoDatasComparison = keyValuePair.Value;
 
-                        if (!dictionary_Rows.TryGetValue(reference, out List<Row> rows) || rows == null)
+                        if (!dictionary_Rows.TryGetValue(reference, out List<Row>? rows) || rows == null)
                         {
-                            rows = new List<Row>();
+                            rows = [];
                             dictionary_Rows[reference] = rows;
                         }
 
@@ -401,9 +411,9 @@ namespace DiGi.GIS.UI
 
                         for (int i = range_Years.Min; i <= range_Years.Max; i++)
                         {
-                            DateTime dateTime_1 = new DateTime(i, 1, 1);
+                            DateTime dateTime_1 = new (i, 1, 1);
 
-                            Row row = null;
+                            Row? row = null;
                             if (rows.Count == 0)
                             {
                                 row = new Row(-1);
@@ -440,9 +450,9 @@ namespace DiGi.GIS.UI
                                     continue;
                                 }
 
-                                DateTime dateTime_2 = new DateTime(j, 1, 1);
+                                DateTime dateTime_2 = new (j, 1, 1);
 
-                                Dictionary<string, OrtoImageComparison> dictionary_OrtoImageComparison = Emgu.CV.Query.OrtoImageComparisonDictionary(ortoDatasComparison, dateTime_1, dateTime_2);
+                                Dictionary<string, OrtoImageComparison>? dictionary_OrtoImageComparison = Emgu.CV.Query.OrtoImageComparisonDictionary(ortoDatasComparison, dateTime_1, dateTime_2);
                                 if(dictionary_OrtoImageComparison == null)
                                 {
                                     continue;
@@ -467,18 +477,18 @@ namespace DiGi.GIS.UI
 
                                     OrtoImageComparison ortoImageComparison = keyValuePair_OrtoImageComparison.Value;
 
-                                    row.SetValue(index_AverageColorSimilarity, double.IsNaN(ortoImageComparison.AverageColorSimilarity) ? 0 : ortoImageComparison.AverageColorSimilarity);
-                                    row.SetValue(index_ColorDistributionShift, double.IsNaN(ortoImageComparison.ColorDistributionShift) ? 0 : ortoImageComparison.ColorDistributionShift);
-                                    row.SetValue(index_GrayHistogramsFactor, double.IsNaN(ortoImageComparison.GrayHistogramsFactor) ? 0 : ortoImageComparison.GrayHistogramsFactor);
-                                    row.SetValue(index_HammingDistance, ortoImageComparison.HammingDistance);
-                                    row.SetValue(index_HistogramCorrelation, double.IsNaN(ortoImageComparison.HistogramCorrelation) ? 0 : ortoImageComparison.HistogramCorrelation);
-                                    row.SetValue(index_ShapeComparisonFactor, double.IsNaN(ortoImageComparison.ShapeComparisonFactor) ? 0 : ortoImageComparison.ShapeComparisonFactor);
-                                    row.SetValue(index_StructuralSimilarityIndex_AbsoluteDifference, double.IsNaN(ortoImageComparison.StructuralSimilarityIndex_AbsoluteDifference) ? 0 : ortoImageComparison.StructuralSimilarityIndex_AbsoluteDifference);
-                                    row.SetValue(index_StructuralSimilarityIndex_MatchTemplate, double.IsNaN(ortoImageComparison.StructuralSimilarityIndex_MatchTemplate) ? 0 : ortoImageComparison.StructuralSimilarityIndex_MatchTemplate);
-                                    row.SetValue(index_MeanLaplacianFactor, double.IsNaN(ortoImageComparison.MeanLaplacianFactor) ? 0 : ortoImageComparison.MeanLaplacianFactor);
-                                    row.SetValue(index_StandardDeviationLaplacianFactor, double.IsNaN(ortoImageComparison.StandardDeviationLaplacianFactor) ? 0 : ortoImageComparison.StandardDeviationLaplacianFactor);
-                                    row.SetValue(index_OpticalFlowAverageMagnitude, double.IsNaN(ortoImageComparison.OpticalFlowAverageMagnitude) ? 0 : ortoImageComparison.OpticalFlowAverageMagnitude);
-                                    row.SetValue(index_ORBFeatureMatchingFactor, double.IsNaN(ortoImageComparison.ORBFeatureMatchingFactor) ? 0 : ortoImageComparison.ORBFeatureMatchingFactor);
+                                    row?.SetValue(index_AverageColorSimilarity, double.IsNaN(ortoImageComparison.AverageColorSimilarity) ? 0 : ortoImageComparison.AverageColorSimilarity);
+                                    row?.SetValue(index_ColorDistributionShift, double.IsNaN(ortoImageComparison.ColorDistributionShift) ? 0 : ortoImageComparison.ColorDistributionShift);
+                                    row?.SetValue(index_GrayHistogramsFactor, double.IsNaN(ortoImageComparison.GrayHistogramsFactor) ? 0 : ortoImageComparison.GrayHistogramsFactor);
+                                    row?.SetValue(index_HammingDistance, ortoImageComparison.HammingDistance);
+                                    row?.SetValue(index_HistogramCorrelation, double.IsNaN(ortoImageComparison.HistogramCorrelation) ? 0 : ortoImageComparison.HistogramCorrelation);
+                                    row?.SetValue(index_ShapeComparisonFactor, double.IsNaN(ortoImageComparison.ShapeComparisonFactor) ? 0 : ortoImageComparison.ShapeComparisonFactor);
+                                    row?.SetValue(index_StructuralSimilarityIndex_AbsoluteDifference, double.IsNaN(ortoImageComparison.StructuralSimilarityIndex_AbsoluteDifference) ? 0 : ortoImageComparison.StructuralSimilarityIndex_AbsoluteDifference);
+                                    row?.SetValue(index_StructuralSimilarityIndex_MatchTemplate, double.IsNaN(ortoImageComparison.StructuralSimilarityIndex_MatchTemplate) ? 0 : ortoImageComparison.StructuralSimilarityIndex_MatchTemplate);
+                                    row?.SetValue(index_MeanLaplacianFactor, double.IsNaN(ortoImageComparison.MeanLaplacianFactor) ? 0 : ortoImageComparison.MeanLaplacianFactor);
+                                    row?.SetValue(index_StandardDeviationLaplacianFactor, double.IsNaN(ortoImageComparison.StandardDeviationLaplacianFactor) ? 0 : ortoImageComparison.StandardDeviationLaplacianFactor);
+                                    row?.SetValue(index_OpticalFlowAverageMagnitude, double.IsNaN(ortoImageComparison.OpticalFlowAverageMagnitude) ? 0 : ortoImageComparison.OpticalFlowAverageMagnitude);
+                                    row?.SetValue(index_ORBFeatureMatchingFactor, double.IsNaN(ortoImageComparison.ORBFeatureMatchingFactor) ? 0 : ortoImageComparison.ORBFeatureMatchingFactor);
                                 }
 
                             }
@@ -491,12 +501,12 @@ namespace DiGi.GIS.UI
             {
                 foreach (KeyValuePair<string, int> keyValuePair in dictionary_YearBuilt)
                 {
-                    if (!dictionary_Rows.TryGetValue(keyValuePair.Key, out List<Row> rows) || rows == null || rows.Count == 0)
+                    if (!dictionary_Rows.TryGetValue(keyValuePair.Key, out List<Row>? rows) || rows == null || rows.Count == 0)
                     {
                         continue;
                     }
 
-                    if(rows.Count == 1 || !result.TryGetColumn(columnName_Year, out Column column) || column == null)
+                    if(rows.Count == 1 || !result.TryGetColumn(columnName_Year, out Column? column) || column == null)
                     {
                         int index_YearBuilt = updateColumn.Invoke("Year Built");
                         rows[0].SetValue(index_YearBuilt, keyValuePair.Value);
@@ -532,53 +542,47 @@ namespace DiGi.GIS.UI
             return result;
         }
 
-        public static Table ToDiGi_Table(this GISModelFile gISModelFile, IEnumerable<string> references = null, PredictionTableConversionOptions predictionTableConversionOptions = null)
+        public static Table? ToDiGi_Table(this GISModelFile?  gISModelFile, IEnumerable<string>? references = null, PredictionTableConversionOptions? predictionTableConversionOptions = null)
         {
             if (gISModelFile == null)
             {
                 return null;
             }
 
-            string path = gISModelFile.Path;
+            string? path = gISModelFile.Path;
             if (string.IsNullOrWhiteSpace(path))
             {
                 return null;
             }
 
-            if (references == null)
-            {
-                references = gISModelFile.Value.GetObjects<Building2D>()?.ConvertAll(x => x.Reference);
-            }
+            references ??= gISModelFile!.Value?.GetObjects<Building2D>()?.ConvertAll(x => x.Reference).FilterNulls();
 
             if (references == null)
             {
                 return null;
             }
 
-            if (predictionTableConversionOptions == null)
-            {
-                predictionTableConversionOptions = new PredictionTableConversionOptions();
-            }
+            predictionTableConversionOptions ??= new PredictionTableConversionOptions();
 
-            IndexDataFile indexDataFile = null;
+            IndexDataFile? indexDataFile = null;
             if(!string.IsNullOrWhiteSpace(predictionTableConversionOptions.AdministrativeAreal2DsIndexDataFilePath) && File.Exists(predictionTableConversionOptions.AdministrativeAreal2DsIndexDataFilePath))
             {
-                indexDataFile = new IndexDataFile();
+                indexDataFile = [];
                 indexDataFile.Read(predictionTableConversionOptions.AdministrativeAreal2DsIndexDataFilePath);
             }
 
-            Table result = new Table();
+            Table result = new();
 
-            Dictionary<string, Row> dictionary_Row = new Dictionary<string, Row>();
+            Dictionary<string, Row> dictionary_Row = [];
 
-            Func<string, Type, int> updateColumn = new Func<string, Type,int>((name, type) =>
+            Func<string, Type, int> updateColumn = new((name, type) =>
             {
                 if (string.IsNullOrWhiteSpace(name))
                 {
                     return -1;
                 }
 
-                if (result.TryGetColumn(name, out Column column))
+                if (result.TryGetColumn(name, out Column? column) && column is not null)
                 {
                     return column.Index;
                 }
@@ -592,45 +596,45 @@ namespace DiGi.GIS.UI
                 return column.Index;
             });
 
-            Dictionary<string, int> dictionary_YearBuilt = null;
+            Dictionary<string, int>? dictionary_YearBuilt = null;
             if (predictionTableConversionOptions.IncludeYearBuilt)
             {
-                string directory = System.IO.Path.GetDirectoryName(path);
+                string? directory = System.IO.Path.GetDirectoryName(path);
 
-                Dictionary<string, YearBuiltData> dictionary_YearBuiltData = GIS.Query.YearBuiltDataDictionary<YearBuiltData>(directory, references);
+                Dictionary<string, YearBuiltData>? dictionary_YearBuiltData = GIS.Query.YearBuiltDataDictionary<YearBuiltData>(directory, references);
                 if (dictionary_YearBuiltData != null)
                 {
-                    dictionary_YearBuilt = new Dictionary<string, int>();
+                    dictionary_YearBuilt = [];
 
                     foreach (KeyValuePair<string, YearBuiltData> keyValuePair in dictionary_YearBuiltData)
                     {
-                        IYearBuilt yearBuilt = keyValuePair.Value.GetUserYearBuilt();
+                        UserYearBuilt? userYearBuilt = keyValuePair.Value.GetUserYearBuilt();
                         //if(yearBuilt == null)
                         //{
                         //    yearBuilt = keyValuePair.Value.GetPredictedYearBuilt();
                         //}
 
-                        if (yearBuilt == null)
+                        if (userYearBuilt == null)
                         {
                             continue;
                         }
 
-                        dictionary_YearBuilt[keyValuePair.Key] = yearBuilt.Year;
+                        dictionary_YearBuilt[keyValuePair.Key] = userYearBuilt.Year;
                     }
                 }
 
-                if (predictionTableConversionOptions.YearBuiltOnly)
+                if(dictionary_YearBuilt is not null && predictionTableConversionOptions.YearBuiltOnly)
                 {
                     references = references.ToList().FindAll(dictionary_YearBuilt.ContainsKey);
-                    if (references.Count() == 0)
+                    if (!references.Any())
                     {
                         return result;
                     }
                 }
             }
 
-            GISModel gISModel = gISModelFile.Value;
-            List<Building2D> building2Ds = gISModel?.GetObjects<Building2D>();
+            GISModel? gISModel = gISModelFile.Value;
+            List<Building2D>? building2Ds = gISModel?.GetObjects<Building2D>();
             if (building2Ds != null)
             {
                 for (int i = building2Ds.Count - 1; i >= 0; i--)
@@ -642,30 +646,30 @@ namespace DiGi.GIS.UI
                 }
             }
 
-            Dictionary<string, Building2DYearBuiltPredictions> dictionary_Building2DYearBuiltPredictions = null;
-            if (predictionTableConversionOptions.IncludeYearBuiltPredictions)
+            Dictionary<string, Building2DYearBuiltPredictions>? dictionary_Building2DYearBuiltPredictions = null;
+            if (predictionTableConversionOptions.IncludeYearBuiltPredictions && building2Ds != null)
             {
-                string directory = System.IO.Path.GetDirectoryName(path);
+                string? directory = System.IO.Path.GetDirectoryName(path);
 
-                dictionary_Building2DYearBuiltPredictions = GIS.Query.Building2DYearBuiltPredictionsDictionary(directory, building2Ds.ConvertAll(x => x.Reference));
+                dictionary_Building2DYearBuiltPredictions = GIS.Query.Building2DYearBuiltPredictionsDictionary(directory, building2Ds.ConvertAll(x => x.Reference).FilterNulls());
             }
 
             if (building2Ds != null && dictionary_Building2DYearBuiltPredictions != null)
             {
                 for (int i = building2Ds.Count - 1; i >= 0; i--)
                 {
-                    if (!dictionary_Building2DYearBuiltPredictions.ContainsKey(building2Ds[i]?.Reference))
+                    if (building2Ds[i]?.Reference is string reference && !dictionary_Building2DYearBuiltPredictions.ContainsKey(reference))
                     {
                         building2Ds.RemoveAt(i);
                     }
                 }
             }
 
-            Dictionary<GuidReference, List<AdministrativeAreal2D>> dictionary = GIS.Query.AdministrativeAreal2DsDictionary<AdministrativeAreal2D>(gISModel, building2Ds);
+            Dictionary<GuidReference, List<AdministrativeAreal2D>?>? dictionary = GIS.Query.AdministrativeAreal2DsDictionary<AdministrativeAreal2D>(gISModel, building2Ds);
 
             if (predictionTableConversionOptions.IncludeModel)
             {
-                if (building2Ds != null && building2Ds.Count != 0)
+                if (dictionary != null && building2Ds != null && building2Ds.Count != 0)
                 {
                     int index_Reference = updateColumn.Invoke("Reference", typeof(string));
                     int index_BuildingGeneralFunction = updateColumn.Invoke("Building General Function", typeof(int));
@@ -690,40 +694,40 @@ namespace DiGi.GIS.UI
 
                     foreach (Building2D building2D in building2Ds)
                     {
-                        string reference = building2D?.Reference;
+                        string? reference = building2D?.Reference;
                         if (string.IsNullOrWhiteSpace(reference))
                         {
                             continue;
                         }
 
-                        GuidReference guidReference = new GuidReference(building2D);
+                        GuidReference guidReference = new (building2D);
 
-                        PolygonalFace2D polygonalFace2D = building2D.PolygonalFace2D;
+                        PolygonalFace2D? polygonalFace2D = building2D!.PolygonalFace2D;
 
                         BuildingGeneralFunction? buildingGeneralFunction = building2D.BuildingGeneralFunction;
                         BuildingPhase? buidlingPhase = building2D.BuildingPhase;
                         ushort storeys = building2D.Storeys;
                         double? area = polygonalFace2D?.GetArea();
-                        Point2D location = polygonalFace2D?.GetInternalPoint();
-                        string voivodeship = null;
-                        string county = null;
-                        string municipality = null;
-                        string subdivision = null;
+                        Point2D? location = polygonalFace2D?.GetInternalPoint();
+                        string? voivodeship = null;
+                        string? county = null;
+                        string? municipality = null;
+                        string? subdivision = null;
                         uint? subdivisionCalculatedOccupancy = null;
                         double? subdivisionCalculatedOccupancyArea = null;
 
-                        BoundingBox2D boundingBox2D = polygonalFace2D?.GetBoundingBox();
-                        double? boundingBox_X = boundingBox2D?.GetCentroid().X;
-                        double? boundingBox_Y = boundingBox2D?.GetCentroid().Y;
+                        BoundingBox2D? boundingBox2D = polygonalFace2D?.GetBoundingBox();
+                        double? boundingBox_X = boundingBox2D?.GetCentroid()?.X;
+                        double? boundingBox_Y = boundingBox2D?.GetCentroid()?.Y;
                         double? boundingBox_Width = boundingBox2D?.Width;
                         double? boundingBox_Height = boundingBox2D?.Height;
 
-                        if (dictionary.TryGetValue(guidReference, out List<AdministrativeAreal2D> administrativeAreal2Ds) && administrativeAreal2Ds != null)
+                        if (dictionary.TryGetValue(guidReference, out List<AdministrativeAreal2D>? administrativeAreal2Ds) && administrativeAreal2Ds != null)
                         {
-                            List<AdministrativeDivision> administrativeDivisions = administrativeAreal2Ds.OfType<AdministrativeDivision>().ToList();
+                            List<AdministrativeDivision> administrativeDivisions = [.. administrativeAreal2Ds.OfType<AdministrativeDivision>()];
                             if (administrativeDivisions != null)
                             {
-                                AdministrativeDivision administrativeDivision = null;
+                                AdministrativeDivision? administrativeDivision = null;
 
                                 administrativeDivision = administrativeDivisions.Find(x => x.AdministrativeDivisionType == AdministrativeDivisionType.voivodeship);
                                 if (administrativeDivision != null)
@@ -766,7 +770,7 @@ namespace DiGi.GIS.UI
                                 }
                             }
 
-                            AdministrativeSubdivision administrativeSubdivision = administrativeAreal2Ds.OfType<AdministrativeSubdivision>().FirstOrDefault();
+                            AdministrativeSubdivision? administrativeSubdivision = administrativeAreal2Ds.OfType<AdministrativeSubdivision>().FirstOrDefault();
                             if (administrativeSubdivision != null)
                             {
                                 if (indexDataFile != null && indexDataFile.TryGetIndex(administrativeSubdivision.Reference, out int index))
@@ -779,9 +783,9 @@ namespace DiGi.GIS.UI
                                 }
 
 
-                                if (gISModel.TryGetRelatedObjects<OccupancyCalculationResult, AdministrativeAreal2DOccupancyCalculationResultRelation>(administrativeSubdivision, out List<OccupancyCalculationResult> occupancyCalculationResults) && occupancyCalculationResults != null)
+                                if (gISModel!.TryGetRelatedObjects<OccupancyCalculationResult, AdministrativeAreal2DOccupancyCalculationResultRelation>(administrativeSubdivision, out List<OccupancyCalculationResult>? occupancyCalculationResults) && occupancyCalculationResults != null)
                                 {
-                                    OccupancyCalculationResult occupancyCalculationResult = occupancyCalculationResults.FirstOrDefault();
+                                    OccupancyCalculationResult? occupancyCalculationResult = occupancyCalculationResults.FirstOrDefault();
                                     if (occupancyCalculationResult != null)
                                     {
                                         subdivisionCalculatedOccupancy = occupancyCalculationResult.Occupancy;
@@ -792,7 +796,7 @@ namespace DiGi.GIS.UI
                             }
                         }
 
-                        Row row = new Row(-1);
+                        Row row = new(-1);
                         row.SetValue(index_Reference, reference);
                         row.SetValue(index_BuildingGeneralFunction, buildingGeneralFunction == null || !buildingGeneralFunction.HasValue ? -1 : ((int)buildingGeneralFunction.Value).ToString());
                         row.SetValue(index_BuildingPhase, buidlingPhase == null || !buidlingPhase.HasValue ? -1 : ((int)buidlingPhase.Value).ToString());
@@ -821,7 +825,7 @@ namespace DiGi.GIS.UI
             {
                 if (building2Ds != null)
                 {
-                    List<Tuple<StatisticalUnit, List<Building2D>>> tuples = new List<Tuple<StatisticalUnit, List<Building2D>>>();
+                    List<Tuple<StatisticalUnit, List<Building2D>>> tuples = [];
 
                     foreach (Building2D building2D in building2Ds)
                     {
@@ -830,14 +834,14 @@ namespace DiGi.GIS.UI
                             continue;
                         }
 
-                        GuidReference guidReference = new GuidReference(building2D);
+                        GuidReference guidReference = new (building2D);
 
-                        if (!dictionary.TryGetValue(guidReference, out List<AdministrativeAreal2D> administrativeAreal2Ds) || administrativeAreal2Ds == null)
+                        if (!dictionary!.TryGetValue(guidReference, out List<AdministrativeAreal2D>? administrativeAreal2Ds) || administrativeAreal2Ds == null)
                         {
                             continue;
                         }
 
-                        List<AdministrativeSubdivision> administrativeSubdivisions = administrativeAreal2Ds.OfType<AdministrativeSubdivision>().ToList();
+                        List<AdministrativeSubdivision> administrativeSubdivisions = [.. administrativeAreal2Ds.OfType<AdministrativeSubdivision>()];
                         if (administrativeSubdivisions == null || administrativeSubdivisions.Count == 0)
                         {
                             continue;
@@ -845,11 +849,20 @@ namespace DiGi.GIS.UI
 
                         if (administrativeSubdivisions.Count != 1)
                         {
-                            List<Tuple<double, AdministrativeSubdivision>> tuples_AdministrativeSubdivision = new List<Tuple<double, AdministrativeSubdivision>>();
+                            List<Tuple<double, AdministrativeSubdivision>> tuples_AdministrativeSubdivision = [];
                             foreach (AdministrativeSubdivision administrativeSubdivision_Temp in administrativeSubdivisions)
                             {
-                                AdministrativeAreal2DGeometryCalculationResult administrativeAreal2DGeometryCalculationResult = gISModel.GetRelatedObject<AdministrativeAreal2DGeometryCalculationResult>(administrativeSubdivision_Temp);
-                                double area = administrativeAreal2DGeometryCalculationResult != null ? administrativeAreal2DGeometryCalculationResult.Area : administrativeSubdivision_Temp.PolygonalFace2D.GetArea();
+                                AdministrativeAreal2DGeometryCalculationResult? administrativeAreal2DGeometryCalculationResult = gISModel!.GetRelatedObject<AdministrativeAreal2DGeometryCalculationResult>(administrativeSubdivision_Temp);
+                                double area = 0;
+                                if (administrativeAreal2DGeometryCalculationResult == null && administrativeSubdivision_Temp.PolygonalFace2D is PolygonalFace2D polygonalFace2D)
+                                {
+                                    area = polygonalFace2D.GetArea();
+                                }
+                                else if(administrativeAreal2DGeometryCalculationResult is not null)
+                                {
+                                    area = administrativeAreal2DGeometryCalculationResult.Area;
+                                }
+
                                 tuples_AdministrativeSubdivision.Add(new Tuple<double, AdministrativeSubdivision>(area, administrativeSubdivision_Temp));
                             }
 
@@ -857,15 +870,15 @@ namespace DiGi.GIS.UI
                             administrativeSubdivisions = tuples_AdministrativeSubdivision.ConvertAll(x => x.Item2);
                         }
 
-                        IEnumerable<StatisticalUnit> statisticalUnits = gISModel.GetRelatedObject<AdministrativeAreal2DStatisticalUnitsCalculcationResult>(administrativeSubdivisions[0])?.StatisticalUnits;
+                        IEnumerable<StatisticalUnit>? statisticalUnits = gISModel!.GetRelatedObject<AdministrativeAreal2DStatisticalUnitsCalculcationResult>(administrativeSubdivisions[0])?.StatisticalUnits;
                         if (statisticalUnits != null)
                         {
                             foreach (StatisticalUnit statisticalUnit in statisticalUnits)
                             {
-                                Tuple<StatisticalUnit, List<Building2D>> tuple = tuples.Find(x => x.Item1.Code == statisticalUnit.Code);
+                                Tuple<StatisticalUnit, List<Building2D>>? tuple = tuples.Find(x => x.Item1.Code == statisticalUnit.Code);
                                 if (tuple == null)
                                 {
-                                    tuple = new Tuple<StatisticalUnit, List<Building2D>>(statisticalUnit, new List<Building2D>());
+                                    tuple = new Tuple<StatisticalUnit, List<Building2D>>(statisticalUnit, []);
                                     tuples.Add(tuple);
                                 }
 
@@ -876,71 +889,77 @@ namespace DiGi.GIS.UI
 
                     if (tuples != null && tuples.Count != 0)
                     {
-                        Range<int> range_Years = predictionTableConversionOptions?.Years;
+                        Range<int>? range_Years = predictionTableConversionOptions?.Years;
 
-                        string[] paths_StatisticalDataCollectionFile = Directory.GetFiles(predictionTableConversionOptions.StatisticalDirectory, string.Format("*.{0}", Constans.FileExtension.StatisticalDataCollectionFile));
+                        string[] paths_StatisticalDataCollectionFile = Directory.GetFiles(predictionTableConversionOptions!.StatisticalDirectory, string.Format("*.{0}", Constans.FileExtension.StatisticalDataCollectionFile));
                         if (paths_StatisticalDataCollectionFile != null && paths_StatisticalDataCollectionFile.Length != 0)
                         {
                             foreach (string path_StatisticalDataCollectionFile in paths_StatisticalDataCollectionFile)
                             {
-                                using (StatisticalDataCollectionFile statisticalDataCollectionFile = new StatisticalDataCollectionFile(path_StatisticalDataCollectionFile))
+                                using StatisticalDataCollectionFile statisticalDataCollectionFile = new (path_StatisticalDataCollectionFile);
+
+                                Dictionary<string, StatisticalDataCollection>? dictionary_StatisticalDataCollection = GIS.Query.StatisticalDataCollectionDictionary(statisticalDataCollectionFile, tuples.ConvertAll(x => x.Item1.Code).FilterNulls());
+                                if (dictionary is not null && dictionary_StatisticalDataCollection is not null)
                                 {
-                                    Dictionary<string, StatisticalDataCollection> dictionary_StatisticalDataCollection = GIS.Query.StatisticalDataCollectionDictionary(statisticalDataCollectionFile, tuples.ConvertAll(x => x.Item1.Code));
-                                    if (dictionary != null)
+                                    foreach (KeyValuePair<string, StatisticalDataCollection> keyValuePair in dictionary_StatisticalDataCollection)
                                     {
-                                        foreach (KeyValuePair<string, StatisticalDataCollection> keyValuePair in dictionary_StatisticalDataCollection)
+                                        Tuple<StatisticalUnit, List<Building2D>>? tuple = tuples.Find(x => x.Item1.Code == keyValuePair.Key);
+                                        if (tuple == null)
                                         {
-                                            Tuple<StatisticalUnit, List<Building2D>> tuple = tuples.Find(x => x.Item1.Code == keyValuePair.Key);
-                                            if (tuple == null)
-                                            {
-                                                continue;
-                                            }
+                                            continue;
+                                        }
 
-                                            StatisticalDataCollection statisticalDataCollection = keyValuePair.Value;
+                                        StatisticalDataCollection statisticalDataCollection = keyValuePair.Value;
 
-                                            Variable[] variables =
-                                            {
+                                        Variable[] variables =
+                                        [
                                                 Variable.population_thousand_persons
-                                            };
+                                        ];
 
-                                            if (range_Years != null)
+                                        if (range_Years != null)
+                                        {
+                                            foreach (Variable variable in variables)
                                             {
-                                                foreach (Variable variable in variables)
+                                                string? description = Core.Query.Description(variable);
+                                                if(description is null)
                                                 {
-                                                    string description = Core.Query.Description(variable);
+                                                    continue;
+                                                }
 
-                                                    StatisticalYearlyDoubleData statisticalYearlyDoubleData = statisticalDataCollection[description] as StatisticalYearlyDoubleData;
-                                                    if (statisticalYearlyDoubleData != null)
+                                                if (statisticalDataCollection[description] is StatisticalYearlyDoubleData statisticalYearlyDoubleData)
+                                                {
+                                                    string? name = Query.ColumnName(variable);
+
+                                                    foreach (Building2D building2D in tuple.Item2)
                                                     {
-                                                        string name = Query.ColumnName(variable);
-
-                                                        foreach (Building2D building2D in tuple.Item2)
+                                                        string? reference = building2D?.Reference;
+                                                        if (reference == null)
                                                         {
-                                                            string reference = building2D.Reference;
+                                                            continue;
+                                                        }
 
-                                                            if (!dictionary_Row.TryGetValue(reference, out Row row) || row == null)
+                                                        if (!dictionary_Row.TryGetValue(reference, out Row? row) || row == null)
+                                                        {
+                                                            row = new Row(-1);
+                                                            dictionary_Row[reference] = row;
+                                                        }
+
+                                                        for (int i = range_Years.Min; i <= range_Years.Max; i++)
+                                                        {
+                                                            short year = System.Convert.ToInt16(i);
+
+                                                            double? value = null;
+                                                            if (statisticalYearlyDoubleData.TryGetValue(year, out double value_Temp))
                                                             {
-                                                                row = new Row(-1);
-                                                                dictionary_Row[reference] = row;
-                                                            }
-
-                                                            for (int i = range_Years.Min; i <= range_Years.Max; i++)
-                                                            {
-                                                                short year = System.Convert.ToInt16(i);
-
-                                                                double? value = null;
-                                                                if (statisticalYearlyDoubleData.TryGetValue(year, out double value_Temp))
+                                                                value = value_Temp;
+                                                                if (variable == Variable.population_thousand_persons)
                                                                 {
-                                                                    value = value_Temp;
-                                                                    if (variable == Variable.population_thousand_persons)
-                                                                    {
-                                                                        value *= 1000;
-                                                                    }
+                                                                    value *= 1000;
                                                                 }
-
-                                                                int index_Year = updateColumn.Invoke(string.Format("{0} {1}", name, year), typeof(double));
-                                                                row.SetValue(index_Year, value == null || !value.HasValue ? null : value.Value);
                                                             }
+
+                                                            int index_Year = updateColumn.Invoke(string.Format("{0} {1}", name, year), typeof(double));
+                                                            row.SetValue(index_Year, value == null || !value.HasValue ? null : value.Value);
                                                         }
                                                     }
                                                 }
@@ -956,12 +975,12 @@ namespace DiGi.GIS.UI
 
             if (dictionary_Building2DYearBuiltPredictions != null && dictionary_Building2DYearBuiltPredictions.Count != 0)
             {
-                Range<int> range_Years = predictionTableConversionOptions?.Years;
+                Range<int>? range_Years = predictionTableConversionOptions?.Years;
                 if(range_Years != null)
                 {
                     foreach (KeyValuePair<string, Row> keyValuePair in dictionary_Row)
                     {
-                        if (!dictionary_Building2DYearBuiltPredictions.TryGetValue(keyValuePair.Key, out Building2DYearBuiltPredictions building2DYearBuiltPredictions) || building2DYearBuiltPredictions == null)
+                        if (!dictionary_Building2DYearBuiltPredictions.TryGetValue(keyValuePair.Key, out Building2DYearBuiltPredictions? building2DYearBuiltPredictions) || building2DYearBuiltPredictions == null)
                         {
                             continue;
                         }
@@ -970,7 +989,7 @@ namespace DiGi.GIS.UI
 
                         for (int i = range_Years.Min; i <= range_Years.Max; i++)
                         {
-                            YearBuiltPrediction yearBuiltPrediction = building2DYearBuiltPredictions.GetYearBuiltPrediction((ushort)i);
+                            YearBuiltPrediction? yearBuiltPrediction = building2DYearBuiltPredictions.GetYearBuiltPrediction((ushort)i);
                             if (yearBuiltPrediction == null)
                             {
                                 continue;
@@ -982,16 +1001,16 @@ namespace DiGi.GIS.UI
                             row.SetValue(index, yearBuiltPrediction.Confidence);
 
                             index = updateColumn.Invoke(string.Format("Prediction BoundingBox X {0}", i), typeof(double));
-                            row.SetValue(index, yearBuiltPrediction.BoundingBox.GetCentroid().X);
+                            row.SetValue(index, yearBuiltPrediction.BoundingBox?.GetCentroid()?.X);
 
                             index = updateColumn.Invoke(string.Format("Prediction BoundingBox Y {0}", i), typeof(double));
-                            row.SetValue(index, yearBuiltPrediction.BoundingBox.GetCentroid().Y);
+                            row.SetValue(index, yearBuiltPrediction.BoundingBox?.GetCentroid()?.Y);
 
                             index = updateColumn.Invoke(string.Format("Prediction BoundingBox Width {0}", i), typeof(double));
-                            row.SetValue(index, yearBuiltPrediction.BoundingBox.Width);
+                            row.SetValue(index, yearBuiltPrediction.BoundingBox?.Width);
 
                             index = updateColumn.Invoke(string.Format("Prediction BoundingBox Height {0}", i), typeof(double));
-                            row.SetValue(index, yearBuiltPrediction.BoundingBox.Height);
+                            row.SetValue(index, yearBuiltPrediction.BoundingBox?.Height);
                         }
                     }
                 }
@@ -1003,7 +1022,7 @@ namespace DiGi.GIS.UI
 
                 foreach (KeyValuePair<string, int> keyValuePair in dictionary_YearBuilt)
                 {
-                    if (!dictionary_Row.TryGetValue(keyValuePair.Key, out Row row) || row == null)
+                    if (!dictionary_Row.TryGetValue(keyValuePair.Key, out Row? row) || row == null)
                     {
                         continue;
                     }
@@ -1020,7 +1039,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                Row row = result.AddRow(keyValuePair.Value);
+                Row? row = result.AddRow(keyValuePair.Value);
                 if(row == null)
                 {
                     continue;
@@ -1032,7 +1051,7 @@ namespace DiGi.GIS.UI
                     {
                         if(column.Type == typeof(string))
                         {
-                            if (!row.TryGetValue(column.Index, out string value) || value == null)
+                            if (!row.TryGetValue(column.Index, out string? value) || value == null)
                             {
                                 row.SetValue(column.Index, "null");
                             }

@@ -14,8 +14,10 @@ namespace DiGi.GIS.UI
 
             OpenFolderDialog openFolderDialog;
 
-            openFolderDialog = new OpenFolderDialog();
-            openFolderDialog.Title = "Select Bounding Box Result Files directory";
+            openFolderDialog = new()
+            {
+                Title = "Select Bounding Box Result Files directory"
+            };
             dialogResult = openFolderDialog.ShowDialog(owner);
             if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
             {
@@ -30,8 +32,10 @@ namespace DiGi.GIS.UI
                 return false;
             }
 
-            openFolderDialog = new OpenFolderDialog();
-            openFolderDialog.Title = "Select GIS Model Files directory";
+            openFolderDialog = new()
+            {
+                Title = "Select GIS Model Files directory"
+            };
             dialogResult = openFolderDialog.ShowDialog(owner);
             if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
             {
@@ -50,13 +54,13 @@ namespace DiGi.GIS.UI
 
             string path_Building2DYearBuiltPredictionsFile_Temp = Path.Combine(directory_GISModelFile, string.Format("{0}.{1}", "TEMP", FileExtension.Building2DYearBuiltPredictionsFile));
 
-            using (Building2DYearBuiltPredictionsFile building2DYearBuiltPredictionsFile_Temp = new Building2DYearBuiltPredictionsFile(path_Building2DYearBuiltPredictionsFile_Temp))
+            using (Building2DYearBuiltPredictionsFile building2DYearBuiltPredictionsFile_Temp = new (path_Building2DYearBuiltPredictionsFile_Temp))
             {
                 building2DYearBuiltPredictionsFile_Temp.Open();
 
                 foreach (string path_Input in paths_BoundingBoxResultFile)
                 {
-                    YOLO.Classes.BoundingBoxResultFile boundingBoxResultFile = YOLO.Create.BoundingBoxResultFile(path_Input);
+                    YOLO.Classes.BoundingBoxResultFile? boundingBoxResultFile = YOLO.Create.BoundingBoxResultFile(path_Input);
                     if (boundingBoxResultFile == null)
                     {
                         continue;
@@ -68,12 +72,17 @@ namespace DiGi.GIS.UI
                 //foreach (string path_GISModelFile in paths_GISModelFile)
                 Parallel.ForEach(paths_GISModelFile, Core.Create.ParallelOptions(), path_GISModelFile => 
                 {
-                    List<Building2DYearBuiltPredictions> building2DYearBuiltPredictionsList = new List<Building2DYearBuiltPredictions>();
-                    using (GISModelFile gISModelFile = new GISModelFile(path_GISModelFile))
+                    if (Path.GetDirectoryName(path_GISModelFile) is not string directory)
+                    {
+                        return;
+                    }
+
+                    List<Building2DYearBuiltPredictions> building2DYearBuiltPredictionsList = [];
+                    using (GISModelFile gISModelFile = new (path_GISModelFile))
                     {
                         gISModelFile.Open();
 
-                        HashSet<string> references = gISModelFile?.Value?.GetReferences<Building2D>();
+                        HashSet<string>? references = gISModelFile?.Value?.GetReferences<Building2D>();
                         if (references == null || references.Count == 0)
                         {
                             return;
@@ -81,7 +90,7 @@ namespace DiGi.GIS.UI
 
                         foreach (string reference in references)
                         {
-                            Building2DYearBuiltPredictions building2DYearBuiltPredictions = building2DYearBuiltPredictionsFile_Temp.GetValue<Building2DYearBuiltPredictions>(Building2DYearBuiltPredictionsFile.GetUniqueReference(reference));
+                            Building2DYearBuiltPredictions? building2DYearBuiltPredictions = building2DYearBuiltPredictionsFile_Temp.GetValue<Building2DYearBuiltPredictions>(Building2DYearBuiltPredictionsFile.GetUniqueReference(reference));
                             if (building2DYearBuiltPredictions == null)
                             {
                                 continue;
@@ -97,8 +106,8 @@ namespace DiGi.GIS.UI
                         return;
                     }
 
-                    string path_Building2DYearBuiltPredictionsFile = Path.Combine(Path.GetDirectoryName(path_GISModelFile), string.Format("{0}.{1}", Path.GetFileNameWithoutExtension(path_GISModelFile), FileExtension.Building2DYearBuiltPredictionsFile));
-                    using (Building2DYearBuiltPredictionsFile building2DYearBuiltPredictionsFile = new Building2DYearBuiltPredictionsFile(path_Building2DYearBuiltPredictionsFile))
+                    string path_Building2DYearBuiltPredictionsFile = Path.Combine(directory, string.Format("{0}.{1}", Path.GetFileNameWithoutExtension(path_GISModelFile), FileExtension.Building2DYearBuiltPredictionsFile));
+                    using (Building2DYearBuiltPredictionsFile building2DYearBuiltPredictionsFile = new (path_Building2DYearBuiltPredictionsFile))
                     {
                         building2DYearBuiltPredictionsFile.Open();
 

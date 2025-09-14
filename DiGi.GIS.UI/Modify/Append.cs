@@ -12,10 +12,14 @@ namespace DiGi.GIS.UI
                 return false;
             }
 
-            Dictionary<string, List<YearBuiltPrediction>> dictionary = new Dictionary<string, List<YearBuiltPrediction>>();
+            Dictionary<string, List<YearBuiltPrediction>> dictionary = [];
             foreach(BoundingBoxResult boundingBoxResult in boundingBoxResultFile)
             {
-                string name = boundingBoxResult?.Name;
+                string? name = boundingBoxResult?.Name;
+                if (name is null)
+                {
+                    continue;
+                }
 
                 string[] values = name.Split("_");
                 if(values == null || values.Length < 2)
@@ -30,13 +34,13 @@ namespace DiGi.GIS.UI
 
                 string reference = values[0].Trim();
 
-                if(!dictionary.TryGetValue(reference, out List<YearBuiltPrediction> yearBuiltPredictions) || yearBuiltPredictions == null)
+                if(!dictionary.TryGetValue(reference, out List<YearBuiltPrediction>? yearBuiltPredictions) || yearBuiltPredictions == null)
                 {
-                    yearBuiltPredictions = new List<YearBuiltPrediction>();
+                    yearBuiltPredictions = [];
                     dictionary[reference] = yearBuiltPredictions;
                 }
 
-                YearBuiltPrediction YearBuiltPrediction = new YearBuiltPrediction(year, new Geometry.Planar.Classes.BoundingBox2D(boundingBoxResult.X, boundingBoxResult.Y, boundingBoxResult.Width, boundingBoxResult.Height), boundingBoxResult.Confidence);
+                YearBuiltPrediction YearBuiltPrediction = new(year, new Geometry.Planar.Classes.BoundingBox2D(boundingBoxResult!.X, boundingBoxResult.Y, boundingBoxResult.Width, boundingBoxResult.Height), boundingBoxResult.Confidence);
                 yearBuiltPredictions.Add(YearBuiltPrediction);
             }
 

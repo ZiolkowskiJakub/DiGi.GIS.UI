@@ -10,8 +10,10 @@ namespace DiGi.GIS.UI
         {
             bool? result;
 
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "zip files (*.zip)|*.zip|All files (*.*)|*.*";
+            OpenFileDialog openFileDialog = new()
+            {
+                Filter = "zip files (*.zip)|*.zip|All files (*.*)|*.*"
+            };
             result = openFileDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -24,7 +26,7 @@ namespace DiGi.GIS.UI
                 return;
             }
 
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            OpenFolderDialog openFolderDialog = new();
             result = openFolderDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {

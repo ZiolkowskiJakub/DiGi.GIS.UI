@@ -21,21 +21,23 @@ namespace DiGi.GIS.UI.Application.Windows
     /// </summary>
     public partial class MainWindow : Window
     {
-        private DiGi.UI.WPF.Core.Classes.DeterminateWindowWorker determinateWindowWorker;
+        private readonly DiGi.UI.WPF.Core.Classes.DeterminateWindowWorker determinateWindowWorker;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            determinateWindowWorker = new DiGi.UI.WPF.Core.Classes.DeterminateWindowWorker(this);
+            determinateWindowWorker = new DiGi.UI.WPF.Core.Classes.DeterminateWindowWorker();
 
             this.Closed += MainWindow_Closed;
         }
 
-        private static async void BDLMatchTest()
+        private static void BDLMatchTest()
         {
-            OpenFileDialog openFileDialog_Json = new OpenFileDialog();
-            openFileDialog_Json.Filter = "json files (*.json)|*.json|All files (*.*)|*.*";
+            OpenFileDialog openFileDialog_Json = new()
+            {
+                Filter = "json files (*.json)|*.json|All files (*.*)|*.*"
+            };
             bool? openFileDialog_Json_Result = openFileDialog_Json.ShowDialog();
             if (openFileDialog_Json_Result == null || !openFileDialog_Json_Result.HasValue || !openFileDialog_Json_Result.Value)
             {
@@ -43,44 +45,48 @@ namespace DiGi.GIS.UI.Application.Windows
             }
 
             string json = File.ReadAllText(openFileDialog_Json.FileName);
-            List<Unit> units = JsonSerializer.Deserialize<List<Unit>>(json);
+            List<Unit>? units = JsonSerializer.Deserialize<List<Unit>>(json);
 
-            StatisticalUnit statisticalUnit = GIS.Create.StatisticalUnit(units);
+            StatisticalUnit? statisticalUnit = GIS.Create.StatisticalUnit(units);
 
-            OpenFileDialog openFileDialog_GISModelFile = new OpenFileDialog();
-            openFileDialog_GISModelFile.Filter = "GISModelFile files (*.gmf)|*.gmf|All files (*.*)|*.*";
+            OpenFileDialog openFileDialog_GISModelFile = new()
+            {
+                Filter = "GISModelFile files (*.gmf)|*.gmf|All files (*.*)|*.*"
+            };
             bool? openFileDialog_GISModelFile_Result = openFileDialog_GISModelFile.ShowDialog();
             if (openFileDialog_GISModelFile_Result == null || !openFileDialog_GISModelFile_Result.HasValue || !openFileDialog_GISModelFile_Result.Value)
             {
                 return;
             }
 
-            GISModel gISModel = null;
-            using (GISModelFile gISModelFile = new GISModelFile(openFileDialog_GISModelFile.FileName))
+            GISModel? gISModel = null;
+            using (GISModelFile gISModelFile = new (openFileDialog_GISModelFile.FileName))
             {
                 gISModelFile.Open();
                 gISModel = gISModelFile.Value;
             }
 
-            List<AdministrativeAreal2D> administrativeAreal2Ds = gISModel?.GetObjects<AdministrativeAreal2D>();
+            List<AdministrativeAreal2D>? administrativeAreal2Ds = gISModel?.GetObjects<AdministrativeAreal2D>();
             if (administrativeAreal2Ds == null)
             {
                 return;
             }
 
-            List<string> names = new List<string>();
+            List<string?> names = [];
             foreach (AdministrativeAreal2D administrativeAreal2D in administrativeAreal2Ds)
             {
-                names.Add(administrativeAreal2D.Name);
+                names.Add(administrativeAreal2D?.Name);
             }
 
         }
 
-        private static async void BDLTest()
+        private static void BDLTest()
         {
 
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "json files (*.json)|*.json|All files (*.*)|*.*";
+            OpenFileDialog openFileDialog = new()
+            {
+                Filter = "json files (*.json)|*.json|All files (*.*)|*.*"
+            };
             bool? openFileDialog_Result = openFileDialog.ShowDialog();
             if (openFileDialog_Result == null || !openFileDialog_Result.HasValue || !openFileDialog_Result.Value)
             {
@@ -88,23 +94,23 @@ namespace DiGi.GIS.UI.Application.Windows
             }
 
             string json = File.ReadAllText(openFileDialog.FileName);
-            List<Unit> units = JsonSerializer.Deserialize<List<Unit>>(json);
+            List<Unit>? units = JsonSerializer.Deserialize<List<Unit>>(json);
 
-            StatisticalUnit statisticalUnit = GIS.Create.StatisticalUnit(units);
+            StatisticalUnit? statisticalUnit = GIS.Create.StatisticalUnit(units);
 
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.StatisticalUnitFile, FileExtension.StatisticalUnitFile);
+            SaveFileDialog saveFileDialog = new()
+            {
+                Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.StatisticalUnitFile, FileExtension.StatisticalUnitFile)
+            };
             bool? saveFileDialog_Result = saveFileDialog.ShowDialog();
             if (saveFileDialog_Result == null || !saveFileDialog_Result.HasValue || !saveFileDialog_Result.Value)
             {
                 return;
             }
 
-            using (StatisticalUnitFile statisticalUnitFile = new StatisticalUnitFile(saveFileDialog.FileName))
-            {
-                statisticalUnitFile.Value = statisticalUnit;
-                statisticalUnitFile.Save();
-            }
+            using StatisticalUnitFile statisticalUnitFile = new (saveFileDialog.FileName);
+            statisticalUnitFile.Value = statisticalUnit;
+            statisticalUnitFile.Save();
 
 
 
@@ -152,7 +158,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             string fileNameSufix = "_StatisticalUnits";
 
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            OpenFolderDialog openFolderDialog = new();
             result = openFolderDialog.ShowDialog();
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -161,13 +167,13 @@ namespace DiGi.GIS.UI.Application.Windows
 
             string directory = openFolderDialog.FolderName;
 
-            List<string> paths_GISModelFile = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories).ToList();
+            List<string> paths_GISModelFile = [.. Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories)];
             if (paths_GISModelFile == null || paths_GISModelFile.Count == 0)
             {
                 return;
             }
 
-            Core.Query.Filter(paths_GISModelFile, x => System.IO.Path.GetFileNameWithoutExtension(x).EndsWith(fileNameSufix), out List<string> paths_GISModelFile_New, out List<string> paths_GISModelFile_Old);
+            Core.Query.Filter(paths_GISModelFile, x => System.IO.Path.GetFileNameWithoutExtension(x)!.EndsWith(fileNameSufix), out List<string>? paths_GISModelFile_New, out List<string>? paths_GISModelFile_Old);
 
             if (paths_GISModelFile_New == null || paths_GISModelFile_Old == null)
             {
@@ -189,7 +195,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             foreach (string path_GISModelFile_New in paths_GISModelFile_New)
             {
-                string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path_GISModelFile_New), System.IO.Path.GetFileNameWithoutExtension(path_GISModelFile_New).Replace(fileNameSufix, string.Empty) + System.IO.Path.GetExtension(path_GISModelFile_New));
+                string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path_GISModelFile_New)!, System.IO.Path.GetFileNameWithoutExtension(path_GISModelFile_New).Replace(fileNameSufix, string.Empty) + System.IO.Path.GetExtension(path_GISModelFile_New));
 
                 File.Move(path_GISModelFile_New, path);
             }
@@ -213,7 +219,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             string directory_Source = openFolderDialog.FolderName;
 
-            List<string> paths_GISModelFile_Source = Directory.GetFiles(directory_Source, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories).ToList();
+            List<string> paths_GISModelFile_Source = [.. Directory.GetFiles(directory_Source, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories)];
             if (paths_GISModelFile_Source == null || paths_GISModelFile_Source.Count == 0)
             {
                 return;
@@ -228,7 +234,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             string directory_Destination = openFolderDialog.FolderName;
 
-            List<string> paths_GISModelFile_Destination = Directory.GetFiles(directory_Destination, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories).ToList();
+            List<string> paths_GISModelFile_Destination = [.. Directory.GetFiles(directory_Destination, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories)];
             if (paths_GISModelFile_Destination == null || paths_GISModelFile_Destination.Count == 0)
             {
                 return;
@@ -238,7 +244,7 @@ namespace DiGi.GIS.UI.Application.Windows
             {
                 string fileName = System.IO.Path.GetFileNameWithoutExtension(path_GISModelFile_Source);
 
-                string path_GISModelFile_Destination = paths_GISModelFile_Destination.Find(x => System.IO.Path.GetFileNameWithoutExtension(x) == fileName);
+                string? path_GISModelFile_Destination = paths_GISModelFile_Destination.Find(x => System.IO.Path.GetFileNameWithoutExtension(x) == fileName);
 
                 if(File.Exists(path_GISModelFile_Source) && File.Exists(path_GISModelFile_Destination))
                 {
@@ -249,7 +255,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private static void CreateAdministrativeAreal2DModel()
         {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            OpenFolderDialog openFolderDialog = new ();
             bool? result = openFolderDialog.ShowDialog();
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -268,43 +274,42 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.GISModelFile, FileExtension.GISModelFile);
+            SaveFileDialog saveFileDialog = new()
+            {
+                Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.GISModelFile, FileExtension.GISModelFile)
+            };
             result = saveFileDialog.ShowDialog();
             if (result == null || !result.HasValue || !result.Value)
             {
                 return;
             }
 
-            Dictionary<string, AdministrativeAreal2D> dictionary = new Dictionary<string, AdministrativeAreal2D>();
+            Dictionary<string, AdministrativeAreal2D> dictionary = [];
 
             for (int i = 0; i < paths_Input.Length; i++)
             {
                 string path_Input = paths_Input[i];
 
-                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                using GISModelFile gISModelFile = new(path_Input);
+                gISModelFile.Open();
+
+                List<AdministrativeAreal2D>? administrativeAreal2Ds = gISModelFile?.Value?.GetObjects<AdministrativeAreal2D>();
+                if (administrativeAreal2Ds != null)
                 {
-                    gISModelFile.Open();
-
-                    List<AdministrativeAreal2D> administrativeAreal2Ds = gISModelFile.Value.GetObjects<AdministrativeAreal2D>();
-                    if (administrativeAreal2Ds != null)
+                    foreach (AdministrativeAreal2D administrativeAreal2D in administrativeAreal2Ds)
                     {
-                        foreach (AdministrativeAreal2D administrativeAreal2D in administrativeAreal2Ds)
+                        if (string.IsNullOrWhiteSpace(administrativeAreal2D?.Reference))
                         {
-                            if (string.IsNullOrWhiteSpace(administrativeAreal2D?.Reference))
-                            {
-                                continue;
-                            }
-
-                            dictionary[administrativeAreal2D.Reference] = administrativeAreal2D;
+                            continue;
                         }
-                    }
 
+                        dictionary[administrativeAreal2D.Reference] = administrativeAreal2D;
+                    }
                 }
             }
 
 
-            GISModel gISModel = new GISModel();
+            GISModel gISModel = new ();
             foreach (AdministrativeAreal2D administrativeAreal2D in dictionary.Values)
             {
                 gISModel.Update(administrativeAreal2D);
@@ -313,7 +318,7 @@ namespace DiGi.GIS.UI.Application.Windows
             gISModel.CalculateAdministrativeAreal2DGeometries();
             gISModel.CalculateAdministrativeAreal2DAdministrativeAreal2Ds();
 
-            using (GISModelFile gISModelFile = new GISModelFile(saveFileDialog.FileName))
+            using (GISModelFile gISModelFile = new (saveFileDialog.FileName))
             {
                 gISModelFile.Value = gISModel;
                 gISModelFile.Save();
@@ -324,8 +329,10 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private static void GISFileModelTest()
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "GIS Model files (*.gmf)|*.gmf|All files (*.*)|*.*";
+            OpenFileDialog openFileDialog = new()
+            {
+                Filter = "GIS Model files (*.gmf)|*.gmf|All files (*.*)|*.*"
+            };
             bool? result = openFileDialog.ShowDialog();
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -338,29 +345,24 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            using (GISModelFile gISModelFile = new GISModelFile(path))
+            using GISModelFile gISModelFile = new(path);
+            gISModelFile.Open();
+
+            GISModel? gISModel = gISModelFile.Value;
+
+            List<Building2D>? building2Ds = gISModel?.GetObjects<Building2D>();
+            if (building2Ds != null && building2Ds.Count > 0)
             {
-                gISModelFile.Open();
+                Building2D building2D = building2Ds[0];
 
-                GISModel gISModel = gISModelFile.Value;
+                GIS.Query.AdministrativeAreal2Ds<AdministrativeAreal2D>(gISModel, building2D);
 
-                List<Building2D> building2Ds = gISModel.GetObjects<Building2D>();
-                if (building2Ds != null && building2Ds.Count > 0)
-                {
-                    Building2D building2D = building2Ds[0];
-
-                    List<AdministrativeAreal2D> administrativeAreal2Ds = GIS.Query.AdministrativeAreal2Ds<AdministrativeAreal2D>(gISModel, building2D);
-
-
-                }
 
             }
         }
 
-        private void Analyse_OrtoDatasComparisons_Table()
+        private static void Analyse_OrtoDatasComparisons_Table()
         {
-
-
             MessageBox.Show("Finished!");
         }
 
@@ -372,22 +374,20 @@ namespace DiGi.GIS.UI.Application.Windows
 
             Modify.AppendBuildingModels(this);
 
-            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+            TimeSpan timeSpan = new ((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Appending! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
         private void AppendPredictionYearBuilts()
         {
-            bool includeOrtoRange = false;
-
             DateTime dateTime = DateTime.Now;
 
             TextBlock_Progress.Text = "Appending Prediction Year Builts...";
 
             Modify.AppendPredictionYearBuilts(this);
 
-            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+            TimeSpan timeSpan = new ((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Appending Prediction Year Builts! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
@@ -400,7 +400,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             Modify.AppendPredictionTable(this);
 
-            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+            TimeSpan timeSpan = new ((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Appending! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
@@ -413,7 +413,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             Modify.AppendVoTTModel_OrtoRange(this);
 
-            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+            TimeSpan timeSpan = new ((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Appending VoTT Model! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
@@ -426,8 +426,10 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = "Appending YOLO Model...";
 
-            YOLOConversionOptions yOLOConversionOptions = new YOLOConversionOptions();
-            yOLOConversionOptions.ClearData = true;
+            YOLOConversionOptions yOLOConversionOptions = new()
+            {
+                ClearData = true
+            };
 
             yOLOConversionOptions[YOLO.Enums.Category.Train] = 0.9;
             yOLOConversionOptions[YOLO.Enums.Category.Validate] = 0.1;
@@ -441,7 +443,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 Modify.AppendYOLOModel_OrtoRange(this, yOLOConversionOptions);
             }
 
-            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+            TimeSpan timeSpan = new ((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Appending YOLO Model! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
@@ -459,7 +461,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             Modify.AppendBuilding2DYearBuiltPredictionsFile(this);
 
-            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+            TimeSpan timeSpan = new ((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Appending Predictions! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
 
@@ -529,8 +531,10 @@ namespace DiGi.GIS.UI.Application.Windows
         {
             Hide();
 
-            UI.Windows.OrtoDatasWindow yearBuiltsWindow = new UI.Windows.OrtoDatasWindow();
-            yearBuiltsWindow.WindowState = WindowState.Maximized;
+            UI.Windows.OrtoDatasWindow yearBuiltsWindow = new()
+            {
+                WindowState = WindowState.Maximized
+            };
 
             yearBuiltsWindow.ShowDialog();
 
@@ -547,23 +551,27 @@ namespace DiGi.GIS.UI.Application.Windows
             ResaveOrtoDatasFiles();
         }
 
-        private async void Button_Test_Click(object sender, RoutedEventArgs e)
+        private void Button_Test_Click(object sender, RoutedEventArgs e)
         {
             OpenFolderDialog openFolderDialog;
             bool? result;
 
-            openFolderDialog = new OpenFolderDialog();
-            openFolderDialog.Title = "Select EPW files directory";
+            openFolderDialog = new OpenFolderDialog
+            {
+                Title = "Select EPW files directory"
+            };
             result = openFolderDialog.ShowDialog(this);
             if (result == null || !result.HasValue || !result.Value)
             {
                 return;
             }
 
-            Dictionary<string, EPWFile> dictionary_EPWFile =  EPW.Create.EPWFiles(openFolderDialog.FolderName, SearchOption.AllDirectories);
+            Dictionary<string, EPWFile>? dictionary_EPWFile = EPW.Create.EPWFiles(openFolderDialog.FolderName, SearchOption.AllDirectories);
 
-            openFolderDialog = new OpenFolderDialog();
-            openFolderDialog.Title = "Select GISModel directory";
+            openFolderDialog = new OpenFolderDialog
+            {
+                Title = "Select GISModel directory"
+            };
             result = openFolderDialog.ShowDialog(this);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -575,35 +583,40 @@ namespace DiGi.GIS.UI.Application.Windows
             {
                 string path_GISModel = paths_GISModel[i];
 
-                string path_BuidlingModelsFile = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path_GISModel), System.IO.Path.GetFileNameWithoutExtension(path_GISModel) + "." + Analytical.Constans.FileExtension.BuildingModelsFile);
-
-                if(!File.Exists(path_BuidlingModelsFile))
+                if(System.IO.Path.GetDirectoryName(path_GISModel) is not string directory)
                 {
                     continue;
                 }
 
-                List<Building2D> building2Ds = null;
-                using (GISModelFile gISModelFile = new GISModelFile(path_GISModel))
+                string path_BuidlingModelsFile = System.IO.Path.Combine(directory, System.IO.Path.GetFileNameWithoutExtension(path_GISModel) + "." + Analytical.Constans.FileExtension.BuildingModelsFile);
+
+                if (!File.Exists(path_BuidlingModelsFile))
+                {
+                    continue;
+                }
+
+                List<Building2D>? building2Ds = null;
+                using (GISModelFile gISModelFile = new(path_GISModel))
                 {
                     gISModelFile.Open();
 
                     building2Ds = gISModelFile?.Value?.GetObjects<Building2D>();
                 }
 
-                if(building2Ds == null || building2Ds.Count == 0)
+                if (building2Ds == null || building2Ds.Count == 0)
                 {
                     continue;
                 }
 
-                if(dictionary_EPWFile != null)
+                if (dictionary_EPWFile != null)
                 {
                     foreach (Building2D building2D in building2Ds)
                     {
-                        EPWFile ePWFile = GIS.Query.EPWFile(building2D.PolygonalFace2D.Centroid(), dictionary_EPWFile.Values, out double distance);
+                        EPWFile? ePWFile = GIS.Query.EPWFile(building2D.PolygonalFace2D.Centroid(), dictionary_EPWFile.Values, out double distance);
                     }
                 }
 
-                List<Building2D> building2Ds_Invalid = new List<Building2D>();
+                //List<Building2D> building2Ds_Invalid = [];
 
                 //Dictionary<Analytical.Enums.LOD, List<BuildingModel>> dictionary = new Dictionary<Analytical.Enums.LOD, List<BuildingModel>>();
                 //using (BuildingModelsFile buildingModelsFile = new BuildingModelsFile(path_BuidlingModelsFile))
@@ -813,8 +826,10 @@ namespace DiGi.GIS.UI.Application.Windows
         {
             Hide();
 
-            UI.Windows.YearBuiltsWindow yearBuiltsWindow = new UI.Windows.YearBuiltsWindow();
-            yearBuiltsWindow.WindowState = WindowState.Maximized;
+            UI.Windows.YearBuiltsWindow yearBuiltsWindow = new()
+            {
+                WindowState = WindowState.Maximized
+            };
 
             yearBuiltsWindow.ShowDialog();
 
@@ -829,21 +844,21 @@ namespace DiGi.GIS.UI.Application.Windows
 
             Modify.CalculateAdministrativeAreal2DStatisticalUnits(this, true, "_StatisticalUnits");
 
-            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+            TimeSpan timeSpan = new ((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
 
         }
 
-        private async void CalculateGISModelFiles()
+        private void CalculateGISModelFiles()
         {
             DateTime dateTime = DateTime.Now;
 
             TextBlock_Progress.Text = "Calculating...";
 
-            await Modify.CalculateGISModelFilesAsync(this, determinateWindowWorker);
+            Modify.CalculateGISModelFiles(this, determinateWindowWorker);
 
-            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+            TimeSpan timeSpan = new ((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
@@ -854,14 +869,14 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = "Calculating...";
 
-            OrtoDatasBuilding2DOptions ortoDatasBuilding2DOptions = new OrtoDatasBuilding2DOptions()
+            OrtoDatasBuilding2DOptions ortoDatasBuilding2DOptions = new ()
             {
                 MaxFileSize = (1024UL * 1024UL * 1024UL * 5) / 10
             };
 
-            bool result = await Modify.CalculateOrtoDatas(this, ortoDatasBuilding2DOptions, count, false);
+            await Modify.CalculateOrtoDatas(this, ortoDatasBuilding2DOptions, count, false);
 
-            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+            TimeSpan timeSpan = new ((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
@@ -872,25 +887,25 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = "Calculating...";
 
-            OrtoDatasOrtoRangeOptions ortoDatasOrtoRangeOptions = new OrtoDatasOrtoRangeOptions()
+            OrtoDatasOrtoRangeOptions ortoDatasOrtoRangeOptions = new ()
             {
                 MaxFileSize = (1024UL * 1024UL * 1024UL * 5) / 10
             };
 
-            bool result = await Modify.CalculateOrtoDatas(this, ortoDatasOrtoRangeOptions, count);
+            await Modify.CalculateOrtoDatas(this, ortoDatasOrtoRangeOptions, count);
 
-            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+            TimeSpan timeSpan = new ((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
-        private async void CalculateOrtoDatasComparisons()
+        private void CalculateOrtoDatasComparisons()
         {
             DateTime dateTime = DateTime.Now;
 
             TextBlock_Progress.Text = "Calculating...";
 
-            OrtoDatasComparisonOptions ortoDatasComparisonOptions = new OrtoDatasComparisonOptions()
+            OrtoDatasComparisonOptions ortoDatasComparisonOptions = new ()
             {
                 DirectoryNames = GIS.Query.OrtoDatasDirectoryNames_Building2D()
             };
@@ -898,32 +913,32 @@ namespace DiGi.GIS.UI.Application.Windows
 
             Modify.CalculateOrtoDatasComparisons(this, ortoDatasComparisonOptions);
 
-            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+            TimeSpan timeSpan = new ((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
-        private async void CalculateOrtoRanges()
+        private void CalculateOrtoRanges()
         {
             DateTime dateTime = DateTime.Now;
 
             TextBlock_Progress.Text = "Calculating...";
 
-            OrtoRangeOptions ortoRangeOptions = new OrtoRangeOptions()
+            OrtoRangeOptions ortoRangeOptions = new ()
             {
 
             };
 
             Modify.CalculateOrtoRanges(this, ortoRangeOptions);
 
-            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+            TimeSpan timeSpan = new ((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
-        
+
         private void Convert_ToFiles(int count = 10)
         {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            OpenFolderDialog openFolderDialog = new ();
             bool? result = openFolderDialog.ShowDialog(this);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -943,53 +958,49 @@ namespace DiGi.GIS.UI.Application.Windows
             {
                 string path_Input = paths_Input[i];
 
-                using (OrtoDatasFile ortoDatasFile = new OrtoDatasFile(path_Input))
+                using OrtoDatasFile ortoDatasFile = new (path_Input);
+                ortoDatasFile.Open();
+
+                List<UniqueReference>? uniqueReferences = ortoDatasFile.GetUniqueReferences()?.ToList();
+                if (uniqueReferences == null)
                 {
-                    ortoDatasFile.Open();
+                    continue;
+                }
 
-                    List<UniqueReference> uniqueReferences = ortoDatasFile.GetUniqueReferences()?.ToList();
-                    if (uniqueReferences == null)
+                string directory_Temp = System.IO.Path.Combine(directory, "OrtoData");
+                if (!Directory.Exists(directory_Temp))
+                {
+                    Directory.CreateDirectory(directory_Temp);
+                }
+
+                while (uniqueReferences.Count > 0)
+                {
+                    int count_Temp = Math.Max(count, uniqueReferences.Count);
+
+                    List<UniqueReference> uniqueReferences_Temp = uniqueReferences.GetRange(0, count_Temp);
+                    uniqueReferences.RemoveRange(0, count_Temp);
+
+                    IEnumerable<OrtoDatas?>? ortoDatasList = ortoDatasFile.GetValues<OrtoDatas>(uniqueReferences_Temp);
+                    if (ortoDatasList != null)
                     {
-                        continue;
-                    }
-
-                    string directory_Temp = System.IO.Path.Combine(directory, "OrtoData");
-                    if (!Directory.Exists(directory_Temp))
-                    {
-                        Directory.CreateDirectory(directory_Temp);
-                    }
-
-                    while (uniqueReferences.Count > 0)
-                    {
-                        int count_Temp = Math.Max(count, uniqueReferences.Count);
-
-                        List<UniqueReference> uniqueReferences_Temp = uniqueReferences.GetRange(0, count_Temp);
-                        uniqueReferences.RemoveRange(0, count_Temp);
-
-                        IEnumerable<OrtoDatas> ortoDatasList = ortoDatasFile.GetValues<OrtoDatas>(uniqueReferences_Temp);
-                        if (ortoDatasList != null)
+                        foreach (OrtoDatas? ortoDatas in ortoDatasList)
                         {
-                            foreach (OrtoDatas ortoDatas in ortoDatasList)
+                            if (string.IsNullOrWhiteSpace(ortoDatas?.Reference))
                             {
-                                if (string.IsNullOrWhiteSpace(ortoDatas?.Reference))
+                                continue;
+                            }
+
+                            foreach (OrtoData ortoData in ortoDatas)
+                            {
+                                if (ortoData?.Bytes == null || ortoData.Bytes.Length == 0)
                                 {
                                     continue;
                                 }
 
-                                foreach (OrtoData ortoData in ortoDatas)
-                                {
-                                    if (ortoData?.Bytes == null || ortoData.Bytes.Length == 0)
-                                    {
-                                        continue;
-                                    }
+                                string fileName = string.Format("{0}_{1}.{2}", ortoDatas.Reference, ortoData.DateTime.Year.ToString(), "jpeg");
 
-                                    string fileName = string.Format("{0}_{1}.{2}", ortoDatas.Reference, ortoData.DateTime.Year.ToString(), "jpeg");
-
-                                    using (Image image = Image.FromStream(new MemoryStream(ortoData.Bytes)))
-                                    {
-                                        image.Save(System.IO.Path.Combine(directory_Temp, fileName), ImageFormat.Jpeg);
-                                    }
-                                }
+                                using Image image = Image.FromStream(new MemoryStream(ortoData.Bytes));
+                                image.Save(System.IO.Path.Combine(directory_Temp, fileName), ImageFormat.Jpeg);
                             }
                         }
                     }
@@ -1002,7 +1013,7 @@ namespace DiGi.GIS.UI.Application.Windows
             MessageBox.Show("Finished!");
         }
 
-        private void Delete()
+        private static void Delete()
         {
             //OpenFolderDialog openFolderDialog = new OpenFolderDialog();
             //bool? result = openFolderDialog.ShowDialog(this);
@@ -1033,7 +1044,7 @@ namespace DiGi.GIS.UI.Application.Windows
         {
             bool? result;
 
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            OpenFolderDialog openFolderDialog = new ();
             result = openFolderDialog.ShowDialog(this);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -1051,9 +1062,14 @@ namespace DiGi.GIS.UI.Application.Windows
             string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
             foreach (string path_Input in paths_Input)
             {
-                GISModel gISModel_Input = null;
+                GISModel? gISModel_Input = null;
 
-                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                if(System.IO.Path.GetDirectoryName(path_Input) is not string directory_Temp)
+                {
+                    continue;
+                }
+
+                using (GISModelFile gISModelFile = new (path_Input))
                 {
                     gISModelFile.Open();
                     gISModel_Input = gISModelFile.Value;
@@ -1064,13 +1080,15 @@ namespace DiGi.GIS.UI.Application.Windows
                     continue;
                 }
 
-                Building2D building2D = gISModel_Input.GetObject<Building2D>();
+                Building2D? building2D = gISModel_Input.GetObject<Building2D>();
 
-                string path_Output = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path_Input), System.IO.Path.GetFileNameWithoutExtension(path_Input) + "_Out." + FileExtension.GISModelFile);
-                using (GISModelFile gISModelFile = new GISModelFile(path_Output))
+
+
+                string path_Output = System.IO.Path.Combine(directory_Temp, System.IO.Path.GetFileNameWithoutExtension(path_Input) + "_Out." + FileExtension.GISModelFile);
+                using (GISModelFile gISModelFile = new (path_Output))
                 {
 
-                    GISModel gISModel_Output = new GISModel();
+                    GISModel gISModel_Output = new ();
                     gISModel_Output.Update(building2D);
                     gISModel_Output.CalculateBuilding2DGeometries();
 
@@ -1080,10 +1098,10 @@ namespace DiGi.GIS.UI.Application.Windows
                     gISModelFile.Save();
                 }
 
-                using (GISModelFile gISModelFile = new GISModelFile(path_Output))
+                using (GISModelFile gISModelFile = new (path_Output))
                 {
                     gISModelFile.Open();
-                    GISModel gISModel_Output = gISModelFile.Value;
+                    GISModel? gISModel_Output = gISModelFile.Value;
                 }
 
             }
@@ -1094,7 +1112,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Reduce()
         {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            OpenFolderDialog openFolderDialog = new ();
             bool? result = openFolderDialog.ShowDialog(this);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -1114,74 +1132,68 @@ namespace DiGi.GIS.UI.Application.Windows
             {
                 string path_Input = paths_Input[i];
 
-                using (OrtoDatasFile ortoDatasFile = new OrtoDatasFile(path_Input))
+                using OrtoDatasFile ortoDatasFile = new(path_Input);
+
+                ortoDatasFile.Open();
+
+                string directory_Temp = @"C:\Users\jakub\Downloads\GIS Test\OrtoData";
+
+                IEnumerable<OrtoDatas?>? ortoDatasList = ortoDatasFile.Values;
+                if (ortoDatasList != null)
                 {
-                    ortoDatasFile.Open();
-
-                    string directory_Temp = @"C:\Users\jakub\Downloads\GIS Test\OrtoData";
-
-                    IEnumerable<OrtoDatas> ortoDatasList = ortoDatasFile.Values;
-                    if (ortoDatasList != null)
+                    foreach (OrtoDatas? ortoDatas in ortoDatasList)
                     {
-                        foreach (OrtoDatas ortoDatas in ortoDatasList)
+                        if (ortoDatas == null)
                         {
-                            if (ortoDatas == null)
+                            continue;
+                        }
+
+                        string directory_Temp_Before = System.IO.Path.Combine(directory_Temp, "Before");
+                        if (!Directory.Exists(directory_Temp_Before))
+                        {
+                            Directory.CreateDirectory(directory_Temp_Before);
+                        }
+
+                        foreach (OrtoData ortoData in ortoDatas)
+                        {
+                            if (ortoData?.Bytes == null || ortoData.Bytes.Length == 0)
                             {
                                 continue;
                             }
 
-                            string directory_Temp_Before = System.IO.Path.Combine(directory_Temp, "Before");
-                            if (!Directory.Exists(directory_Temp_Before))
-                            {
-                                Directory.CreateDirectory(directory_Temp_Before);
-                            }
+                            string fileName = string.Format("{0}_{1}.{2}", ortoDatas.Reference, ortoData.DateTime.Year.ToString(), "jpg");
 
-                            foreach (OrtoData ortoData in ortoDatas)
-                            {
-                                if (ortoData?.Bytes == null || ortoData.Bytes.Length == 0)
-                                {
-                                    continue;
-                                }
-
-                                string fileName = string.Format("{0}_{1}.{2}", ortoDatas.Reference, ortoData.DateTime.Year.ToString(), "jpg");
-
-                                using (Image image = Image.FromStream(new MemoryStream(ortoData.Bytes)))
-                                {
-                                    image.Save(System.IO.Path.Combine(directory_Temp_Before, fileName), ImageFormat.Jpeg);
-                                }
-                            }
-
-                            ortoDatas.Reduce();
-
-                            string directory_Temp_After = System.IO.Path.Combine(directory_Temp, "After");
-                            if (!Directory.Exists(directory_Temp_After))
-                            {
-                                Directory.CreateDirectory(directory_Temp_After);
-                            }
-
-                            foreach (OrtoData ortoData in ortoDatas)
-                            {
-                                if (ortoData?.Bytes == null || ortoData.Bytes.Length == 0)
-                                {
-                                    continue;
-                                }
-
-                                string fileName = string.Format("{0}_{1}.{2}", ortoDatas.Reference, ortoData.DateTime.Year.ToString(), "jpg");
-
-                                using (Image image = Image.FromStream(new MemoryStream(ortoData.Bytes)))
-                                {
-                                    image.Save(System.IO.Path.Combine(directory_Temp_After, fileName), ImageFormat.Jpeg);
-                                }
-                            }
-
-                            ortoDatasFile.AddValue(ortoDatas);
+                            using Image image = Image.FromStream(new MemoryStream(ortoData.Bytes));
+                            image.Save(System.IO.Path.Combine(directory_Temp_Before, fileName), ImageFormat.Jpeg);
                         }
 
+                        ortoDatas.Reduce();
+
+                        string directory_Temp_After = System.IO.Path.Combine(directory_Temp, "After");
+                        if (!Directory.Exists(directory_Temp_After))
+                        {
+                            Directory.CreateDirectory(directory_Temp_After);
+                        }
+
+                        foreach (OrtoData ortoData in ortoDatas)
+                        {
+                            if (ortoData?.Bytes == null || ortoData.Bytes.Length == 0)
+                            {
+                                continue;
+                            }
+
+                            string fileName = string.Format("{0}_{1}.{2}", ortoDatas.Reference, ortoData.DateTime.Year.ToString(), "jpg");
+
+                            using Image image = Image.FromStream(new MemoryStream(ortoData.Bytes));
+                            image.Save(System.IO.Path.Combine(directory_Temp_After, fileName), ImageFormat.Jpeg);
+                        }
+
+                        ortoDatasFile.AddValue(ortoDatas);
                     }
 
-                    ortoDatasFile.Save();
-
                 }
+
+                ortoDatasFile.Save();
             }
             ;
 
@@ -1192,7 +1204,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Reorganize()
         {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            OpenFolderDialog openFolderDialog = new ();
             bool? result = openFolderDialog.ShowDialog(this);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -1237,7 +1249,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             Modify.ResaveOrtoDatasFiles(this, true);
 
-            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+            TimeSpan timeSpan = new ((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Resaving! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
 
@@ -1246,7 +1258,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Test_CalculateConstructionDate()
         {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            OpenFolderDialog openFolderDialog = new ();
             bool? result = openFolderDialog.ShowDialog(this);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -1264,9 +1276,9 @@ namespace DiGi.GIS.UI.Application.Windows
             {
                 string path_Input = paths_Input[i];
 
-                GISModel gISModel = null;
+                GISModel? gISModel = null;
 
-                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                using (GISModelFile gISModelFile = new (path_Input))
                 {
                     gISModelFile.Open();
                     gISModel = gISModelFile.Value;
@@ -1277,7 +1289,7 @@ namespace DiGi.GIS.UI.Application.Windows
                     continue;
                 }
 
-                List<Building2D> buidling2Ds = gISModel.GetObjects<Building2D>();
+                List<Building2D>? buidling2Ds = gISModel.GetObjects<Building2D>();
                 if (buidling2Ds == null || buidling2Ds.Count == 0)
                 {
                     continue;
@@ -1314,7 +1326,7 @@ namespace DiGi.GIS.UI.Application.Windows
         {
             bool? result;
 
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            OpenFolderDialog openFolderDialog = new ();
             result = openFolderDialog.ShowDialog(this);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -1330,9 +1342,14 @@ namespace DiGi.GIS.UI.Application.Windows
             string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
             foreach (string path_Input in paths_Input)
             {
-                GISModel gISModel_Input = null;
+                if(System.IO.Path.GetDirectoryName(path_Input) is not string directory_Temp) 
+                { 
+                    continue; 
+                }
 
-                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                GISModel? gISModel_Input = null;
+
+                using (GISModelFile gISModelFile = new (path_Input))
                 {
                     gISModelFile.Open();
                     gISModel_Input = gISModelFile.Value;
@@ -1343,22 +1360,22 @@ namespace DiGi.GIS.UI.Application.Windows
                     continue;
                 }
 
-                Building2D building2D = gISModel_Input.GetObject<Building2D>();
+                Building2D? building2D = gISModel_Input.GetObject<Building2D>();
 
-                string path_Output = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path_Input), System.IO.Path.GetFileNameWithoutExtension(path_Input) + "_Out." + FileExtension.GISModelFile);
-                using (GISModelFile gISModelFile = new GISModelFile(path_Output))
+                string path_Output = System.IO.Path.Combine(directory_Temp, System.IO.Path.GetFileNameWithoutExtension(path_Input) + "_Out." + FileExtension.GISModelFile);
+                using (GISModelFile gISModelFile = new (path_Output))
                 {
 
-                    GISModel gISModel_Output = new GISModel();
+                    GISModel gISModel_Output = new ();
                     gISModel_Output.Update(building2D);
                     gISModelFile.Value = gISModel_Output;
                     gISModelFile.Save();
                 }
 
-                using (GISModelFile gISModelFile = new GISModelFile(path_Output))
+                using (GISModelFile gISModelFile = new (path_Output))
                 {
                     gISModelFile.Open();
-                    GISModel gISModel_Output = gISModelFile.Value;
+                    GISModel? gISModel_Output = gISModelFile.Value;
                 }
 
             }
@@ -1373,7 +1390,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             Convert.ToDiGi_GISModelFiles(this);
 
-            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+            TimeSpan timeSpan = new ((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Converting! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
@@ -1386,7 +1403,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             Modify.WriteImages(this, false, new Range<int>(0, 10));
 
-            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+            TimeSpan timeSpan = new ((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Writing! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
@@ -1401,7 +1418,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             await Modify.WriteStatisticalDataCollections(Enum.GetValues<Variable>(), new Range<int>(2008, DateTime.Now.Year));
 
-            TimeSpan timeSpan = new TimeSpan((DateTime.Now - dateTime).Ticks);
+            TimeSpan timeSpan = new ((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Writing! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }

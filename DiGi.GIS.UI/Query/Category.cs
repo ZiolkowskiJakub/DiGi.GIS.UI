@@ -4,17 +4,14 @@ namespace DiGi.GIS.UI
 {
     public static partial class Query
     {
-        public static YOLO.Enums.Category? Category(this Dictionary<YOLO.Enums.Category, double> weights, Random random = null)
+        public static YOLO.Enums.Category? Category(this Dictionary<YOLO.Enums.Category, double>? weights, Random? random = null)
         {
             if(weights == null || weights.Count == 0)
             {
                 return null;
             }
 
-            if(random == null)
-            {
-                random = new Random();
-            }
+            random ??= new Random();
 
             double sum = 0;
             foreach(double weight in weights.Values)
@@ -37,7 +34,7 @@ namespace DiGi.GIS.UI
             return null;
         }
 
-        public static YOLO.Enums.Category? Category(this YOLOConversionOptions yOLOConversionOptions, Random random = null)
+        public static YOLO.Enums.Category? Category(this YOLOConversionOptions? yOLOConversionOptions, Random? random = null)
         {
             return Category(yOLOConversionOptions?.Weights, random);
         }

@@ -16,10 +16,10 @@ namespace DiGi.GIS.UI.Classes
         public bool ClearData { get; set; } = false;
 
         [JsonInclude, JsonPropertyName("ConfigurationFilePath")]
-        public string ConfigurationFilePath { get; set; } = null;
+        public string? ConfigurationFilePath { get; set; } = null;
 
         [JsonInclude, JsonPropertyName("GISModelFilesDirectory")]
-        public string GISModelFilesDirectory { get; set; } = null;
+        public string? GISModelFilesDirectory { get; set; } = null;
 
         public YOLOConversionOptions(double offset)
             : base()
@@ -65,10 +65,7 @@ namespace DiGi.GIS.UI.Classes
 
             set
             {
-                if(Weights == null)
-                {
-                    Weights = new Dictionary<YOLO.Enums.Category, double>();
-                }
+                Weights ??= new Dictionary<YOLO.Enums.Category, double>();
 
                 Weights[category] = value;
             }

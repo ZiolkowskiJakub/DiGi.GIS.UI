@@ -8,9 +8,9 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
-        public static bool WriteAdministrativeAreal2DsIndexData(Window owner, string path)
+        public static bool WriteAdministrativeAreal2DsIndexData(Window? owner, string? path)
         {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            OpenFolderDialog openFolderDialog = new ();
             bool? result = openFolderDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -24,7 +24,7 @@ namespace DiGi.GIS.UI
             }
 
             string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
-            Dictionary<string, List<AdministrativeAreal2D>> dictionary = new Dictionary<string, List<AdministrativeAreal2D>>();
+            Dictionary<string, List<AdministrativeAreal2D>?> dictionary = [];
             foreach (string path_Input in paths_Input)
             {
                 dictionary[path_Input] = null;
@@ -41,32 +41,35 @@ namespace DiGi.GIS.UI
             {
                 string path_Input = paths_Input[i];
 
-                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
-                {
-                    gISModelFile.Open();
+                using GISModelFile gISModelFile = new (path_Input);
 
-                    GISModel gISModel = gISModelFile.Value;
-                    if (gISModel != null)
-                    {
-                        dictionary[path_Input] = gISModel.GetObjects<AdministrativeAreal2D>();
-                    }
+                gISModelFile.Open();
+
+                GISModel? gISModel = gISModelFile.Value;
+                if (gISModel != null)
+                {
+                    dictionary[path_Input] = gISModel.GetObjects<AdministrativeAreal2D>();
                 }
             });
 
-            List<AdministrativeAreal2D> administrativeAreal2Ds = new List<AdministrativeAreal2D>();
-            foreach(List<AdministrativeAreal2D> administrativeAreal2Ds_Temp in dictionary.Values)
+            List<AdministrativeAreal2D> administrativeAreal2Ds = [];
+            foreach(List<AdministrativeAreal2D>? administrativeAreal2Ds_Temp in dictionary.Values)
             {
+                if(administrativeAreal2Ds_Temp is null)
+                {
+                    continue;
+                }
+
                 administrativeAreal2Ds.AddRange(administrativeAreal2Ds_Temp);
             }
 
-            administrativeAreal2Ds.Sort((x, y) => x.Name.CompareTo(y.Name));
+            administrativeAreal2Ds.Sort((x, y) => (x.Name ?? string.Empty).CompareTo(y.Name ?? string.Empty));
 
-            IndexDataFile indexDataFile = GIS.Create.IndexDataFile(administrativeAreal2Ds);
+            IndexDataFile? indexDataFile = GIS.Create.IndexDataFile(administrativeAreal2Ds);
             if(indexDataFile == null)
             {
                 return false;
             }
-
 
             return indexDataFile.Write(path);
         }

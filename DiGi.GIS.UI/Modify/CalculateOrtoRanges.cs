@@ -8,9 +8,9 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
-        public static async Task<bool> CalculateOrtoRanges(Window owner, OrtoRangeOptions ortoRangeOptions)
+        public static bool CalculateOrtoRanges(Window? owner, OrtoRangeOptions? ortoRangeOptions)
         {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            OpenFolderDialog openFolderDialog = new();
             bool? result = openFolderDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -23,43 +23,39 @@ namespace DiGi.GIS.UI
                 return false;
             }
 
-            if (ortoRangeOptions == null)
-            {
-                ortoRangeOptions = new OrtoRangeOptions();
-            }
+            ortoRangeOptions ??= new OrtoRangeOptions();
 
             string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
             {
                 string path_Input = paths_Input[i];
 
-                List<OrtoRange> ortoRanges = null;
+                List<OrtoRange>? ortoRanges = null;
 
-                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                using (GISModelFile gISModelFile = new(path_Input))
                 {
                     gISModelFile.Open();
 
-                    GISModel gISModel = gISModelFile.Value;
+                    GISModel? gISModel = gISModelFile.Value;
                     if (gISModel != null)
                     {
                         ortoRanges = GIS.Create.OrtoRanges(gISModel, null, ortoRangeOptions);
                     }
                 }
 
-                string path_Output = Path.Combine(Path.GetDirectoryName(path_Input), string.Format("{0}.{1}", Path.GetFileNameWithoutExtension(path_Input), FileExtension.OrtoRangeFile));
+                string path_Output = Path.Combine(Path.GetDirectoryName(path_Input)!, string.Format("{0}.{1}", Path.GetFileNameWithoutExtension(path_Input), FileExtension.OrtoRangeFile));
 
-                if(ortoRanges != null)
+                if (ortoRanges != null)
                 {
-                    using (OrtoRangeFile ortoRangeFile = new OrtoRangeFile(path_Output))
-                    {
-                        ortoRangeFile.Open();
-                        ortoRangeFile.Values = ortoRanges;
+                    using OrtoRangeFile ortoRangeFile = new(path_Output);
+                    ortoRangeFile.Open();
+                    ortoRangeFile.Values = ortoRanges;
 
-                        ortoRangeFile.Save();
-                    }
-                        
+                    ortoRangeFile.Save();
+
                 }
-            };
+            }
+            ;
 
             return true;
         }

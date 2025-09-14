@@ -8,7 +8,7 @@ namespace DiGi.GIS.UI.Windows
     /// </summary>
     public partial class GISWindow : Window
     {
-        GISModelFileManager gISModelFileManager = new GISModelFileManager();
+        private readonly GISModelFileManager gISModelFileManager = new ();
 
         public GISWindow()
         {

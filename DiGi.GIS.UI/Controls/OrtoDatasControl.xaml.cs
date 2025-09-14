@@ -12,17 +12,17 @@ namespace DiGi.GIS.UI.Controls
     /// </summary>
     public partial class OrtoDatasControl : UserControl
     {
-        private Core.Classes.Size imageSize = new Core.Classes.Size(300, 300);
+        private Core.Classes.Size? imageSize = new(300, 300);
         private int margin = 5;
         
-        private OrtoDatas ortoDatas;
+        private OrtoDatas? ortoDatas;
 
         public OrtoDatasControl()
         {
             InitializeComponent();
         }
 
-        public OrtoDatasControl(OrtoDatas ortoDatas, short? year = null)
+        public OrtoDatasControl(OrtoDatas? ortoDatas, short? year = null)
         {
             InitializeComponent();
 
@@ -30,9 +30,9 @@ namespace DiGi.GIS.UI.Controls
             Year = year;
         }
 
-        public event OrtoDataSelectionChangedEventHandler OrtoDataSelectionChanged;
+        public event OrtoDataSelectionChangedEventHandler? OrtoDataSelectionChanged;
 
-        public Core.Classes.Size ImageSize
+        public Core.Classes.Size? ImageSize
         {
             get
             {
@@ -48,7 +48,7 @@ namespace DiGi.GIS.UI.Controls
 
                 imageSize = value.Clone<Core.Classes.Size>();
 
-                if (WrapPanel_Main.Children == null)
+                if (imageSize is null || WrapPanel_Main.Children is null)
                 {
                     return;
                 }
@@ -63,11 +63,10 @@ namespace DiGi.GIS.UI.Controls
                     ortoDataControl_Temp.Width = imageSize.Width;
                     ortoDataControl_Temp.Height = imageSize.Height;
                 }
-
             }
         }
 
-        public int Margin
+        public new int Margin
         {
             get
             {
@@ -96,7 +95,7 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
-        public OrtoDatas OrtoDatas
+        public OrtoDatas? OrtoDatas
         {
             get
             {
@@ -122,18 +121,18 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
-        public List<short> Years
+        public List<short>? Years
         {
             get
             {
-                List<short> result = null;
+                List<short>? result = null;
 
                 if (WrapPanel_Main?.Children == null)
                 {
                     return result;
                 }
 
-                result = new List<short>();
+                result = [];
                 foreach (OrtoDataControl ortoDataControl_Temp in WrapPanel_Main.Children)
                 {
                     if (ortoDataControl_Temp != null)
@@ -146,12 +145,12 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
-        public bool Update(BitmapImage bitmapImage, short year)
+        public bool Update(BitmapImage? bitmapImage, short year)
         {
             return Update(bitmapImage, year, null);
         }
 
-        private OrtoDataControl GetOrtoDataControl(short year)
+        private OrtoDataControl? GetOrtoDataControl(short year)
         {
             if (WrapPanel_Main?.Children == null)
             {
@@ -169,7 +168,7 @@ namespace DiGi.GIS.UI.Controls
             return null;
         }
 
-        private OrtoDatas GetOrtoDatas()
+        private OrtoDatas? GetOrtoDatas()
         {
             return ortoDatas;
         }
@@ -202,9 +201,9 @@ namespace DiGi.GIS.UI.Controls
                 return;
             }
 
-            OrtoDataControl ortoDataControl = sender as OrtoDataControl;
+            OrtoDataControl? ortoDataControl = sender as OrtoDataControl;
 
-            bool active = ortoDataControl == null ? false : ortoDataControl.Active;
+            bool active = ortoDataControl != null && ortoDataControl.Active;
 
             foreach (OrtoDataControl ortoDataControl_Temp in WrapPanel_Main.Children)
             {
@@ -224,7 +223,7 @@ namespace DiGi.GIS.UI.Controls
             e.Handled = true;
         }
 
-        private void SetOrtoDatas(OrtoDatas ortoDatas)
+        private void SetOrtoDatas(OrtoDatas? ortoDatas)
         {
             this.ortoDatas = ortoDatas;
 
@@ -248,7 +247,7 @@ namespace DiGi.GIS.UI.Controls
                 return;
             }
 
-            OrtoDataControl ortoDataControl_Active = null;
+            OrtoDataControl? ortoDataControl_Active = null;
 
             foreach (OrtoDataControl ortoDataControl_Temp in WrapPanel_Main.Children)
             {
@@ -274,7 +273,7 @@ namespace DiGi.GIS.UI.Controls
 
         }
 
-        private bool Update(OrtoData ortoData)
+        private bool Update(OrtoData? ortoData)
         {
             if(ortoData == null)
             {
@@ -284,9 +283,9 @@ namespace DiGi.GIS.UI.Controls
             return Update(ortoData.BitmapImage(), System.Convert.ToInt16(ortoData.DateTime.Year), ortoData);
         }
 
-        private bool Update(BitmapImage bitmapImage, short year, OrtoData ortoData)
+        private bool Update(BitmapImage? bitmapImage, short year, OrtoData? ortoData)
         {
-            OrtoDataControl ortoDataControl = GetOrtoDataControl(year);
+            OrtoDataControl? ortoDataControl = GetOrtoDataControl(year);
             if(ortoDataControl != null)
             {
                 ortoDataControl.BitmapImage = bitmapImage;
@@ -299,10 +298,15 @@ namespace DiGi.GIS.UI.Controls
                 BitmapImage = bitmapImage,
                 Tag = ortoData,
                 Active = false,
-                Width = imageSize.Width,
-                Height = imageSize.Height,
+
                 Margin = new System.Windows.Thickness(margin, margin, margin, margin),
             };
+
+            if(imageSize is not null)
+            {
+                ortoDataControl.Width = imageSize.Width;
+                ortoDataControl.Height = imageSize.Height;
+            }
 
             ortoDataControl.MouseDown += OrtoDataControl_MouseDown;
 

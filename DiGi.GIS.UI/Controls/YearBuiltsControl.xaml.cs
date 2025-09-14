@@ -9,7 +9,7 @@ namespace DiGi.GIS.UI.Controls
     /// </summary>
     public partial class YearBuiltsControl : UserControl
     {
-        private GISModelFile gISModelFile;
+        private GISModelFile? gISModelFile;
 
         public YearBuiltsControl()
         {
@@ -23,13 +23,13 @@ namespace DiGi.GIS.UI.Controls
 
             ListBox_Main.SelectionChanged -= ListBox_Main_SelectionChanged;
 
-            GISModel gISModel = gISModelFile.Value;
+            GISModel? gISModel = gISModelFile?.Value;
             if(gISModel == null)
             {
                 return;
             }
 
-            List<Building2D> building2Ds = gISModel.GetObjects<Building2D>();
+            List<Building2D>? building2Ds = gISModel.GetObjects<Building2D>();
             if(building2Ds == null || building2Ds.Count == 0)
             {
                 return;
@@ -49,17 +49,17 @@ namespace DiGi.GIS.UI.Controls
         {
             WrapPanel_Main.Children.Clear();
 
-            Building2D building2D = Building2D;
+            Building2D? building2D = Building2D;
 
             Building2DControl_Main.Building2D = building2D;
 
-            string path = gISModelFile.Path;
+            string? path = gISModelFile?.Path;
             if(string.IsNullOrWhiteSpace(path))
             {
                 return;
             }
 
-            string directory = System.IO.Path.GetDirectoryName(path);
+            string? directory = System.IO.Path.GetDirectoryName(path);
             if(!System.IO.Directory.Exists(directory))
             {
                 return;
@@ -67,8 +67,8 @@ namespace DiGi.GIS.UI.Controls
 
             directory = GIS.Query.OrtoDatasDirectory_Building2D(directory);
 
-            OrtoDatas ortoDatas = GIS.Query.OrtoDatas(building2D, directory);
-            if(ortoDatas == null || ortoDatas.Count() == 0)
+            OrtoDatas? ortoDatas = GIS.Query.OrtoDatas(building2D, directory);
+            if(ortoDatas == null || !ortoDatas.Any())
             {
                 return;
             }
@@ -78,9 +78,9 @@ namespace DiGi.GIS.UI.Controls
             //TODO: Implement predicted year
             short? predictedYear = GIS.Query.LatestPredictedYearBuilt(gISModelFile, building2D);
 
-            SortedDictionary<short, OrtoDataControl> dictionary = new SortedDictionary<short, OrtoDataControl>();
+            SortedDictionary<short, OrtoDataControl> dictionary = [];
 
-            OrtoDataControl ortoDataControl;
+            OrtoDataControl? ortoDataControl;
 
             foreach (OrtoData ortoData in ortoDatas)
             {
@@ -131,7 +131,7 @@ namespace DiGi.GIS.UI.Controls
 
             if(predictedYear != null && predictedYear.HasValue && dictionary.Count !=0)
             {
-                List<short> years = dictionary.Keys.ToList();
+                List<short> years = [.. dictionary.Keys];
                 if(years.Count == 1)
                 {
                     dictionary.First().Value.PredictedYear = predictedYear.Value;
@@ -175,9 +175,9 @@ namespace DiGi.GIS.UI.Controls
 
         private void OrtoDataControl_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            OrtoDataControl ortoDataControl = sender as OrtoDataControl;
+            OrtoDataControl? ortoDataControl = sender as OrtoDataControl;
 
-            bool active = ortoDataControl == null ? false : ortoDataControl.Active;
+            bool active = ortoDataControl != null && ortoDataControl.Active;
 
             foreach (OrtoDataControl ortoDataControl_Temp in WrapPanel_Main.Children)
             {
@@ -198,7 +198,7 @@ namespace DiGi.GIS.UI.Controls
             e.Handled = true;
         }
 
-        public GISModelFile GISModelFile
+        public GISModelFile? GISModelFile
         {
             get
             {
@@ -212,12 +212,11 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
-        public Building2D Building2D
+        public Building2D? Building2D
         {
             get
             {
-                ListBoxItem listBoxItem = ListBox_Main.SelectedValue as ListBoxItem;
-                if (listBoxItem == null)
+                if (ListBox_Main.SelectedValue is not ListBoxItem listBoxItem)
                 {
                     return null;
                 }

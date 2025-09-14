@@ -14,16 +14,16 @@ namespace DiGi.GIS.UI.Classes
             
         }
 
-        public GISWindowSettings(GISWindowSettings gISWindowSettings)
+        public GISWindowSettings(GISWindowSettings? gISWindowSettings)
             :base(gISWindowSettings)
         {
             if(gISWindowSettings != null)
             {
-                Paths = gISWindowSettings.Paths == null ? null : new List<string>(gISWindowSettings.Paths);
+                Paths = gISWindowSettings.Paths == null ? null : [.. gISWindowSettings.Paths];
             }
         }
 
-        public GISWindowSettings(JsonObject jsonObject)
+        public GISWindowSettings(JsonObject? jsonObject)
             : base(jsonObject)
         {
 

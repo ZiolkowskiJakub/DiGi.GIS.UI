@@ -11,17 +11,16 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
-        public static bool AppendYOLOModel_Building2D(Window owner, YOLOConversionOptions yOLOConversionOptions = null)
+        public static bool AppendYOLOModel_Building2D(Window? owner, YOLOConversionOptions? yOLOConversionOptions = null)
         {
-            if (yOLOConversionOptions == null)
-            {
-                yOLOConversionOptions = new YOLOConversionOptions();
-            }
+            yOLOConversionOptions ??= new YOLOConversionOptions();
 
             if (string.IsNullOrWhiteSpace(yOLOConversionOptions.GISModelFilesDirectory) || !Directory.Exists(yOLOConversionOptions.GISModelFilesDirectory))
             {
-                OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-                openFolderDialog.Title = "Select GIS Model Files directory";
+                OpenFolderDialog openFolderDialog = new()
+                {
+                    Title = "Select GIS Model Files directory"
+                };
                 bool? result = openFolderDialog.ShowDialog(owner);
                 if (result == null || !result.HasValue || !result.Value)
                 {
@@ -39,11 +38,13 @@ namespace DiGi.GIS.UI
 
             if (string.IsNullOrWhiteSpace(yOLOConversionOptions.ConfigurationFilePath) || !File.Exists(yOLOConversionOptions.ConfigurationFilePath))
             {
-                SaveFileDialog saveFileDialog = new SaveFileDialog();
-                saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", "YOLO yaml File", "yaml");
-                saveFileDialog.FileName = "conf.yaml";
-                saveFileDialog.Title = "Select YOLO yaml file";
-                saveFileDialog.OverwritePrompt = false;
+                SaveFileDialog saveFileDialog = new()
+                {
+                    Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", "YOLO yaml File", "yaml"),
+                    FileName = "conf.yaml",
+                    Title = "Select YOLO yaml file",
+                    OverwritePrompt = false
+                };
                 bool? result = saveFileDialog.ShowDialog(owner);
                 if (result == null || !result.HasValue || !result.Value)
                 {
@@ -59,11 +60,8 @@ namespace DiGi.GIS.UI
                 return false;
             }
 
-            YOLOModel yOLOModel = YOLO.Modify.Read(path_YOLO);
-            if (yOLOModel == null)
-            {
-                yOLOModel = new YOLOModel(Path.GetDirectoryName(path_YOLO));
-            }
+            YOLOModel? yOLOModel = YOLO.Modify.Read(path_YOLO);
+            yOLOModel ??= new YOLOModel(Path.GetDirectoryName(path_YOLO));
 
             if(yOLOConversionOptions.ClearData)
             {
@@ -75,16 +73,16 @@ namespace DiGi.GIS.UI
             {
                 string path_Input = paths_Input[i];
 
-                string directory_OrtoDatas = GIS.Query.Directory(Path.GetDirectoryName(path_Input), GIS.Query.OrtoDatasDirectoryNames_Building2D());
+                string? directory_OrtoDatas = GIS.Query.Directory(Path.GetDirectoryName(path_Input), GIS.Query.OrtoDatasDirectoryNames_Building2D());
 
-                GISModel gISModel = null;
-                List<Tuple<Building2D, short>> tuples = new List<Tuple<Building2D, short>>();
-                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                GISModel? gISModel = null;
+                List<Tuple<Building2D, short>> tuples = [];
+                using (GISModelFile gISModelFile = new (path_Input))
                 {
                     gISModelFile.Open();
 
                     gISModel = gISModelFile.Value;
-                    List<Building2D> building2Ds = gISModel?.GetObjects<Building2D>();
+                    List<Building2D>? building2Ds = gISModel?.GetObjects<Building2D>();
                     if(building2Ds != null)
                     {
                         foreach(Building2D building2D in building2Ds)
@@ -100,16 +98,16 @@ namespace DiGi.GIS.UI
                     }
                 }
 
-                if (tuples == null || tuples.Count == 0)
+                if (gISModel is null || tuples is null || tuples.Count == 0)
                 {
                     continue;
                 }
 
-                Random random = new Random(tuples.Count);
+                Random random = new(tuples.Count);
 
                 foreach (Tuple<Building2D, short> tuple in tuples)
                 {
-                    YOLO.Enums.Category? category = yOLOConversionOptions.Category(random);
+                    YOLO.Enums.Category? category = yOLOConversionOptions?.Category(random);
                     if(category == null || !category.HasValue)
                     {
                         category = YOLO.Enums.Category.Train;
@@ -117,21 +115,27 @@ namespace DiGi.GIS.UI
 
                     Building2D building2D = tuple.Item1;
 
-                    int yearBuilt = tuple.Item2;
-
-                    Building2DGeometryCalculationResult building2DGeometryCalculationResult = gISModel.GetRelatedObject<Building2DGeometryCalculationResult>(building2D);
-                    if(building2DGeometryCalculationResult == null)
+                    if(string.IsNullOrWhiteSpace(building2D.Reference))
                     {
-                        building2DGeometryCalculationResult = building2D.Building2DGeometryCalculationResult();
+                        continue;
                     }
 
-                    OrtoDatas ortoDatas = building2D.OrtoDatas(directory_OrtoDatas);
+                    int yearBuilt = tuple.Item2;
+
+                    Building2DGeometryCalculationResult? building2DGeometryCalculationResult = gISModel.GetRelatedObject<Building2DGeometryCalculationResult>(building2D);
+                    building2DGeometryCalculationResult ??= building2D.Building2DGeometryCalculationResult();
+
+                    OrtoDatas? ortoDatas = building2D.OrtoDatas(directory_OrtoDatas);
                     if (ortoDatas == null)
                     {
                         continue;
                     }
 
-                    string directory = yOLOModel.GetDirectory_Images(category.Value);
+                    if(yOLOModel.GetDirectory_Images(category.Value) is not string directory)
+                    {
+                        continue;
+                    }
+
                     if (!Directory.Exists(directory))
                     {
                         Directory.CreateDirectory(directory);
@@ -143,7 +147,7 @@ namespace DiGi.GIS.UI
                     {
                         int year = ortoData.DateTime.Year;
 
-                        BitmapImage bitmapImage = ortoData.BitmapImage();
+                        BitmapImage? bitmapImage = ortoData.BitmapImage();
                         if (bitmapImage == null)
                         {
                             continue;
@@ -151,9 +155,9 @@ namespace DiGi.GIS.UI
 
                         string path_Image = string.Format("{0}_{1}.jpeg", pathPrefix, year);
 
-                        JpegBitmapEncoder jpegBitmapEncoder = new JpegBitmapEncoder();
+                        JpegBitmapEncoder jpegBitmapEncoder = new ();
                         jpegBitmapEncoder.Frames.Add(BitmapFrame.Create(bitmapImage));
-                        using (FileStream fileStream = new FileStream(path_Image, FileMode.Create))
+                        using (FileStream fileStream = new (path_Image, FileMode.Create))
                         {
                             jpegBitmapEncoder.Save(fileStream);
                         }
@@ -164,15 +168,20 @@ namespace DiGi.GIS.UI
                             continue;
                         }
 
-                        BoundingBox2D boundingBox2D = building2DGeometryCalculationResult.BoundingBox;
+                        if(building2DGeometryCalculationResult?.BoundingBox is not BoundingBox2D boundingBox2D)
+                        {
+                            continue;
+                        }
 
                         if (yOLOConversionOptions != null)
                         {
                             boundingBox2D.Offset(yOLOConversionOptions.Offset);
                         }
 
-                        Point2D topLeft = ortoData.ToOrto(boundingBox2D.TopLeft);
-                        Point2D bottomRight = ortoData.ToOrto(boundingBox2D.BottomRight);
+                        if(ortoData.ToOrto(boundingBox2D.TopLeft) is not Point2D topLeft || ortoData.ToOrto(boundingBox2D.BottomRight) is not Point2D bottomRight)
+                        {
+                            continue;
+                        }
 
                         yOLOModel.Add(path_Image, "Building", YOLO.Create.BoundingBox(bitmapImage.Width, bitmapImage.Height, topLeft.X, topLeft.Y, bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y));
                     }
@@ -184,17 +193,16 @@ namespace DiGi.GIS.UI
             return true;
         }
 
-        public static bool AppendYOLOModel_OrtoRange(Window owner, YOLOConversionOptions yOLOConversionOptions = null)
+        public static bool AppendYOLOModel_OrtoRange(Window? owner, YOLOConversionOptions? yOLOConversionOptions = null)
         {
-            if (yOLOConversionOptions == null)
-            {
-                yOLOConversionOptions = new YOLOConversionOptions();
-            }
+            yOLOConversionOptions ??= new YOLOConversionOptions();
 
             if (string.IsNullOrWhiteSpace(yOLOConversionOptions.GISModelFilesDirectory) || !Directory.Exists(yOLOConversionOptions.GISModelFilesDirectory))
             {
-                OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-                openFolderDialog.Title = "Select GIS Model Files directory";
+                OpenFolderDialog openFolderDialog = new()
+                {
+                    Title = "Select GIS Model Files directory"
+                };
                 bool? result = openFolderDialog.ShowDialog(owner);
                 if (result == null || !result.HasValue || !result.Value)
                 {
@@ -212,11 +220,13 @@ namespace DiGi.GIS.UI
 
             if (string.IsNullOrWhiteSpace(yOLOConversionOptions.ConfigurationFilePath) || !File.Exists(yOLOConversionOptions.ConfigurationFilePath))
             {
-                SaveFileDialog saveFileDialog = new SaveFileDialog();
-                saveFileDialog.Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", "YOLO yaml File", "yaml");
-                saveFileDialog.FileName = "conf.yaml";
-                saveFileDialog.Title = "Select YOLO yaml file";
-                saveFileDialog.OverwritePrompt = false;
+                SaveFileDialog saveFileDialog = new()
+                {
+                    Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", "YOLO yaml File", "yaml"),
+                    FileName = "conf.yaml",
+                    Title = "Select YOLO yaml file",
+                    OverwritePrompt = false
+                };
                 bool? result = saveFileDialog.ShowDialog(owner);
                 if (result == null || !result.HasValue || !result.Value)
                 {
@@ -234,11 +244,8 @@ namespace DiGi.GIS.UI
                 return false;
             }
 
-            YOLOModel yOLOModel = YOLO.Modify.Read(path_YOLO);
-            if (yOLOModel == null)
-            {
-                yOLOModel = new YOLOModel(Path.GetDirectoryName(path_YOLO));
-            }
+            YOLOModel? yOLOModel = YOLO.Modify.Read(path_YOLO);
+            yOLOModel ??= new YOLOModel(Path.GetDirectoryName(path_YOLO));
 
             if (yOLOConversionOptions.ClearData)
             {
@@ -250,18 +257,21 @@ namespace DiGi.GIS.UI
             {
                 string path_Input = paths_Input[i];
 
-                string directory_Input = Path.GetDirectoryName(path_Input);
+                if(Path.GetDirectoryName(path_Input)is not string directory_Input)
+                {
+                    continue;
+                }
 
-                string directory_OrtoDatas = GIS.Query.Directory(directory_Input, GIS.Query.OrtoDatasDirectoryNames_OrtoRange());
+                string? directory_OrtoDatas = GIS.Query.Directory(directory_Input, GIS.Query.OrtoDatasDirectoryNames_OrtoRange());
 
-                GISModel gISModel = null;
-                List<Tuple<Building2D, short>> tuples = new List<Tuple<Building2D, short>>();
-                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                GISModel? gISModel = null;
+                List<Tuple<Building2D, short>> tuples = [];
+                using (GISModelFile gISModelFile = new (path_Input))
                 {
                     gISModelFile.Open();
 
                     gISModel = gISModelFile.Value;
-                    List<Building2D> building2Ds = gISModel?.GetObjects<Building2D>();
+                    List<Building2D>? building2Ds = gISModel?.GetObjects<Building2D>();
                     if (building2Ds != null)
                     {
                         foreach (Building2D building2D in building2Ds)
@@ -278,7 +288,7 @@ namespace DiGi.GIS.UI
 
                 }
 
-                if (tuples == null || tuples.Count == 0)
+                if (gISModel is null || tuples == null || tuples.Count == 0)
                 {
                     continue;
                 }
@@ -289,25 +299,35 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                IEnumerable<OrtoRange> ortoRanges = null;
-                using (OrtoRangeFile ortoRangeFile = new OrtoRangeFile(path_OrtoRange))
+                IEnumerable<OrtoRange?>? ortoRanges = null;
+                using (OrtoRangeFile ortoRangeFile = new(path_OrtoRange))
                 {
                     ortoRanges = ortoRangeFile.Values;
                 }
 
-                Random random = new Random(tuples.Count);
+                if(ortoRanges is null)
+                {
+                    continue;
+                }
+
+                Random random = new(tuples.Count);
 
                 for (int j = 0; j < ortoRanges.Count(); j++)
                 {
-                    OrtoRange ortoRange = ortoRanges.ElementAt(j);
+                    OrtoRange? ortoRange = ortoRanges.ElementAt(j);
 
-                    HashSet<string> references_Inside = ortoRange?.References_Inside;
+                    if(ortoRange?.UniqueId is null)
+                    {
+                        continue;
+                    }
+
+                    HashSet<string>? references_Inside = ortoRange.References_Inside;
                     if (references_Inside == null || references_Inside.Count == 0)
                     {
                         continue;
                     }
 
-                    List<Tuple<Building2D, short>> tuples_OrtoRange = tuples.FindAll(x => references_Inside.Contains(x.Item1.Reference));
+                    List<Tuple<Building2D, short>> tuples_OrtoRange = tuples.FindAll(x => x.Item1.Reference is string reference && references_Inside.Contains(reference));
                     if (tuples_OrtoRange == null || tuples_OrtoRange.Count == 0)
                     {
                         continue;
@@ -318,19 +338,23 @@ namespace DiGi.GIS.UI
                         continue;
                     }
 
-                    OrtoDatas ortoDatas = ortoRange.OrtoDatas(directory_OrtoDatas);
+                    OrtoDatas? ortoDatas = ortoRange.OrtoDatas(directory_OrtoDatas);
                     if (ortoDatas == null)
                     {
                         continue;
                     }
 
-                    YOLO.Enums.Category? category = yOLOConversionOptions.Category(random);
+                    YOLO.Enums.Category? category = yOLOConversionOptions?.Category(random);
                     if (category == null || !category.HasValue)
                     {
                         category = YOLO.Enums.Category.Train;
                     }
 
-                    string directory = yOLOModel.GetDirectory_Images(category.Value);
+                    if(yOLOModel.GetDirectory_Images(category.Value) is not string directory)
+                    {
+                        continue;
+                    }
+
                     if (!Directory.Exists(directory))
                     {
                         Directory.CreateDirectory(directory);
@@ -340,7 +364,7 @@ namespace DiGi.GIS.UI
 
                     foreach (OrtoData ortoData in ortoDatas)
                     {
-                        BitmapImage bitmapImage = ortoData.BitmapImage();
+                        BitmapImage? bitmapImage = ortoData.BitmapImage();
                         if (bitmapImage == null)
                         {
                             continue;
@@ -350,9 +374,9 @@ namespace DiGi.GIS.UI
 
                         string path_Image = string.Format("{0}_{1}.jpeg", pathPrefix, year);
 
-                        JpegBitmapEncoder jpegBitmapEncoder = new JpegBitmapEncoder();
+                        JpegBitmapEncoder jpegBitmapEncoder = new ();
                         jpegBitmapEncoder.Frames.Add(BitmapFrame.Create(bitmapImage));
-                        using (FileStream fileStream = new FileStream(path_Image, FileMode.Create))
+                        using (FileStream fileStream = new (path_Image, FileMode.Create))
                         {
                             jpegBitmapEncoder.Save(fileStream);
                         }
@@ -370,21 +394,24 @@ namespace DiGi.GIS.UI
 
                             Building2D building2D = tuple.Item1;
 
-                            Building2DGeometryCalculationResult building2DGeometryCalculationResult = gISModel.GetRelatedObject<Building2DGeometryCalculationResult>(building2D);
-                            if (building2DGeometryCalculationResult == null)
-                            {
-                                building2DGeometryCalculationResult = building2D.Building2DGeometryCalculationResult();
-                            }
+                            Building2DGeometryCalculationResult? building2DGeometryCalculationResult = gISModel.GetRelatedObject<Building2DGeometryCalculationResult>(building2D);
+                            building2DGeometryCalculationResult ??= building2D.Building2DGeometryCalculationResult();
 
-                            BoundingBox2D boundingBox2D = building2DGeometryCalculationResult.BoundingBox;
+                            BoundingBox2D? boundingBox2D = building2DGeometryCalculationResult?.BoundingBox;
+                            if (boundingBox2D is null)
+                            {
+                                continue;
+                            }
 
                             if (yOLOConversionOptions != null)
                             {
                                 boundingBox2D.Offset(yOLOConversionOptions.Offset);
                             }
 
-                            Point2D topLeft = ortoData.ToOrto(boundingBox2D.TopLeft);
-                            Point2D bottomRight = ortoData.ToOrto(boundingBox2D.BottomRight);
+                            if(ortoData.ToOrto(boundingBox2D.TopLeft) is not Point2D topLeft || ortoData.ToOrto(boundingBox2D.BottomRight) is not Point2D bottomRight)
+                            {
+                                continue;
+                            }
 
                             yOLOModel.Add(path_Image, "Building", YOLO.Create.BoundingBox(bitmapImage.Width, bitmapImage.Height, topLeft.X, topLeft.Y, bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y));
                         }

@@ -15,8 +15,10 @@ namespace DiGi.GIS.UI
 
             OpenFolderDialog openFolderDialog;
 
-            openFolderDialog = new OpenFolderDialog();
-            openFolderDialog.Title = "Select GIS Model Files directory";
+            openFolderDialog = new()
+            {
+                Title = "Select GIS Model Files directory"
+            };
             result = openFolderDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -29,8 +31,10 @@ namespace DiGi.GIS.UI
                 return;
             }
 
-            openFolderDialog = new OpenFolderDialog();
-            openFolderDialog.Title = "Select Statistical Data Directory";
+            openFolderDialog = new()
+            {
+                Title = "Select Statistical Data Directory"
+            };
             result = openFolderDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -43,14 +47,14 @@ namespace DiGi.GIS.UI
                 return;
             }
 
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            SaveFileDialog saveFileDialog = new ();
             result = saveFileDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {
                 return;
             }
 
-            PredictionTableConversionOptions predictionTableConversionOptions = new PredictionTableConversionOptions()
+            PredictionTableConversionOptions predictionTableConversionOptions = new ()
             {
                 IncludeModel = true,
                 IncludeStatistical = true,
@@ -61,9 +65,11 @@ namespace DiGi.GIS.UI
                 StatisticalDirectory = directory_Statistical
             };
 
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Title = "Select Index Data File";
-            openFileDialog.Filter = "Index Data File (*.txt)|*.txt|All files (*.*)|*.*";
+            OpenFileDialog openFileDialog = new()
+            {
+                Title = "Select Index Data File",
+                Filter = "Index Data File (*.txt)|*.txt|All files (*.*)|*.*"
+            };
             result = openFileDialog.ShowDialog();
             if (result != null && result.HasValue && result.Value)
             {
@@ -75,8 +81,8 @@ namespace DiGi.GIS.UI
             {
                 string path_Input = paths_Input[i];
 
-                Table table = null;
-                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                Table? table = null;
+                using (GISModelFile gISModelFile = new (path_Input))
                 {
                     gISModelFile.Open();
 

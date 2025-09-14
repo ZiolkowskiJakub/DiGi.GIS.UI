@@ -8,7 +8,7 @@ namespace DiGi.GIS.UI.Controls
     /// </summary>
     public partial class Building2DControl : UserControl
     {
-        private Building2D building2D;
+        private Building2D? building2D;
 
         public Building2DControl()
         {
@@ -47,7 +47,7 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
-        public Building2D Building2D
+        public Building2D? Building2D
         {
             get
             {

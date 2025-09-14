@@ -9,14 +9,16 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
-        public static void AppendComparisonTable(Window owner)
+        public static void AppendComparisonTable(Window? owner)
         {
             bool? result;
 
             OpenFolderDialog openFolderDialog;
 
-            openFolderDialog = new OpenFolderDialog();
-            openFolderDialog.Title = "Select GIS Model Files directory";
+            openFolderDialog = new()
+            {
+                Title = "Select GIS Model Files directory"
+            };
             result = openFolderDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -30,8 +32,10 @@ namespace DiGi.GIS.UI
             }
 
 
-            openFolderDialog = new OpenFolderDialog();
-            openFolderDialog.Title = "Select Statistical Data Directory";
+            openFolderDialog = new()
+            {
+                Title = "Select Statistical Data Directory"
+            };
             result = openFolderDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -44,14 +48,14 @@ namespace DiGi.GIS.UI
                 return;
             }
 
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            SaveFileDialog saveFileDialog = new ();
             result = saveFileDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {
                 return;
             }
 
-            ComparisonTableConversionOptions comparisonTableConversionOptions = new ComparisonTableConversionOptions()
+            ComparisonTableConversionOptions comparisonTableConversionOptions = new ()
             {
                 IncludeModel = true,
                 IncludeStatistical = true,
@@ -67,8 +71,8 @@ namespace DiGi.GIS.UI
             {
                 string path_Input = paths_Input[i];
 
-                Table table = null;
-                using (GISModelFile gISModelFile = new GISModelFile(path_Input))
+                Table? table = null;
+                using (GISModelFile gISModelFile = new (path_Input))
                 {
                     gISModelFile.Open();
 

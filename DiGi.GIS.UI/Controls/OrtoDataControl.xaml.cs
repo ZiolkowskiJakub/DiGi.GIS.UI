@@ -57,7 +57,7 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
-        public BitmapImage BitmapImage
+        public BitmapImage? BitmapImage
         {
             get
             {
@@ -70,13 +70,13 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
-        private bool SetBitmapImage(BitmapImage bitmapImage)
+        private bool SetBitmapImage(BitmapImage? bitmapImage)
         {
             Image_Main.Source = bitmapImage;
             return true;
         }
 
-        private BitmapImage GetBitmapImage()
+        private BitmapImage? GetBitmapImage()
         {
             return Image_Main.Source as BitmapImage;
         }
@@ -97,14 +97,20 @@ namespace DiGi.GIS.UI.Controls
 
         private void UserControl_PreviewMouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            FrameworkElement frameworkElement = sender as FrameworkElement;
+            if (sender is not FrameworkElement frameworkElement)
+            {
+                return;
+            }
 
-            ContextMenu contextMenu = new ContextMenu();
+            ContextMenu contextMenu = new ();
 
-            MenuItem menuItem = new MenuItem { Header = "Save As..." };
+            MenuItem menuItem = new() { Header = "Save As..." };
             menuItem.Click += (s, args) => 
             {
-                DiGi.UI.WPF.Core.Modify.Write(GetBitmapImage());
+                if(GetBitmapImage() is BitmapImage bitmapImage)
+                {
+                    DiGi.UI.WPF.Core.Modify.Write(bitmapImage);
+                }
             };
            
             contextMenu.Items.Add(menuItem);

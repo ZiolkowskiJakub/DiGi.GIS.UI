@@ -6,16 +6,16 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
-        public static HashSet<string> AppendBuildingModels(this Window owner)
+        public static HashSet<string>? AppendBuildingModels(this Window? owner)
         {
-            Dictionary<string, List<BuildingModel>> dictionary = Create.BuildingModels(owner);
+            Dictionary<string, List<BuildingModel>>? dictionary = Create.BuildingModels(owner);
             if(dictionary == null || dictionary.Count == 0)
             {
                 return null;
             }
 
 
-            HashSet<string> result = new HashSet<string>();
+            HashSet<string> result = [];
             foreach (KeyValuePair<string, List<BuildingModel>> keyValuePair in dictionary)
             {
                 string path = keyValuePair.Key;
@@ -31,9 +31,14 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path), System.IO.Path.GetFileNameWithoutExtension(path) + "." + Analytical.Constans.FileExtension.BuildingModelsFile);
+                if(System.IO.Path.GetDirectoryName(path) is not string directory)
+                {
+                    continue;
+                }
 
-                using (BuildingModelsFile buildingModelsFile = new BuildingModelsFile(path))
+                path = System.IO.Path.Combine(directory, System.IO.Path.GetFileNameWithoutExtension(path) + "." + Analytical.Constans.FileExtension.BuildingModelsFile);
+
+                using (BuildingModelsFile buildingModelsFile = new(path))
                 {
                     buildingModelsFile.Open();
 

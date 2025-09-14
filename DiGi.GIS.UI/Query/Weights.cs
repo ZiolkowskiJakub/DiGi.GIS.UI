@@ -4,7 +4,7 @@
     {
         public static Dictionary<YOLO.Enums.Category, double> Weights()
         {
-            Dictionary<YOLO.Enums.Category, double> result = new Dictionary<YOLO.Enums.Category, double>();
+            Dictionary<YOLO.Enums.Category, double> result = [];
 
             foreach(YOLO.Enums.Category category in Enum.GetValues(typeof(YOLO.Enums.Category)))
             {

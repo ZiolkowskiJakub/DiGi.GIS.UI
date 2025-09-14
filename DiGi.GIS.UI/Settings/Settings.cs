@@ -4,6 +4,6 @@ namespace DiGi.GIS.UI
 {
     public static partial class Settings
     {
-        public static string DefaultDirectory = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public static string? DefaultDirectory = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
     }
 }

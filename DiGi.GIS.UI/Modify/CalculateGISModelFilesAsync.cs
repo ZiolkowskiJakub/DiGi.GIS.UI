@@ -9,9 +9,9 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
-        public static async Task<HashSet<string>> CalculateGISModelFilesAsync(Window owner, IDeterminateWorker determinateWorker = null)
+        public static HashSet<string>? CalculateGISModelFiles(Window? owner, IDeterminateWorker? determinateWorker = null)
         {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            OpenFolderDialog openFolderDialog = new ();
             bool? openFolderDialogResult = openFolderDialog.ShowDialog(owner);
             if (openFolderDialogResult == null || !openFolderDialogResult.HasValue || !openFolderDialogResult.Value)
             {
@@ -24,7 +24,7 @@ namespace DiGi.GIS.UI
                 return null;
             }
 
-            List<string> paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories)?.ToList();
+            List<string>? paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories)?.ToList();
             if (paths_Input == null || paths_Input.Count == 0)
             {
                 return null;
@@ -32,7 +32,7 @@ namespace DiGi.GIS.UI
 
             paths_Input.RemoveAll(x => string.IsNullOrWhiteSpace(x));
 
-            if(determinateWorker != null)
+            if (determinateWorker != null)
             {
                 determinateWorker.Maximum = paths_Input.Count;
             }
@@ -50,44 +50,41 @@ namespace DiGi.GIS.UI
 
             int reportCount = 0;
 
-            HashSet<string> result = new HashSet<string>();
+            HashSet<string> result = [];
 
             while (paths_Input.Count > 0)
             {
                 //int count_Temp = Math.Min(count, paths_Input.Count);
                 int count_Temp = Math.Min(parallelOptions.MaxDegreeOfParallelism, paths_Input.Count);
 
-                List<Tuple<string, GISModel>> tuples = Enumerable.Repeat((Tuple<string, GISModel>)null, count_Temp).ToList();
+                List<Tuple<string, GISModel?>?> tuples = [.. Enumerable.Repeat((Tuple<string, GISModel?>?)null, count_Temp)];
                 for (int i = 0; i < count_Temp; i++)
                 {
                     string path = paths_Input[i];
 
-                    using (GISModelFile gISModelFile = new GISModelFile(path))
-                    {
-                        gISModelFile.Open();
-                        tuples[i] = new Tuple<string, GISModel>(path, gISModelFile.Value);
-                    }
+                    using GISModelFile gISModelFile = new(path);
+
+                    gISModelFile.Open();
+                    tuples[i] = new Tuple<string, GISModel?>(path, gISModelFile?.Value);
                 }
 
                 Parallel.For(0, tuples.Count, parallelOptions, i =>
                 {
-                    tuples[i].Item2.Calculate();
+                    tuples[i]?.Item2?.Calculate();
                 });
 
                 for (int i = 0; i < count_Temp; i++)
                 {
                     string path = paths_Input[i];
 
-                    using (GISModelFile gISModelFile = new GISModelFile(path))
-                    {
-                        gISModelFile.Value = tuples[i].Item2;
-                        gISModelFile.Save();
-                        result.Add(path);
-                    }
+                    using GISModelFile gISModelFile = new(path);
+                    gISModelFile.Value = tuples[i]?.Item2;
+                    gISModelFile.Save();
+                    result.Add(path);
                 }
 
                 paths_Input.RemoveRange(0, count_Temp);
-                
+
                 reportCount += count_Temp;
                 determinateWorker?.Report(reportCount);
 

@@ -16,43 +16,42 @@ namespace DiGi.GIS.UI
 
             try
             {
-                using (HttpClient httpClient = new HttpClient())
+                using HttpClient httpClient = new ();
+                try
                 {
-                    try
+                    HttpRequestMessage httpRequestMessage = new (HttpMethod.Head, url);
+                    HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
+
+                    if (!httpResponseMessage.IsSuccessStatusCode)
                     {
-                        HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Head, url);
-                        HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
+                        return false;
+                    }
 
-                        if (!httpResponseMessage.IsSuccessStatusCode)
+                    httpResponseMessage = await httpClient.GetAsync(url);
+                    httpResponseMessage.EnsureSuccessStatusCode();
+
+                    Stream stream = await httpResponseMessage.Content.ReadAsStreamAsync();
+                    if (stream != null)
+                    {
+                        string? directory = Path.GetDirectoryName(path);
+                        if(!string.IsNullOrWhiteSpace(directory))
                         {
-                            return false;
-                        }
-
-                        httpResponseMessage = await httpClient.GetAsync(url);
-                        httpResponseMessage.EnsureSuccessStatusCode();
-
-                        Stream stream = await httpResponseMessage.Content.ReadAsStreamAsync();
-                        if(stream != null)
-                        {
-                            string directory = Path.GetDirectoryName(path);
-                            if(!Directory.Exists(directory))
+                            if (!Directory.Exists(directory))
                             {
                                 Directory.CreateDirectory(directory);
                             }
 
                             if (Directory.Exists(directory))
                             {
-                                using (FileStream fileStream = File.Create(path))
-                                {
-                                    await stream.CopyToAsync(fileStream);
-                                }
+                                using FileStream fileStream = File.Create(path);
+                                await stream.CopyToAsync(fileStream);
                             }
                         }
                     }
-                    catch
-                    {
-                        result = false;
-                    }
+                }
+                catch
+                {
+                    result = false;
                 }
             }
             catch

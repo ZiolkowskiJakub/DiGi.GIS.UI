@@ -8,9 +8,9 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
-        public static void ResaveOrtoDatasFiles(Window owner, bool updateScale)
+        public static void ResaveOrtoDatasFiles(Window? owner, bool updateScale)
         {
-            OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            OpenFolderDialog openFolderDialog = new ();
             bool? result = openFolderDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -27,18 +27,18 @@ namespace DiGi.GIS.UI
 
             if(paths_Input != null && paths_Input.Length != 0)
             {
-                Action<string> resave = new Action<string>(x =>
+                Action<string> resave = new(x =>
                 {
                     string path_Input = x;
 
-                    List<OrtoDatas> ortoDatas_Temp = null;
+                    List<OrtoDatas>? ortoDatas_Temp = null;
 
-                    using (OrtoDatasFile ortoDatasFile = new OrtoDatasFile(path_Input))
+                    using (OrtoDatasFile ortoDatasFile = new (path_Input))
                     {
-                        IEnumerable<OrtoDatas> ortoDatas_Temp_Temp = ortoDatasFile.Values;
+                        IEnumerable<OrtoDatas?>? ortoDatas_Temp_Temp = ortoDatasFile.Values;
                         if (ortoDatas_Temp_Temp != null)
                         {
-                            ortoDatas_Temp = new List<OrtoDatas>(ortoDatas_Temp_Temp);
+                            ortoDatas_Temp = [.. ortoDatas_Temp_Temp];
                         }
                     }
 
@@ -60,7 +60,7 @@ namespace DiGi.GIS.UI
                         {
                             OrtoDatas ortoDatas = ortoDatas_Temp[j];
 
-                            List<OrtoData> ortoDatas_New = new List<OrtoData>();
+                            List<OrtoData> ortoDatas_New = [];
                             foreach (OrtoData ortoData in ortoDatas)
                             {
                                 ortoDatas_New.Add(new OrtoData(ortoData.DateTime, ortoData.Bytes, 1 / ortoData.Scale, ortoData.Location));
@@ -73,7 +73,12 @@ namespace DiGi.GIS.UI
 
                     File.Delete(path_Input);
 
-                    string directory_New = GIS.Query.OrtoDatasDirectory_Building2D(Path.GetDirectoryName(path_Input));
+                    string? directory_New = GIS.Query.OrtoDatasDirectory_Building2D(Path.GetDirectoryName(path_Input));
+                    if(directory_New is null)
+                    {
+                        return;
+                    }
+
                     if (!Directory.Exists(directory_New))
                     {
                         Directory.CreateDirectory(directory_New);
@@ -81,7 +86,7 @@ namespace DiGi.GIS.UI
 
                     string path_Output = Path.Combine(directory_New, Path.GetFileName(path_Input));
 
-                    using (OrtoDatasFile ortoDatasFile = new OrtoDatasFile(path_Output))
+                    using (OrtoDatasFile ortoDatasFile = new (path_Output))
                     {
                         ortoDatasFile.Values = ortoDatas_Temp;
                         ortoDatasFile.Save();

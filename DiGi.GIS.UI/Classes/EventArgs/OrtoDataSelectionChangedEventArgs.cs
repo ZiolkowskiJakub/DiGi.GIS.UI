@@ -4,10 +4,10 @@ namespace DiGi.UI.WPF.Core.Classes
 {
     public class OrtoDataSelectionChangedEventArgs : EventArgs
     {
-        private OrtoDatas ortoDatas;
-        private short? year;
+        private readonly OrtoDatas? ortoDatas;
+        private readonly short? year;
 
-        public OrtoDataSelectionChangedEventArgs(OrtoDatas ortoDatas, short? year)
+        public OrtoDataSelectionChangedEventArgs(OrtoDatas? ortoDatas, short? year)
             : base()
         {
             this.ortoDatas = ortoDatas;
@@ -22,7 +22,7 @@ namespace DiGi.UI.WPF.Core.Classes
             }
         }
 
-        public OrtoDatas OrtoDatas
+        public OrtoDatas? OrtoDatas
         {
             get
             {

@@ -17,9 +17,9 @@ namespace DiGi.GIS.UI.Controls
             OrtoDatasControl_Main.OrtoDataSelectionChanged += OrtoDatasControl_Main_OrtoDataSelectionChanged;
         }
 
-        public event OrtoDataSelectionChangedEventHandler OrtoDataSelectionChanged;
+        public event OrtoDataSelectionChangedEventHandler? OrtoDataSelectionChanged;
 
-        public List<OrtoDatas> OrtoDatasList
+        public List<OrtoDatas>? OrtoDatasList
         {
             get
             {
@@ -32,7 +32,7 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
-        public OrtoDatas SelectedOrtoDatas
+        public OrtoDatas? SelectedOrtoDatas
         {
             get
             {
@@ -40,14 +40,12 @@ namespace DiGi.GIS.UI.Controls
                 {
                     foreach (object @object in ListBox_Main.SelectedItems)
                     {
-                        ListBoxItem listBoxItem = @object as ListBoxItem;
-                        if (listBoxItem == null)
+                        if (@object is not ListBoxItem listBoxItem)
                         {
                             break;
                         }
 
-                        OrtoDatas result = listBoxItem.Tag as OrtoDatas;
-                        if (result != null)
+                        if (listBoxItem.Tag is OrtoDatas result)
                         {
                             return result;
                         }
@@ -58,24 +56,22 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
-        private List<OrtoDatas> GetOrtoDatasList()
+        private List<OrtoDatas>? GetOrtoDatasList()
         {
             if (ListBox_Main.Items == null)
             {
                 return null;
             }
 
-            List<OrtoDatas> result = new List<OrtoDatas>();
+            List<OrtoDatas> result = [];
             foreach (object @object in ListBox_Main.Items)
             {
-                ListBoxItem listBoxItem = @object as ListBoxItem;
-                if (listBoxItem == null)
+                if (@object is not ListBoxItem listBoxItem)
                 {
                     continue;
                 }
 
-                OrtoDatas ortoDatas = listBoxItem.Tag as OrtoDatas;
-                if (ortoDatas == null)
+                if (listBoxItem.Tag is not OrtoDatas ortoDatas)
                 {
                     continue;
                 }
@@ -86,17 +82,17 @@ namespace DiGi.GIS.UI.Controls
             return result;
         }
 
-        private void ListBox_Main_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ListBox_Main_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
             OrtoDatasControl_Main.OrtoDatas = SelectedOrtoDatas;
         }
 
-        private void OrtoDatasControl_Main_OrtoDataSelectionChanged(object sender, DiGi.UI.WPF.Core.Classes.OrtoDataSelectionChangedEventArgs e)
+        private void OrtoDatasControl_Main_OrtoDataSelectionChanged(object? sender, DiGi.UI.WPF.Core.Classes.OrtoDataSelectionChangedEventArgs e)
         {
             OrtoDataSelectionChanged?.Invoke(this, e);
         }
         
-        private void SetOrtoDatasList(IEnumerable<OrtoDatas> ortoDatasList)
+        private void SetOrtoDatasList(IEnumerable<OrtoDatas>? ortoDatasList)
         {
             ListBox_Main.Items.Clear();
 

@@ -15,13 +15,13 @@ namespace DiGi.GIS.UI.Windows
 
         private void MenuItem_Load_Click(object sender, RoutedEventArgs e)
         {
-            string path = Query.GISModelFilePath(this);
+            string? path = Query.GISModelFilePath(this);
             if (string.IsNullOrEmpty(path))
             {
                 return;
             }
 
-            GISModelFile gISModelFile = new GISModelFile(path);
+            GISModelFile gISModelFile = new (path);
             gISModelFile.Open();
 
             YearBuiltsControl_Main.GISModelFile = gISModelFile;
@@ -37,7 +37,7 @@ namespace DiGi.GIS.UI.Windows
 
         }
 
-        public GISModelFile GISModelFile
+        public GISModelFile? GISModelFile
         {
             get
             {
