@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace DiGi.GIS.UI.Classes
 {
-    public class VoTTConversionOptions : Options
+    public class VoTTConversionOptions : SerializableOptions
     {
         [JsonInclude, JsonPropertyName("Offset")]
         public double Offset { get; set; } = 1;

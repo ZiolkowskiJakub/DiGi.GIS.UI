@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace DiGi.GIS.UI.Classes
 {
-    public class YOLOConversionOptions : Options
+    public class YOLOConversionOptions : SerializableOptions
     {
         [JsonInclude, JsonPropertyName("Offset")]
         public double Offset { get; set; } = 1;
@@ -65,7 +65,7 @@ namespace DiGi.GIS.UI.Classes
 
             set
             {
-                Weights ??= new Dictionary<YOLO.Enums.Category, double>();
+                Weights ??= [];
 
                 Weights[category] = value;
             }

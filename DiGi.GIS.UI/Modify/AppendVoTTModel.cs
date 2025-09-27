@@ -52,7 +52,7 @@ namespace DiGi.GIS.UI
 
             string path_VoTT = saveFileDialog.FileName;
 
-            VoTTModel voTTModel = VoTT.Modify.Read(path_VoTT);
+            VoTTModel? voTTModel = VoTT.Modify.Read(path_VoTT);
             voTTModel ??= new VoTTModel()
             {
                 name = "Building2D VoTT",
@@ -168,7 +168,10 @@ namespace DiGi.GIS.UI
                             continue;
                         }
 
-                        Asset asset = VoTT.Create.Asset(path_OrtoData);
+                        if( VoTT.Create.Asset(path_OrtoData) is not Asset asset)
+                        {
+                            continue;
+                        }
 
                         voTTModel.Add(asset);
 
@@ -221,7 +224,7 @@ namespace DiGi.GIS.UI
 
             string path_VoTT = saveFileDialog.FileName;
 
-            VoTTModel voTTModel = VoTT.Modify.Read(path_VoTT);
+            VoTTModel? voTTModel = VoTT.Modify.Read(path_VoTT);
             voTTModel ??= new VoTTModel()
             {
                 name = "OrtoRange VoTT",
@@ -339,7 +342,10 @@ namespace DiGi.GIS.UI
                             jpegBitmapEncoder.Save(fileStream);
                         }
 
-                        Asset asset = VoTT.Create.Asset(path_OrtoData);
+                        if (VoTT.Create.Asset(path_OrtoData) is not Asset asset)
+                        {
+                            continue;
+                        }
 
                         voTTModel.Add(asset);
 
