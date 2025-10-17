@@ -32,6 +32,11 @@ namespace DiGi.GIS.UI.Application.Windows
             this.Closed += MainWindow_Closed;
         }
 
+        private static void Analyse_OrtoDatasComparisons_Table()
+        {
+            MessageBox.Show("Finished!");
+        }
+
         private static void BDLMatchTest()
         {
             OpenFileDialog openFileDialog_Json = new()
@@ -327,6 +332,28 @@ namespace DiGi.GIS.UI.Application.Windows
             MessageBox.Show("Finished!");
         }
 
+        private static void Delete()
+        {
+            //OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            //bool? result = openFolderDialog.ShowDialog(this);
+            //if (result == null || !result.HasValue || !result.Value)
+            //{
+            //    return;
+            //}
+
+            //string directory = openFolderDialog.FolderName;
+            string directory = @"C:\Users\jakub\Nextcloud\Data\GIS\Output";
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            foreach (string directory_Temp in Directory.GetDirectories(directory))
+            {
+                Directory.Delete(directory_Temp, true);
+            }
+        }
+
         private static void GISFileModelTest()
         {
             OpenFileDialog openFileDialog = new()
@@ -360,12 +387,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             }
         }
-
-        private static void Analyse_OrtoDatasComparisons_Table()
-        {
-            MessageBox.Show("Finished!");
-        }
-
+        
         private void AppendBuildingModels()
         {
             DateTime dateTime = DateTime.Now;
@@ -553,263 +575,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Button_Test_Click(object sender, RoutedEventArgs e)
         {
-            OpenFolderDialog openFolderDialog;
-            bool? result;
-
-            openFolderDialog = new OpenFolderDialog
-            {
-                Title = "Select EPW files directory"
-            };
-            result = openFolderDialog.ShowDialog(this);
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-            Dictionary<string, EPWFile>? dictionary_EPWFile = EPW.Create.EPWFiles(openFolderDialog.FolderName, SearchOption.AllDirectories);
-
-            openFolderDialog = new OpenFolderDialog
-            {
-                Title = "Select GISModel directory"
-            };
-            result = openFolderDialog.ShowDialog(this);
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-            string[] paths_GISModel = Directory.GetFiles(openFolderDialog.FolderName, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
-            for (int i = 0; i < paths_GISModel.Length; i++)
-            {
-                string path_GISModel = paths_GISModel[i];
-
-                if(System.IO.Path.GetDirectoryName(path_GISModel) is not string directory)
-                {
-                    continue;
-                }
-
-                string path_BuidlingModelsFile = System.IO.Path.Combine(directory, System.IO.Path.GetFileNameWithoutExtension(path_GISModel) + "." + Analytical.Constans.FileExtension.BuildingModelsFile);
-
-                if (!File.Exists(path_BuidlingModelsFile))
-                {
-                    continue;
-                }
-
-                List<Building2D>? building2Ds = null;
-                using (GISModelFile gISModelFile = new(path_GISModel))
-                {
-                    gISModelFile.Open();
-
-                    building2Ds = gISModelFile?.Value?.GetObjects<Building2D>();
-                }
-
-                if (building2Ds == null || building2Ds.Count == 0)
-                {
-                    continue;
-                }
-
-                if (dictionary_EPWFile != null)
-                {
-                    foreach (Building2D building2D in building2Ds)
-                    {
-                        EPWFile? ePWFile = GIS.Query.EPWFile(building2D.PolygonalFace2D.Centroid(), dictionary_EPWFile.Values, out double distance);
-                    }
-                }
-
-                //List<Building2D> building2Ds_Invalid = [];
-
-                //Dictionary<Analytical.Enums.LOD, List<BuildingModel>> dictionary = new Dictionary<Analytical.Enums.LOD, List<BuildingModel>>();
-                //using (BuildingModelsFile buildingModelsFile = new BuildingModelsFile(path_BuidlingModelsFile))
-                //{
-                //    buildingModelsFile.Open();
-
-                //    foreach(Building2D building2D in building2Ds)
-                //    {
-                //        UniqueReference uniqueReference = BuildingModelsFile.GetUniqueReference(building2D?.Reference);
-                //        if(uniqueReference == null)
-                //        {
-                //            continue;
-                //        }
-
-                //        BuildingModel buildingModel = buildingModelsFile.GetValue<BuildingModel>(uniqueReference);
-                //        if(buildingModel == null)
-                //        {
-                //            building2Ds_Invalid.Add(building2D);
-                //        }
-
-                //        if (!buildingModel.TryGetValue(Analytical.Enums.BuildingModelParameter.LOD, out Analytical.Enums.LOD lOD, new Core.Parameter.Classes.GetValueSettings(true, false)))
-                //        {
-                //            lOD = Analytical.Enums.LOD.Undefined;
-                //        }
-
-                //        if (!dictionary.TryGetValue(lOD, out List<BuildingModel> buildingModels))
-                //        {
-                //            buildingModels = new List<BuildingModel>();
-                //            dictionary[lOD] = buildingModels;
-                //        }
-
-                //        buildingModels.Add(buildingModel);
-
-                //        Point3D point3D = GIS.Convert.ToEPSG4326(building2D.PolygonalFace2D.ExternalEdge.GetInternalPoint());
-
-                //    }
-
-                //}
-            }
-
-
-
-
-
-
-
-
-            //List<BuildingModel> buildingModels = Create.BuildingModels(this);
-
-
-            //OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            //bool? result = openFolderDialog.ShowDialog(this);
-            //if (result == null || !result.HasValue || !result.Value)
-            //{
-            //    return;
-            //}
-
-            //string[] paths = Directory.GetFiles(openFolderDialog.FolderName, "*.zip");
-            //foreach(string path in paths)
-            //{
-            //    string fileName = System.IO.Path.GetFileNameWithoutExtension(path);
-            //    if(!fileName.EndsWith("_gml"))
-            //    {
-            //        continue;
-            //    }
-
-            //    fileName = fileName.Substring(0, fileName.Length - 4);
-
-            //    string path_New = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path), fileName + System.IO.Path.GetExtension(path));
-            //    if(File.Exists(path_New))
-            //    {
-            //        continue;
-            //    }
-
-            //    File.Copy(path, path_New, true);
-            //    File.Delete(path);
-            //}
-
-
-            //HashSet<string> paths = await Modify.Download3DModels(this);
-
-            //WriteImages();
-
-            //Modify.WriteAdministrativeAreal2DNames(this, @"C:\Users\jakub\Downloads\GIS\AdministrativeAreal2D.txt");
-            //CategoryTest();
-
-            //CopyGISModelFiles_Cloud();
-
-            //CreateAdministrativeAreal2DModel();
-
-            //CalculateAdministrativeAreal2DStatisticalUnits();
-
-            //string path = @"C:\Users\jakub\Downloads\GIS\Statistics\StatisticalDataCollections.sdcf";
-
-            //using (StatisticalDataCollectionFile statisticalDataCollectionFile = new StatisticalDataCollectionFile(path))
-            //{
-            //    statisticalDataCollectionFile.Open();
-
-            //    IEnumerable<StatisticalDataCollection> statisticalDataCollection = statisticalDataCollectionFile.Values;
-            //}
-
-            //List<Building2D> building2Ds = null;
-
-            //string directory = @"C:\Users\jakub\Downloads\GIS\0201_GML\";
-
-            //string path = System.IO.Path.Combine(directory, "0201_GML.gmf");
-            //using (GISModelFile gISModelFile = new GISModelFile(path))
-            //{
-            //    gISModelFile.Open();
-
-            //    GISModel gISModel = gISModelFile.Value;
-
-            //    building2Ds = gISModel.GetObjects<Building2D>();
-            //}
-
-            //if(building2Ds == null)
-            //{
-            //    return;
-            //}
-
-            //OrtoDatasComparisonOptions ortoDatasComparisonOptions = new OrtoDatasComparisonOptions()
-            //{
-            //    OverrideExisting = true
-            //};
-
-            //foreach (Building2D building2D in building2Ds)
-            //{
-            //    string reference = building2D.Reference;
-
-            //    Dictionary<string, OrtoDatasComparison> dictionary;
-            //    OrtoDatasComparison ortoDatasComparison;
-
-            //    dictionary = Emgu.CV.Query.OrtoDatasComparisonDictionary(directory, [reference]);
-            //    if(dictionary == null || !dictionary.TryGetValue(reference, out ortoDatasComparison))
-            //    {
-            //        continue;
-            //    }
-
-            //    HashSet<string> references = await Modify.CalculateOrtoDatasComparisons(directory, ortoDatasComparisonOptions, [reference]);
-            //    if(references == null || !references.Contains(reference))
-            //    {
-            //        continue;
-            //    }
-
-            //    dictionary = Emgu.CV.Query.OrtoDatasComparisonDictionary(directory, [reference]);
-            //    if (dictionary == null || !dictionary.TryGetValue(reference, out ortoDatasComparison))
-            //    {
-            //        continue;
-            //    }
-
-            //}
-
-            //OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            //bool? result = openFolderDialog.ShowDialog(this);
-            //if (result == null || !result.HasValue || !result.Value)
-            //{
-            //    return;
-            //}
-
-            //string[] paths_Input = Directory.GetFiles(openFolderDialog.FolderName, "*." + FileExtension.YearBuiltDataFile, SearchOption.AllDirectories);
-            //for (int i = 0; i < paths_Input.Length; i++)
-            //{
-            //    string path = paths_Input[i];
-
-            //    //File.Copy(path, path + ".bak", true);
-
-            //    using (YearBuiltDataFile yearBuiltDataFile = new YearBuiltDataFile(path))
-            //    {
-            //        IEnumerable<YearBuiltData> yearBuiltDatas =  yearBuiltDataFile.GetValues<YearBuiltData>();
-            //        if(yearBuiltDatas == null || yearBuiltDatas.Count() == 0)
-            //        {
-            //            continue;
-            //        }
-
-            //        foreach(YearBuiltData yearBuiltData in yearBuiltDatas)
-            //        {
-            //            //yearBuiltData.Add(new UserYearBuilt(yearBuiltData.Year));
-
-            //            //if (yearBuiltData.Year.Equals(yearBuiltData.GetUserYearBuilt().Year))
-            //            //{
-            //            //    continue;
-            //            //}
-
-            //            yearBuiltDataFile.AddValue(yearBuiltData);
-            //        }
-
-            //        yearBuiltDataFile.Save();
-
-            //    }
-
-            //}
-
-
+            Test_2();
         }
 
         private void Button_ToDiGiGISModelFiles_Click(object sender, RoutedEventArgs e)
@@ -1012,29 +778,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             MessageBox.Show("Finished!");
         }
-
-        private static void Delete()
-        {
-            //OpenFolderDialog openFolderDialog = new OpenFolderDialog();
-            //bool? result = openFolderDialog.ShowDialog(this);
-            //if (result == null || !result.HasValue || !result.Value)
-            //{
-            //    return;
-            //}
-
-            //string directory = openFolderDialog.FolderName;
-            string directory = @"C:\Users\jakub\Nextcloud\Data\GIS\Output";
-            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
-            {
-                return;
-            }
-
-            foreach (string directory_Temp in Directory.GetDirectories(directory))
-            {
-                Directory.Delete(directory_Temp, true);
-            }
-        }
-
+        
         private void MainWindow_Closed(object? sender, EventArgs e)
         {
 
@@ -1407,7 +1151,297 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = string.Format("Done Writing! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
-        
+
+        private void Test_1()
+        {
+            OpenFolderDialog openFolderDialog;
+            bool? result;
+
+            openFolderDialog = new OpenFolderDialog
+            {
+                Title = "Select EPW files directory"
+            };
+            result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            Dictionary<string, EPWFile>? dictionary_EPWFile = EPW.Create.EPWFiles(openFolderDialog.FolderName, SearchOption.AllDirectories);
+
+            openFolderDialog = new OpenFolderDialog
+            {
+                Title = "Select GISModel directory"
+            };
+            result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string[] paths_GISModel = Directory.GetFiles(openFolderDialog.FolderName, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
+            for (int i = 0; i < paths_GISModel.Length; i++)
+            {
+                string path_GISModel = paths_GISModel[i];
+
+                if (System.IO.Path.GetDirectoryName(path_GISModel) is not string directory)
+                {
+                    continue;
+                }
+
+                string path_BuidlingModelsFile = System.IO.Path.Combine(directory, System.IO.Path.GetFileNameWithoutExtension(path_GISModel) + "." + Analytical.Constans.FileExtension.BuildingModelsFile);
+
+                if (!File.Exists(path_BuidlingModelsFile))
+                {
+                    continue;
+                }
+
+                List<Building2D>? building2Ds = null;
+                using (GISModelFile gISModelFile = new(path_GISModel))
+                {
+                    gISModelFile.Open();
+
+                    building2Ds = gISModelFile?.Value?.GetObjects<Building2D>();
+                }
+
+                if (building2Ds == null || building2Ds.Count == 0)
+                {
+                    continue;
+                }
+
+                if (dictionary_EPWFile != null)
+                {
+                    foreach (Building2D building2D in building2Ds)
+                    {
+                        EPWFile? ePWFile = GIS.Query.EPWFile(building2D.PolygonalFace2D.Centroid(), dictionary_EPWFile.Values, out double distance);
+                    }
+                }
+
+                //List<Building2D> building2Ds_Invalid = [];
+
+                //Dictionary<Analytical.Enums.LOD, List<BuildingModel>> dictionary = new Dictionary<Analytical.Enums.LOD, List<BuildingModel>>();
+                //using (BuildingModelsFile buildingModelsFile = new BuildingModelsFile(path_BuidlingModelsFile))
+                //{
+                //    buildingModelsFile.Open();
+
+                //    foreach(Building2D building2D in building2Ds)
+                //    {
+                //        UniqueReference uniqueReference = BuildingModelsFile.GetUniqueReference(building2D?.Reference);
+                //        if(uniqueReference == null)
+                //        {
+                //            continue;
+                //        }
+
+                //        BuildingModel buildingModel = buildingModelsFile.GetValue<BuildingModel>(uniqueReference);
+                //        if(buildingModel == null)
+                //        {
+                //            building2Ds_Invalid.Add(building2D);
+                //        }
+
+                //        if (!buildingModel.TryGetValue(Analytical.Enums.BuildingModelParameter.LOD, out Analytical.Enums.LOD lOD, new Core.Parameter.Classes.GetValueSettings(true, false)))
+                //        {
+                //            lOD = Analytical.Enums.LOD.Undefined;
+                //        }
+
+                //        if (!dictionary.TryGetValue(lOD, out List<BuildingModel> buildingModels))
+                //        {
+                //            buildingModels = new List<BuildingModel>();
+                //            dictionary[lOD] = buildingModels;
+                //        }
+
+                //        buildingModels.Add(buildingModel);
+
+                //        Point3D point3D = GIS.Convert.ToEPSG4326(building2D.PolygonalFace2D.ExternalEdge.GetInternalPoint());
+
+                //    }
+
+                //}
+            }
+
+
+
+
+
+
+
+
+            //List<BuildingModel> buildingModels = Create.BuildingModels(this);
+
+
+            //OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            //bool? result = openFolderDialog.ShowDialog(this);
+            //if (result == null || !result.HasValue || !result.Value)
+            //{
+            //    return;
+            //}
+
+            //string[] paths = Directory.GetFiles(openFolderDialog.FolderName, "*.zip");
+            //foreach(string path in paths)
+            //{
+            //    string fileName = System.IO.Path.GetFileNameWithoutExtension(path);
+            //    if(!fileName.EndsWith("_gml"))
+            //    {
+            //        continue;
+            //    }
+
+            //    fileName = fileName.Substring(0, fileName.Length - 4);
+
+            //    string path_New = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path), fileName + System.IO.Path.GetExtension(path));
+            //    if(File.Exists(path_New))
+            //    {
+            //        continue;
+            //    }
+
+            //    File.Copy(path, path_New, true);
+            //    File.Delete(path);
+            //}
+
+
+            //HashSet<string> paths = await Modify.Download3DModels(this);
+
+            //WriteImages();
+
+            //Modify.WriteAdministrativeAreal2DNames(this, @"C:\Users\jakub\Downloads\GIS\AdministrativeAreal2D.txt");
+            //CategoryTest();
+
+            //CopyGISModelFiles_Cloud();
+
+            //CreateAdministrativeAreal2DModel();
+
+            //CalculateAdministrativeAreal2DStatisticalUnits();
+
+            //string path = @"C:\Users\jakub\Downloads\GIS\Statistics\StatisticalDataCollections.sdcf";
+
+            //using (StatisticalDataCollectionFile statisticalDataCollectionFile = new StatisticalDataCollectionFile(path))
+            //{
+            //    statisticalDataCollectionFile.Open();
+
+            //    IEnumerable<StatisticalDataCollection> statisticalDataCollection = statisticalDataCollectionFile.Values;
+            //}
+
+            //List<Building2D> building2Ds = null;
+
+            //string directory = @"C:\Users\jakub\Downloads\GIS\0201_GML\";
+
+            //string path = System.IO.Path.Combine(directory, "0201_GML.gmf");
+            //using (GISModelFile gISModelFile = new GISModelFile(path))
+            //{
+            //    gISModelFile.Open();
+
+            //    GISModel gISModel = gISModelFile.Value;
+
+            //    building2Ds = gISModel.GetObjects<Building2D>();
+            //}
+
+            //if(building2Ds == null)
+            //{
+            //    return;
+            //}
+
+            //OrtoDatasComparisonOptions ortoDatasComparisonOptions = new OrtoDatasComparisonOptions()
+            //{
+            //    OverrideExisting = true
+            //};
+
+            //foreach (Building2D building2D in building2Ds)
+            //{
+            //    string reference = building2D.Reference;
+
+            //    Dictionary<string, OrtoDatasComparison> dictionary;
+            //    OrtoDatasComparison ortoDatasComparison;
+
+            //    dictionary = Emgu.CV.Query.OrtoDatasComparisonDictionary(directory, [reference]);
+            //    if(dictionary == null || !dictionary.TryGetValue(reference, out ortoDatasComparison))
+            //    {
+            //        continue;
+            //    }
+
+            //    HashSet<string> references = await Modify.CalculateOrtoDatasComparisons(directory, ortoDatasComparisonOptions, [reference]);
+            //    if(references == null || !references.Contains(reference))
+            //    {
+            //        continue;
+            //    }
+
+            //    dictionary = Emgu.CV.Query.OrtoDatasComparisonDictionary(directory, [reference]);
+            //    if (dictionary == null || !dictionary.TryGetValue(reference, out ortoDatasComparison))
+            //    {
+            //        continue;
+            //    }
+
+            //}
+
+            //OpenFolderDialog openFolderDialog = new OpenFolderDialog();
+            //bool? result = openFolderDialog.ShowDialog(this);
+            //if (result == null || !result.HasValue || !result.Value)
+            //{
+            //    return;
+            //}
+
+            //string[] paths_Input = Directory.GetFiles(openFolderDialog.FolderName, "*." + FileExtension.YearBuiltDataFile, SearchOption.AllDirectories);
+            //for (int i = 0; i < paths_Input.Length; i++)
+            //{
+            //    string path = paths_Input[i];
+
+            //    //File.Copy(path, path + ".bak", true);
+
+            //    using (YearBuiltDataFile yearBuiltDataFile = new YearBuiltDataFile(path))
+            //    {
+            //        IEnumerable<YearBuiltData> yearBuiltDatas =  yearBuiltDataFile.GetValues<YearBuiltData>();
+            //        if(yearBuiltDatas == null || yearBuiltDatas.Count() == 0)
+            //        {
+            //            continue;
+            //        }
+
+            //        foreach(YearBuiltData yearBuiltData in yearBuiltDatas)
+            //        {
+            //            //yearBuiltData.Add(new UserYearBuilt(yearBuiltData.Year));
+
+            //            //if (yearBuiltData.Year.Equals(yearBuiltData.GetUserYearBuilt().Year))
+            //            //{
+            //            //    continue;
+            //            //}
+
+            //            yearBuiltDataFile.AddValue(yearBuiltData);
+            //        }
+
+            //        yearBuiltDataFile.Save();
+
+            //    }
+
+            //}
+        }
+
+        private void Test_2()
+        {
+            if(Create.Typologies(this, out string? directory) is not List<Typology.Classes.Typology> typologies)
+            {
+                return;
+            }
+
+            if(string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string directory_Temp = System.IO.Path.Combine(directory, "Typology");
+            if(!Directory.Exists(directory_Temp))
+            {
+                Directory.CreateDirectory(directory_Temp);
+            }
+
+            foreach(Typology.Classes.Typology typology in typologies)
+            {
+                if (typology?.ToSystem_Strings() is not string[] contents)
+                {
+                    continue;
+                }
+
+                string path = System.IO.Path.Combine(directory_Temp, (typology.Name ?? Guid.NewGuid().ToString()) + ".txt");
+
+                File.AppendAllLines(path, contents);
+            }
+        }
+
         private async void WriteStatisticalDataCollections()
         {
             DateTime dateTime = DateTime.Now;

@@ -65,6 +65,9 @@
     <Reference Include="DiGi.GML">
       <HintPath>..\..\DiGi.GML\bin\DiGi.GML.dll</HintPath>
     </Reference>
+    <Reference Include="DiGi.Typology">
+      <HintPath>..\..\DiGi.Typology\bin\DiGi.Typology.dll</HintPath>
+    </Reference>
     <Reference Include="DiGi.UI.WPF.Core">
       <HintPath>..\..\DiGi.UI.WPF\bin\DiGi.UI.WPF.Core.dll</HintPath>
     </Reference>

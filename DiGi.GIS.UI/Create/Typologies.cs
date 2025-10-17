@@ -1,0 +1,116 @@
+﻿using DiGi.GIS.Classes;
+using DiGi.GIS.Constans;
+using Microsoft.Win32;
+using System.IO;
+using System.Windows;
+
+namespace DiGi.GIS.UI
+{
+    public static partial class Create
+    {
+        public static List<Typology.Classes.Typology>? Typologies(this Window? owner, out string? directory)
+        {
+            directory = null;
+
+            OpenFolderDialog openFolderDialog;
+            bool? dialogResult;
+
+            openFolderDialog = new()
+            {
+                Title = "Select GIS Model files folder"
+            };
+            dialogResult = openFolderDialog.ShowDialog(owner);
+            if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
+            {
+                return null;
+            }
+
+            directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return null;
+            }
+
+            string directoryName = Path.GetFileName(directory);
+
+            List<string>? paths_GISModel = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories)?.ToList();
+            if (paths_GISModel == null || paths_GISModel.Count == 0)
+            {
+                return null;
+            }
+
+            List<Typology.Classes.Typology> result = [];
+
+            foreach (string path_GISModel in paths_GISModel)
+            {
+                if (string.IsNullOrWhiteSpace(path_GISModel) || !File.Exists(path_GISModel))
+                {
+                    continue;
+                }
+
+                using GISModelFile gISModelFile = new(path_GISModel);
+
+                gISModelFile.Open();
+
+                if (gISModelFile.Value is not GISModel gISModel)
+                {
+                    return null;
+                }
+
+                string fileName = Path.GetFileNameWithoutExtension(path_GISModel);
+
+                Typology.Classes.Typology? typology = null;
+
+                typology = Typology_Residential_1(gISModel, fileName);
+                if(typology is not null)
+                {
+                    result.Add(typology);
+                }
+
+                typology = Typology_Residential_2(gISModel, fileName);
+                if (typology is not null)
+                {
+                    result.Add(typology);
+                }
+
+                typology = Typology_Residential_3(gISModel, fileName);
+                if (typology is not null)
+                {
+                    result.Add(typology);
+                }
+
+                typology = Typology_Residential_4(gISModel, fileName);
+                if (typology is not null)
+                {
+                    result.Add(typology);
+                }
+
+                typology = Typology_Residential_5(gISModel, fileName);
+                if (typology is not null)
+                {
+                    result.Add(typology);
+                }
+
+                typology = Typology_NonResidential_1(gISModel, fileName);
+                if (typology is not null)
+                {
+                    result.Add(typology);
+                }
+
+                typology = Typology_NonResidential_2(gISModel, fileName);
+                if (typology is not null)
+                {
+                    result.Add(typology);
+                }
+
+                typology = Typology_NonResidential_3(gISModel, fileName);
+                if (typology is not null)
+                {
+                    result.Add(typology);
+                }
+            }
+
+            return result;
+        }
+    }
+}
