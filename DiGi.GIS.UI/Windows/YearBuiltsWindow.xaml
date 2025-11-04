@@ -4,7 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DiGi.GIS.UI.Windows"
-        xmlns:Controls="clr-namespace:DiGi.GIS.UI.Controls" x:Class="DiGi.GIS.UI.Windows.YearBuiltsWindow"
+        xmlns:Controls="clr-namespace:DiGi.GIS.UI.Controls" 
+        x:Class="DiGi.GIS.UI.Windows.YearBuiltsWindow"
         mc:Ignorable="d"
         Title="Year Builts" Height="450" Width="800">
     <DockPanel LastChildFill="True">

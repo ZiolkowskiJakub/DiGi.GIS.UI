@@ -13,30 +13,6 @@ namespace DiGi.GIS.UI.Windows
             InitializeComponent();
         }
 
-        private void MenuItem_Load_Click(object sender, RoutedEventArgs e)
-        {
-            string? path = Query.GISModelFilePath(this);
-            if (string.IsNullOrEmpty(path))
-            {
-                return;
-            }
-
-            GISModelFile gISModelFile = new (path);
-            gISModelFile.Open();
-
-            YearBuiltsControl_Main.GISModelFile = gISModelFile;
-        }
-
-        private void MenuItem_Close_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
-
-        private void MenuItem_About_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         public GISModelFile? GISModelFile
         {
             get
@@ -51,6 +27,30 @@ namespace DiGi.GIS.UI.Windows
                     YearBuiltsControl_Main.GISModelFile = value;
                 }
             }
+        }
+
+        private void MenuItem_About_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItem_Close_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void MenuItem_Load_Click(object sender, RoutedEventArgs e)
+        {
+            string? path = Query.GISModelFilePath(this);
+            if (string.IsNullOrEmpty(path))
+            {
+                return;
+            }
+
+            GISModelFile gISModelFile = new (path);
+            gISModelFile.Open();
+
+            YearBuiltsControl_Main.GISModelFile = gISModelFile;
         }
     }
 }

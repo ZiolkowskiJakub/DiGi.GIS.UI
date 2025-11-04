@@ -62,7 +62,7 @@ namespace DiGi.GIS.UI
                 Typology.Classes.Typology? typology = null;
 
                 typology = Typology_Residential_1(gISModel, fileName);
-                if(typology is not null)
+                if (typology is not null)
                 {
                     result.Add(typology);
                 }
@@ -108,9 +108,58 @@ namespace DiGi.GIS.UI
                 {
                     result.Add(typology);
                 }
+
+                typology = Typology_Residential_YearBuiltData_1(gISModelFile, fileName);
+                if (typology is not null)
+                {
+                    result.Add(typology);
+                }
+
+                typology = Typology_Residential_YearBuiltData_2(gISModelFile, fileName);
+                if (typology is not null)
+                {
+                    result.Add(typology);
+                }
+
+                typology = Typology_Residential_YearBuiltData_3(gISModelFile, fileName);
+                if (typology is not null)
+                {
+                    result.Add(typology);
+                }
+
+                typology = Typology_Residential_YearBuiltData_4(gISModelFile, fileName);
+                if (typology is not null)
+                {
+                    result.Add(typology);
+                }
+
+                typology = Typology_Residential_YearBuiltData_5(gISModelFile, fileName);
+                if (typology is not null)
+                {
+                    result.Add(typology);
+                }
+
+                typology = Typology_NonResidential_YearBuiltData_1(gISModelFile, fileName);
+                if (typology is not null)
+                {
+                    result.Add(typology);
+                }
+
+                typology = Typology_NonResidential_YearBuiltData_2(gISModelFile, fileName);
+                if (typology is not null)
+                {
+                    result.Add(typology);
+                }
+
+                typology = Typology_NonResidential_YearBuiltData_3(gISModelFile, fileName);
+                if (typology is not null)
+                {
+                    result.Add(typology);
+                }
             }
 
             return result;
         }
     }
 }
+    

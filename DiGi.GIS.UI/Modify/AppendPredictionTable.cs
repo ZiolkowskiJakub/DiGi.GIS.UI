@@ -47,7 +47,13 @@ namespace DiGi.GIS.UI
                 return;
             }
 
-            SaveFileDialog saveFileDialog = new ();
+            SaveFileDialog saveFileDialog = new()
+            {
+                Title = "Save Table File",
+                Filter = "Tab Separated Value Files (*.tsv)|*.tsv|All files (*.*)|*.*",
+                FileName = "ML_Input.tsv"
+            };
+
             result = saveFileDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -59,7 +65,7 @@ namespace DiGi.GIS.UI
                 IncludeModel = true,
                 IncludeStatistical = true,
                 IncludeYearBuilt = true,
-                YearBuiltOnly = true,
+                YearBuiltOnly = false,
                 IncludeYearBuiltPredictions = true,
                 Years = new Range<int>(2008, DateTime.Now.Year),
                 StatisticalDirectory = directory_Statistical

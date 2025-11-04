@@ -75,7 +75,6 @@ namespace DiGi.GIS.UI.Controls
 
             short? userYear = GIS.Query.UserYearBuilt(gISModelFile, building2D);
 
-            //TODO: Implement predicted year
             short? predictedYear = GIS.Query.LatestPredictedYearBuilt(gISModelFile, building2D);
 
             SortedDictionary<short, OrtoDataControl> dictionary = [];

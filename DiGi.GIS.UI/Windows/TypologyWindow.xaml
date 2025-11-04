@@ -1,0 +1,56 @@
+﻿<Window x:Class="DiGi.GIS.UI.Windows.TypologyWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DiGi.GIS.UI.Windows"
+        xmlns:Controls="clr-namespace:DiGi.UI.WPF.Core.Controls;assembly=DiGi.UI.WPF.Core"
+        mc:Ignorable="d"
+        Title="Typology" Height="450" Width="800" Loaded="Window_Loaded">
+    <DockPanel LastChildFill="True">
+        <StackPanel DockPanel.Dock="Top">
+            <Menu>
+                <MenuItem Header="File">
+                    <MenuItem x:Name="MenuItem_Load" Header="Load" Click="MenuItem_Load_Click"/>
+                    <Separator/>
+                    <MenuItem x:Name="MenuItem_Close" Header="Close" Click="MenuItem_Close_Click"/>
+                </MenuItem>
+                <MenuItem Header="Help">
+                    <MenuItem x:Name="MenuItem_About" Header="About" Click="MenuItem_About_Click"/>
+                </MenuItem>
+            </Menu>
+        </StackPanel>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <Controls:ProgressBarControl x:Name="ProgressBarControl_Main" Width="300" VerticalAlignment="Center"/>
+            </StatusBarItem>
+        </StatusBar>
+        <Grid DockPanel.Dock="Left">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="450" MinWidth="350"/>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" MinWidth="200"/>
+            </Grid.ColumnDefinitions>
+            <TabControl Grid.Column="0" TabStripPlacement="Bottom" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="2,2,2,0">
+                <TabItem Header="Typology">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Controls:TreeViewControl Grid.Column="0" x:Name="TreeViewControl_Typology" />
+                        <GridSplitter Grid.Column="1" Width="5" VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="0,0,0,30"/>
+                        <ListBox Grid.Column="2" x:Name="ListBox_References" Margin="0,0,0,30"/>
+                        <Label x:Name="Label_Count" Grid.Column="2" Content="Count: 0" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                    </Grid>
+
+                </TabItem>
+            </TabControl>
+            <GridSplitter Grid.Column="1" Width="5" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+            <TabControl Grid.Column="2" TabStripPlacement="Top"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,2,2,2">
+                <TabItem Header="Building" ></TabItem>
+            </TabControl>
+        </Grid>
+    </DockPanel>
+</Window>

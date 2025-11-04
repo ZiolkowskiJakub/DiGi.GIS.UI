@@ -15,17 +15,17 @@ namespace DiGi.GIS.UI.Windows
             InitializeComponent();
         }
 
+        private void MenuItem_About_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void MenuItem_Close_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }
 
         private void MenuItem_Load_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void MenuItem_About_Click(object sender, RoutedEventArgs e)
         {
 
         }

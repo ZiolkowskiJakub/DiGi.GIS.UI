@@ -52,10 +52,8 @@ namespace DiGi.GIS.UI
                     ortoRangeFile.Values = ortoRanges;
 
                     ortoRangeFile.Save();
-
                 }
-            }
-            ;
+            };
 
             return true;
         }
