@@ -1,6 +1,9 @@
-﻿using DiGi.GIS.Classes;
+﻿using DiGi.Core.Classes;
+using DiGi.Core.Interfaces;
+using DiGi.GIS.Classes;
 using DiGi.Typology.Classes;
 using DiGi.UI.WPF.Core.Classes;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -11,68 +14,125 @@ namespace DiGi.GIS.UI.Windows
     /// </summary>
     public partial class TypologyWindow : Window
     {
+        private GISModelFileManager gISModelFileManager = new ();
+
         public TypologyWindow()
         {
             InitializeComponent();
         }
 
-        private void ListBox_References_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private TypologyFile? GetActiveTypologyFile()
         {
-            if(ListBox_References.SelectedItem is not string reference)
+            if (TreeViewControl_Typology.Tag is not TypologyFile typologyFile)
             {
-                return;
+                return null;
             }
 
-            if(TreeViewControl_Typology.Tag is not TypologyFile typologyFile)
+            return typologyFile;
+        }
+
+        private string? GetActiveDirectory()
+        {
+            if(GetActiveTypologyFile()?.Path is not string path)
             {
-                return;
+                return null;
             }
 
-            if(typologyFile.Path is not string path_TypologyFile)
+            return System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(path));
+        }
+
+        private List<string>? GetActiveGISModelFilePaths()
+        {
+            if(GetActiveDirectory() is not string directory || string.IsNullOrWhiteSpace(directory) || !System.IO.Directory.Exists(directory))
             {
-                return;
+                return null;
             }
 
-            string? directory = System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(path_TypologyFile));
-            if(string.IsNullOrWhiteSpace(directory) || !System.IO.Directory.Exists(directory))
+            return [.. System.IO.Directory.GetFiles(directory, string.Format("*.{0}", Constans.FileExtension.GISModelFile), System.IO.SearchOption.TopDirectoryOnly)];
+        }
+
+        private List<GISModel>? GetActiveGISModels()
+        {
+            List<string>? gISModelFilePaths = GetActiveGISModelFilePaths();
+            if(gISModelFilePaths is null || gISModelFilePaths.Count == 0)
             {
-                return;
+                return null;
             }
 
-            GISModelFile? gISModelFile = null;
-            Building2D? building2D = null;
-
-            List<string> paths_GISModelFile = System.IO.Directory.GetFiles(directory, string.Format(".{0}", Constans.FileExtension.GISModelFile), System.IO.SearchOption.TopDirectoryOnly).ToList();
-            foreach(string path_GISModelFile in paths_GISModelFile)
+            List<GISModel> result = [];
+            foreach (string gISModelFilePath in gISModelFilePaths)
             {
-                gISModelFile = new(path_GISModelFile);
-                if(!gISModelFile.Open())
+                GISModel? gISModel = null;
+
+                if(gISModelFileManager.GetGuidExternalReference(gISModelFilePath) is GuidExternalReference guidExternalReference)
+                {
+                    gISModel = gISModelFileManager.GetGISModel(guidExternalReference);
+                }
+
+                if(gISModel is null)
+                {
+                    GuidExternalReference? guidExternalReference_Temp = gISModelFileManager.Open(gISModelFilePath);
+                    if(guidExternalReference_Temp is null)
+                    {
+                        continue;
+                    }
+
+                    gISModel = gISModelFileManager.GetGISModel(guidExternalReference_Temp);
+                }
+
+                if(gISModel is null)
                 {
                     continue;
                 }
 
-                building2D = gISModelFile.Value?.GetObject<Building2D>(reference);
-                if(building2D is not null)
+                result.Add(gISModel);
+            }
+
+            return result;
+        }
+
+        private string? GetPath(GISModel? gISModel)
+        {
+            return gISModelFileManager.GetPath(gISModel);
+        }
+
+        private void ListBox_References_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            WrapPanel_Main.Children.Clear();
+
+            if (ListBox_References.SelectedItem is not string reference)
+            {
+                return;
+            }
+
+            List<GISModel>? gISModels = GetActiveGISModels();
+            if(gISModels is null || gISModels.Count == 0)
+            {
+                return;
+            }
+
+            GISModel? gISModel = null;
+            Building2D? building2D = null;
+
+            foreach (GISModel gISModel_Temp in gISModels)
+            {
+                building2D = gISModel_Temp.GetObject<Building2D>(reference);
+                if (building2D is null)
                 {
-                    break;
+                    continue;
                 }
 
-                gISModelFile = null;
+                gISModel = gISModel_Temp;
+                break;
             }
 
-            if(building2D is null)
+            if (GetPath(gISModel) is not string path)
             {
                 return;
             }
 
-            string? path = gISModelFile?.Path;
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                return;
-            }
-
-            directory = System.IO.Path.GetDirectoryName(path);
-            if (!System.IO.Directory.Exists(directory))
+            string? directory = System.IO.Path.GetDirectoryName(path);
+            if (string.IsNullOrWhiteSpace(directory) || !System.IO.Directory.Exists(directory))
             {
                 return;
             }
@@ -85,9 +145,14 @@ namespace DiGi.GIS.UI.Windows
                 return;
             }
 
-            short? userYear = GIS.Query.UserYearBuilt(gISModelFile, building2D);
 
-            short? predictedYear = GIS.Query.LatestPredictedYearBuilt(gISModelFile, building2D);
+
+
+
+            //short? userYear = GIS.Query.UserYearBuilt(gISModelFile, building2D);
+
+            //short? predictedYear = GIS.Query.LatestPredictedYearBuilt(gISModelFile, building2D);
+
         }
 
         private void LoadTypologyFile(TypologyFile? typologyFile)
@@ -157,7 +222,12 @@ namespace DiGi.GIS.UI.Windows
         
         private void TreeViewControl_Typology_ItemAdding(object sender, TreeViewItemAddingEventArgs e)
         {
-            if (TreeViewControl_Typology.Tag is not Typology.Classes.Typology typology)
+            if (TreeViewControl_Typology.Tag is not TypologyFile typologyFile)
+            {
+                return;
+            }
+
+            if (typologyFile.Value is not Typology.Classes.Typology typology)
             {
                 return;
             }

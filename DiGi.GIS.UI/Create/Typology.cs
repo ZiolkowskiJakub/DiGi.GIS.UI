@@ -264,7 +264,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                typology_Building.AddReference(building2D.Guid.ToString());
+                typology_Building.AddReference(building2D.Reference);
             }
 
             return result;
@@ -561,7 +561,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                typology_Building.AddReference(building2D.Guid.ToString());
+                typology_Building.AddReference(building2D.Reference);
             }
 
             return result;
@@ -868,7 +868,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                typology_Building.AddReference(building2D.Guid.ToString());
+                typology_Building.AddReference(building2D.Reference);
             }
 
             return result;
@@ -1135,7 +1135,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                typology_Building.AddReference(building2D.Guid.ToString());
+                typology_Building.AddReference(building2D.Reference);
             }
 
             return result;
@@ -1449,7 +1449,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                typology_Building.AddReference(building2D.Guid.ToString());
+                typology_Building.AddReference(building2D.Reference);
             }
 
             return result;
@@ -1607,7 +1607,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                typology_Building.AddReference(building2D.Guid.ToString());
+                typology_Building.AddReference(building2D.Reference);
             }
 
             return result;
@@ -1807,7 +1807,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                typology_Building.AddReference(building2D.Guid.ToString());
+                typology_Building.AddReference(building2D.Reference);
             }
 
             return result;
@@ -2014,7 +2014,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                typology_Building.AddReference(building2D.Guid.ToString());
+                typology_Building.AddReference(building2D.Reference);
             }
 
             return result;
@@ -2326,7 +2326,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                typology_Building.AddReference(building2D.Guid.ToString());
+                typology_Building.AddReference(building2D.Reference);
             }
 
             return result;
@@ -2674,7 +2674,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                typology_Building.AddReference(building2D.Guid.ToString());
+                typology_Building.AddReference(building2D.Reference);
             }
 
             return result;
@@ -3032,7 +3032,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                typology_Building.AddReference(building2D.Guid.ToString());
+                typology_Building.AddReference(building2D.Reference);
             }
 
             return result;
@@ -3350,7 +3350,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                typology_Building.AddReference(building2D.Guid.ToString());
+                typology_Building.AddReference(building2D.Reference);
             }
 
             return result;
@@ -3715,7 +3715,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                typology_Building.AddReference(building2D.Guid.ToString());
+                typology_Building.AddReference(building2D.Reference);
             }
 
             return result;
@@ -3924,7 +3924,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                typology_Building.AddReference(building2D.Guid.ToString());
+                typology_Building.AddReference(building2D.Reference);
             }
 
             return result;
@@ -4433,7 +4433,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                typology_Building.AddReference(building2D.Guid.ToString());
+                typology_Building.AddReference(building2D.Reference);
             }
 
             return result;
