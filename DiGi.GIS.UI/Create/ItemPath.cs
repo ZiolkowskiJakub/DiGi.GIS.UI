@@ -20,9 +20,7 @@ namespace DiGi.GIS.UI
                 return null;
             }
 
-            if(func == null)
-            {
-                func = new Func<Typology.Classes.Typology?, string>(x => 
+            func ??= new Func<Typology.Classes.Typology?, string>(x => 
                 { 
                     if(x is null)
                     {
@@ -31,7 +29,6 @@ namespace DiGi.GIS.UI
 
                     return string.Format("{0} : {1} -> {2}", x.TypologyPath?.ToString() ?? "[???]" , x.Description ?? "???", x.Name ?? "???"); 
                 });
-            }
 
             List<string> names = [func.Invoke(typology_Temp)];
 

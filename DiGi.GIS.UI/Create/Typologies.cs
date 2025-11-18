@@ -31,7 +31,7 @@ namespace DiGi.GIS.UI
                 return null;
             }
 
-            string directoryName = Path.GetFileName(directory);
+            //string directoryName = Path.GetFileName(directory);
 
             List<string>? paths_GISModel = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories)?.ToList();
             if (paths_GISModel == null || paths_GISModel.Count == 0)

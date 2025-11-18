@@ -1,9 +1,11 @@
 ﻿using DiGi.Core.Classes;
 using DiGi.Core.Interfaces;
 using DiGi.GIS.Classes;
+using DiGi.GIS.UI.Controls;
 using DiGi.Typology.Classes;
 using DiGi.UI.WPF.Core.Classes;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -14,7 +16,7 @@ namespace DiGi.GIS.UI.Windows
     /// </summary>
     public partial class TypologyWindow : Window
     {
-        private GISModelFileManager gISModelFileManager = new ();
+        private readonly GISModelFileManager gISModelFileManager = new ();
 
         public TypologyWindow()
         {
@@ -132,27 +134,48 @@ namespace DiGi.GIS.UI.Windows
             }
 
             string? directory = System.IO.Path.GetDirectoryName(path);
-            if (string.IsNullOrWhiteSpace(directory) || !System.IO.Directory.Exists(directory))
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
             {
                 return;
             }
 
-            directory = GIS.Query.OrtoDatasDirectory_Building2D(directory);
+            string? directory_OrtoDatas = GIS.Query.OrtoDatasDirectory_Building2D(directory);
 
-            OrtoDatas? ortoDatas = GIS.Query.OrtoDatas(building2D, directory);
-            if (ortoDatas == null || !ortoDatas.Any())
+            List<OrtoDataControl>? ortoDataControls = Create.OrtoDataControls(gISModel, building2D, directory_OrtoDatas);
+            if(ortoDataControls is null)
             {
                 return;
             }
 
+            foreach (OrtoDataControl ortoDataControl in ortoDataControls)
+            {
+                WrapPanel_Main.Children.Add(ortoDataControl);
+                ortoDataControl.MouseDown += OrtoDataControl_MouseDown;
+            }
 
+            //string? directory = System.IO.Path.GetDirectoryName(path);
+            //if (string.IsNullOrWhiteSpace(directory) || !System.IO.Directory.Exists(directory))
+            //{
+            //    return;
+            //}
 
+            //string? directory_OrtoDatas = GIS.Query.OrtoDatasDirectory_Building2D(directory);
 
+            //OrtoDatas? ortoDatas = GIS.Query.OrtoDatas(building2D, directory_OrtoDatas);
+            //if (ortoDatas == null || !ortoDatas.Any())
+            //{
+            //    return;
+            //}
 
-            //short? userYear = GIS.Query.UserYearBuilt(gISModelFile, building2D);
+            //short? userYear = GIS.Query.UserYearBuilt(directory, building2D);
 
-            //short? predictedYear = GIS.Query.LatestPredictedYearBuilt(gISModelFile, building2D);
+            //short? predictedYear = GIS.Query.LatestPredictedYearBuilt(directory, building2D);
 
+        }
+
+        private void OrtoDataControl_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private void LoadTypologyFile(TypologyFile? typologyFile)
