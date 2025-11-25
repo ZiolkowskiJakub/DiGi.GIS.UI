@@ -38,7 +38,16 @@ namespace DiGi.GIS.UI
                         IEnumerable<OrtoDatas?>? ortoDatas_Temp_Temp = ortoDatasFile.Values;
                         if (ortoDatas_Temp_Temp != null)
                         {
-                            ortoDatas_Temp = [.. ortoDatas_Temp_Temp];
+                            ortoDatas_Temp = [];
+                            foreach(OrtoDatas? ortoDatas in ortoDatas_Temp_Temp)
+                            {
+                                if(ortoDatas is null)
+                                {
+                                    continue;
+                                }
+
+                                ortoDatas_Temp.Add(ortoDatas);
+                            }
                         }
                     }
 

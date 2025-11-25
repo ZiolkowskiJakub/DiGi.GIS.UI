@@ -50,8 +50,6 @@ namespace DiGi.GIS.UI
 
             short? userYear = GIS.Query.UserYearBuilt(directory_OrtoDatas, building2D);
 
-            short? predictedYear = GIS.Query.LatestPredictedYearBuilt(directory_OrtoDatas, building2D);
-
             SortedDictionary<short, OrtoDataControl> dictionary = [];
 
             OrtoDataControl? ortoDataControl;
@@ -92,7 +90,14 @@ namespace DiGi.GIS.UI
                 dictionary[max] = ortoDataControl;
             }
 
+            if(ortoDataControl is null)
+            {
+                //TODO: Add code here
+            }
+
             ortoDataControl.BitmapImage = BitmapImage(building2D, directory_OrtoDatas, DateTime.Now.Year);
+
+            short? predictedYear = GIS.Query.LatestPredictedYearBuilt(directory_OrtoDatas, building2D);
 
             if (predictedYear != null && predictedYear.HasValue && dictionary.Count != 0)
             {

@@ -1,10 +1,8 @@
 ﻿using DiGi.Core.Classes;
-using DiGi.Core.Interfaces;
 using DiGi.GIS.Classes;
 using DiGi.GIS.UI.Controls;
 using DiGi.Typology.Classes;
 using DiGi.UI.WPF.Core.Classes;
-using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -45,12 +43,12 @@ namespace DiGi.GIS.UI.Windows
 
         private List<string>? GetActiveGISModelFilePaths()
         {
-            if(GetActiveDirectory() is not string directory || string.IsNullOrWhiteSpace(directory) || !System.IO.Directory.Exists(directory))
+            if(GetActiveDirectory() is not string directory || string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
             {
                 return null;
             }
 
-            return [.. System.IO.Directory.GetFiles(directory, string.Format("*.{0}", Constans.FileExtension.GISModelFile), System.IO.SearchOption.TopDirectoryOnly)];
+            return [.. Directory.GetFiles(directory, string.Format("*.{0}", Constans.FileExtension.GISModelFile), SearchOption.TopDirectoryOnly)];
         }
 
         private List<GISModel>? GetActiveGISModels()

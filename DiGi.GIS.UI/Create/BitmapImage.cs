@@ -100,5 +100,36 @@ namespace DiGi.GIS.UI
 
             return result;
         }
+
+        public static BitmapImage? BitmapImage(this Building2D? building2D, int width, int height)
+        {
+            if(building2D == null || width == -1 || height == -1)
+            {
+                return null;
+            }
+
+            Polygon2D? polygon2D = building2D?.PolygonalFace2D?.ExternalEdge as Polygon2D;
+
+            polygon2D = new BoundingBox2D(Geometry.Planar.Constans.Point2D.Zero, new Point2D(width, height)).Fit(polygon2D, 0.1);
+            if(polygon2D is null)
+            {
+                return null;
+            }
+
+            BitmapImage? result = null;
+
+            using (Image image = new Bitmap(width, height))
+            {
+                using (Graphics graphics = Graphics.FromImage(image))
+                {
+                    Geometry.Drawing.Modify.Draw(graphics, polygon2D, new Pen(Color.Black.ToDiGi(), 3), false);
+                    Geometry.Drawing.Modify.Draw(graphics, polygon2D.GetBoundingBox(), new Pen(Color.Gray.ToDiGi(), 1), false);
+                }
+
+                result = DiGi.UI.WPF.Core.Create.BitmapImage(image);
+            }
+
+            return result;
+        }
     }
 }
