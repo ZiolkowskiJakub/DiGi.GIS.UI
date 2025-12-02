@@ -13,13 +13,15 @@
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="80"/>
                 <RowDefinition Height="200"/>
             </Grid.RowDefinitions>
-            <ListBox x:Name="ListBox_Main" Grid.Row="0" SelectionMode="Single"/>
-            <Button x:Name="Button_Next" Content="NEXT" Grid.Row="1" HorizontalAlignment="Stretch" Margin="0,3,0,3" VerticalAlignment="Stretch" Click="Button_Next_Click"/>
-            <local:Building2DControl x:Name="Building2DControl_Main" Grid.Row="2" HorizontalAlignment="Stretch" Margin="10,10,0,10" VerticalAlignment="Stretch"/>
+            <TextBox x:Name="TextBox_Search" Text="" Margin="0,3,0,3" TextChanged="TextBox_Search_TextChanged"/>
+            <ListBox x:Name="ListBox_Main" Grid.Row="1" SelectionMode="Single"/>
+            <Button x:Name="Button_Next" Content="NEXT" Grid.Row="2" HorizontalAlignment="Stretch" Margin="0,3,0,3" VerticalAlignment="Stretch" Click="Button_Next_Click"/>
+            <local:Building2DControl x:Name="Building2DControl_Main" Grid.Row="3" HorizontalAlignment="Stretch" Margin="10,10,0,10" VerticalAlignment="Stretch"/>
         </Grid>
         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Column="1">
             <ScrollViewer.Resources>

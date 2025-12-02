@@ -101,7 +101,7 @@ namespace DiGi.GIS.UI
             return result;
         }
 
-        public static BitmapImage? BitmapImage(this Building2D? building2D, int width, int height)
+        public static BitmapImage? BitmapImage(this Building2D? building2D, int width, int height, double offset = 0.1)
         {
             if(building2D == null || width == -1 || height == -1)
             {
@@ -110,7 +110,7 @@ namespace DiGi.GIS.UI
 
             Polygon2D? polygon2D = building2D?.PolygonalFace2D?.ExternalEdge as Polygon2D;
 
-            polygon2D = new BoundingBox2D(Geometry.Planar.Constans.Point2D.Zero, new Point2D(width, height)).Fit(polygon2D, 0.1);
+            polygon2D = new BoundingBox2D(Geometry.Planar.Constans.Point2D.Zero, new Point2D(width, height)).Fit(polygon2D, offset);
             if(polygon2D is null)
             {
                 return null;

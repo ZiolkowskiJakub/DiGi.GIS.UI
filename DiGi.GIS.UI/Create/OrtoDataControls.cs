@@ -42,17 +42,30 @@ namespace DiGi.GIS.UI
                 return null;
             }
 
+            short max = System.Convert.ToInt16(DateTime.Now.Year);
+
+            OrtoDataControl? ortoDataControl;
+
             OrtoDatas? ortoDatas = GIS.Query.OrtoDatas(building2D, directory_OrtoDatas);
             if (ortoDatas == null || !ortoDatas.Any())
             {
-                return null;
+                ortoDataControl = new OrtoDataControl()
+                {
+                    Year = max,
+                    BitmapImage = building2D.BitmapImage(300, 300, 2),
+                    Tag = null,
+                    Active = false,
+                    Width = 300,
+                    Height = 300,
+                    Margin = new System.Windows.Thickness(5, 5, 5, 5),
+                };
+
+                return [ortoDataControl];
             }
 
             short? userYear = GIS.Query.UserYearBuilt(directory_OrtoDatas, building2D);
 
             SortedDictionary<short, OrtoDataControl> dictionary = [];
-
-            OrtoDataControl? ortoDataControl;
 
             foreach (OrtoData ortoData in ortoDatas)
             {
@@ -72,7 +85,7 @@ namespace DiGi.GIS.UI
                 dictionary[year_Temp] = ortoDataControl;
             }
 
-            short max = System.Convert.ToInt16(Math.Min(dictionary.Keys.Max() + 1, DateTime.Now.Year));
+            max = System.Convert.ToInt16(Math.Min(dictionary.Keys.Max() + 1, DateTime.Now.Year));
 
             if (!dictionary.TryGetValue(max, out ortoDataControl) || ortoDataControl == null)
             {

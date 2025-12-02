@@ -6,7 +6,6 @@ using DiGi.Geometry.Planar.Classes;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Emgu.CV.Classes;
 using DiGi.GIS.Enums;
-using DiGi.GIS.Interfaces;
 using System.IO;
 
 namespace DiGi.GIS.UI

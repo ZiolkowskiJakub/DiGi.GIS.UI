@@ -2,15 +2,12 @@
 using DiGi.Geometry.Planar.Interfaces;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Enums;
-using System.IO;
-using System.IO.Packaging;
-using System.Runtime.InteropServices;
 
 namespace DiGi.GIS.UI
 {
     public static partial class Create
     {
-        public static Typology.Classes.Typology? Typology_Residential_1(GISModel? gISModel, string? description, double thinnesRatio = 0.95, double offset = 1)
+        public static Typology.Classes.Typology? Typology_Residential_1(GISModel? gISModel, string? description, double thinnesRatio = 0.90, double offset = 1)
         {
             if(gISModel is null)
             {
@@ -270,7 +267,7 @@ namespace DiGi.GIS.UI
             return result;
         }
 
-        public static Typology.Classes.Typology? Typology_Residential_2(GISModel? gISModel, string? description, double thinnesRatio = 0.95, double offset = 1)
+        public static Typology.Classes.Typology? Typology_Residential_2(GISModel? gISModel, string? description, double thinnesRatio = 0.90, double offset = 1)
         {
             if (gISModel is null)
             {
@@ -567,7 +564,7 @@ namespace DiGi.GIS.UI
             return result;
         }
 
-        public static Typology.Classes.Typology? Typology_Residential_3(GISModel? gISModel, string? description, double thinnesRatio = 0.95)
+        public static Typology.Classes.Typology? Typology_Residential_3(GISModel? gISModel, string? description, double thinnesRatio = 0.90)
         {
             if (gISModel is null)
             {
@@ -874,7 +871,7 @@ namespace DiGi.GIS.UI
             return result;
         }
 
-        public static Typology.Classes.Typology? Typology_Residential_4(GISModel? gISModel, string? description, double thinnesRatio = 0.95, double offset = 1)
+        public static Typology.Classes.Typology? Typology_Residential_4(GISModel? gISModel, string? description, double thinnesRatio = 0.90, double offset = 1)
         {
             if (gISModel is null)
             {
@@ -1141,7 +1138,7 @@ namespace DiGi.GIS.UI
             return result;
         }
 
-        public static Typology.Classes.Typology? Typology_Residential_5(GISModel? gISModel, string? description, double thinnesRatio = 0.95)
+        public static Typology.Classes.Typology? Typology_Residential_5(GISModel? gISModel, string? description, double thinnesRatio = 0.90)
         {
             if (gISModel is null)
             {
@@ -1456,7 +1453,7 @@ namespace DiGi.GIS.UI
         }
 
 
-        public static Typology.Classes.Typology? Typology_NonResidential_1(GISModel? gISModel, string? description, double thinnesRatio = 0.95, double offset = 1)
+        public static Typology.Classes.Typology? Typology_NonResidential_1(GISModel? gISModel, string? description, double thinnesRatio = 0.90, double offset = 1)
         {
             if (gISModel is null)
             {
@@ -1613,7 +1610,7 @@ namespace DiGi.GIS.UI
             return result;
         }
 
-        public static Typology.Classes.Typology? Typology_NonResidential_2(GISModel? gISModel, string? description, double thinnesRatio = 0.95)
+        public static Typology.Classes.Typology? Typology_NonResidential_2(GISModel? gISModel, string? description, double thinnesRatio = 0.90)
         {
             if (gISModel is null)
             {
@@ -1813,7 +1810,7 @@ namespace DiGi.GIS.UI
             return result;
         }
 
-        public static Typology.Classes.Typology? Typology_NonResidential_3(GISModel? gISModel, string? description, double thinnesRatio = 0.95)
+        public static Typology.Classes.Typology? Typology_NonResidential_3(GISModel? gISModel, string? description, double thinnesRatio = 0.90)
         {
             if (gISModel is null)
             {
@@ -2021,7 +2018,7 @@ namespace DiGi.GIS.UI
         }
 
 
-        public static Typology.Classes.Typology? Typology_Residential_YearBuiltData_1(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.95, double offset = 1)
+        public static Typology.Classes.Typology? Typology_Residential_YearBuiltData_1(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.90, double offset = 1)
         {
             if (gISModelFile?.Value is not GISModel gISModel)
             {
@@ -2332,7 +2329,7 @@ namespace DiGi.GIS.UI
             return result;
         }
 
-        public static Typology.Classes.Typology? Typology_Residential_YearBuiltData_2(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.95, double offset = 1)
+        public static Typology.Classes.Typology? Typology_Residential_YearBuiltData_2(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.90, double offset = 1)
         {
             if (gISModelFile?.Value is not GISModel gISModel)
             {
@@ -2680,7 +2677,7 @@ namespace DiGi.GIS.UI
             return result;
         }
 
-        public static Typology.Classes.Typology? Typology_Residential_YearBuiltData_3(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.95)
+        public static Typology.Classes.Typology? Typology_Residential_YearBuiltData_3(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.90)
         {
             if (gISModelFile?.Value is not GISModel gISModel)
             {
@@ -3038,7 +3035,7 @@ namespace DiGi.GIS.UI
             return result;
         }
 
-        public static Typology.Classes.Typology? Typology_Residential_YearBuiltData_4(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.95, double offset = 1)
+        public static Typology.Classes.Typology? Typology_Residential_YearBuiltData_4(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.90, double offset = 1)
         {
             if (gISModelFile?.Value is not GISModel gISModel)
             {
@@ -3356,7 +3353,7 @@ namespace DiGi.GIS.UI
             return result;
         }
 
-        public static Typology.Classes.Typology? Typology_Residential_YearBuiltData_5(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.95)
+        public static Typology.Classes.Typology? Typology_Residential_YearBuiltData_5(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.90)
         {
             if (gISModelFile?.Value is not GISModel gISModel)
             {
@@ -3722,7 +3719,7 @@ namespace DiGi.GIS.UI
         }
 
 
-        public static Typology.Classes.Typology? Typology_NonResidential_YearBuiltData_1(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.95, double offset = 1)
+        public static Typology.Classes.Typology? Typology_NonResidential_YearBuiltData_1(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.90, double offset = 1)
         {
             if (gISModelFile?.Value is not GISModel gISModel)
             {
@@ -3930,7 +3927,7 @@ namespace DiGi.GIS.UI
             return result;
         }
 
-        public static Typology.Classes.Typology? Typology_NonResidential_YearBuiltData_2(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.95)
+        public static Typology.Classes.Typology? Typology_NonResidential_YearBuiltData_2(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.90)
         {
             if (gISModelFile?.Value is not GISModel gISModel)
             {
@@ -4181,7 +4178,7 @@ namespace DiGi.GIS.UI
             return result;
         }
 
-        public static Typology.Classes.Typology? Typology_NonResidential_YearBuiltData_3(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.95)
+        public static Typology.Classes.Typology? Typology_NonResidential_YearBuiltData_3(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.90)
         {
             if (gISModelFile?.Value is not GISModel gISModel)
             {

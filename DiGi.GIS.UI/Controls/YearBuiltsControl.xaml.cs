@@ -9,6 +9,8 @@ namespace DiGi.GIS.UI.Controls
     /// </summary>
     public partial class YearBuiltsControl : UserControl
     {
+        private readonly DiGi.UI.WPF.Core.Classes.Debouncer debouncer = new(2000);
+
         private GISModelFile? gISModelFile;
 
         public YearBuiltsControl()
@@ -16,33 +18,52 @@ namespace DiGi.GIS.UI.Controls
             InitializeComponent();
         }
 
-        private void LoadGISModelFile()
+        public Building2D? Building2D
         {
-            ListBox_Main.Items.Clear();
-            WrapPanel_Main.Children.Clear();
+            get
+            {
+                if (ListBox_Main.SelectedValue is not ListBoxItem listBoxItem)
+                {
+                    return null;
+                }
 
-            ListBox_Main.SelectionChanged -= ListBox_Main_SelectionChanged;
+                return listBoxItem.Tag as Building2D;
+            }
+        }
 
-            GISModel? gISModel = gISModelFile?.Value;
-            if(gISModel == null)
+        public GISModelFile? GISModelFile
+        {
+            get
+            {
+                return gISModelFile;
+            }
+
+            set
+            {
+                gISModelFile = value;
+                LoadGISModelFile();
+            }
+        }
+
+        private void Button_Next_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            int count = ListBox_Main.Items.Count;
+            if (count <= 0)
             {
                 return;
             }
 
-            List<Building2D>? building2Ds = gISModel.GetObjects<Building2D>();
-            if(building2Ds == null || building2Ds.Count == 0)
+            int index = ListBox_Main.SelectedIndex;
+            index++;
+
+            if (index >= count)
             {
                 return;
             }
 
-            for (int i = 0; i < building2Ds.Count; i++)
-            {
-                Building2D building2D = building2Ds[i];
+            ListBox_Main.SelectedIndex = index;
 
-                ListBox_Main.Items.Add(new ListBoxItem() { Content = string.Format("[{0}] {1}", i + 1, building2D.Reference), Tag = building2D });
-            }
-
-            ListBox_Main.SelectionChanged += ListBox_Main_SelectionChanged;
+            ListBox_Main.ScrollIntoView(ListBox_Main.SelectedItem);
         }
 
         private void ListBox_Main_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -54,7 +75,7 @@ namespace DiGi.GIS.UI.Controls
             Building2DControl_Main.Building2D = building2D;
 
             List<OrtoDataControl>? ortoDataControls = Create.OrtoDataControls(gISModelFile, building2D);
-            if(ortoDataControls is null)
+            if (ortoDataControls is null)
             {
                 return;
             }
@@ -191,6 +212,46 @@ namespace DiGi.GIS.UI.Controls
             //}
         }
 
+        private void LoadGISModelFile()
+        {
+            ListBox_Main.Items.Clear();
+            WrapPanel_Main.Children.Clear();
+
+            ListBox_Main.SelectionChanged -= ListBox_Main_SelectionChanged;
+
+            GISModel? gISModel = gISModelFile?.Value;
+            if(gISModel == null)
+            {
+                return;
+            }
+
+            List<Building2D>? building2Ds = gISModel.GetObjects<Building2D>();
+            if(building2Ds == null || building2Ds.Count == 0)
+            {
+                return;
+            }
+
+            string searchText = TextBox_Search.Text;
+
+            for (int i = 0; i < building2Ds.Count; i++)
+            {
+                Building2D building2D = building2Ds[i];
+                if(building2D?.Reference is not string reference)
+                {
+                    continue;
+                }
+
+                if(!string.IsNullOrEmpty(searchText) && !reference.Contains(searchText))
+                {
+                    continue;
+                }
+
+                ListBox_Main.Items.Add(new ListBoxItem() { Content = string.Format("[{0}] {1}", i + 1, reference), Tag = building2D });
+            }
+
+            ListBox_Main.SelectionChanged += ListBox_Main_SelectionChanged;
+        }
+
         private void OrtoDataControl_MouseDown(object sender, MouseButtonEventArgs e)
         {
             OrtoDataControl? ortoDataControl = sender as OrtoDataControl;
@@ -216,52 +277,9 @@ namespace DiGi.GIS.UI.Controls
             e.Handled = true;
         }
 
-        public GISModelFile? GISModelFile
+        private void TextBox_Search_TextChanged(object sender, TextChangedEventArgs e)
         {
-            get
-            {
-                return gISModelFile;
-            }
-
-            set
-            {
-                gISModelFile = value;
-                LoadGISModelFile();
-            }
-        }
-
-        public Building2D? Building2D
-        {
-            get
-            {
-                if (ListBox_Main.SelectedValue is not ListBoxItem listBoxItem)
-                {
-                    return null;
-                }
-
-                return listBoxItem.Tag as Building2D;
-            }
-        }
-
-        private void Button_Next_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            int count = ListBox_Main.Items.Count;
-            if(count <= 0)
-            {
-                return;
-            }
-
-            int index = ListBox_Main.SelectedIndex;
-            index++;
-
-            if(index >= count)
-            {
-                return;
-            }
-
-            ListBox_Main.SelectedIndex = index;
-
-            ListBox_Main.ScrollIntoView(ListBox_Main.SelectedItem);
+            debouncer.Run(LoadGISModelFile);
         }
     }
 }

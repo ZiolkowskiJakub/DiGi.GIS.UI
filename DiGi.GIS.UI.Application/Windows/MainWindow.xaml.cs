@@ -7,7 +7,6 @@ using DiGi.GIS.Classes;
 using DiGi.GIS.Constans;
 using DiGi.GIS.Emgu.CV.Classes;
 using DiGi.GIS.UI.Classes;
-using DiGi.Typology.Classes;
 using Microsoft.Win32;
 using System.Drawing;
 using System.Drawing.Imaging;
