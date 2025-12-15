@@ -1,11 +1,14 @@
-﻿using DiGi.Core.Classes;
+﻿using DiGi.CityGML.Classes;
+using DiGi.Core.Classes;
 using DiGi.GIS.Classes;
+using DiGi.GIS.Enums;
 using DiGi.GIS.UI.Controls;
 using DiGi.Typology.Classes;
 using DiGi.UI.WPF.Core.Classes;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace DiGi.GIS.UI.Windows
 {
@@ -19,6 +22,57 @@ namespace DiGi.GIS.UI.Windows
         public TypologyWindow()
         {
             InitializeComponent();
+
+            ContextMenu contextMenu = new();
+
+            MenuItem menuItem;
+
+            menuItem = new MenuItem();
+            menuItem = new MenuItem { Name = "MenuItem_Properties", Header = "Properties" };
+            menuItem.Click += MenuItem_Properties_Click;
+
+            contextMenu.Items.Add(menuItem);
+
+            menuItem = new MenuItem { Name ="MenuItem_BuildingShape", Header = "Building shape" };
+            menuItem.Click += MenuItem_BuildingShape_Click;
+
+            contextMenu.Items.Add(menuItem);
+
+            ListBox_References.ContextMenu = contextMenu;
+        }
+
+        private void MenuItem_Properties_Click(object sender, RoutedEventArgs e)
+        {
+            Building2D? building2D = GetActiveBuilding2D(out GISModel? gISModel);
+            if (building2D is null)
+            {
+                return;
+            }
+
+            Building2DWindow building2DWindow = new(building2D);
+            building2DWindow.Show();
+        }
+
+        private void MenuItem_BuildingShape_Click(object sender, RoutedEventArgs e)
+        {
+            Building2D? building2D = GetActiveBuilding2D(out GISModel? gISModel);
+            if (building2D is null)
+            {
+                return;
+            }
+
+            BuildingShapeSolver buildingShapeSolver = new BuildingShapeSolver
+            {
+                Input = building2D
+            };
+
+            BuildingShape buildingShape = BuildingShape.Undefined;
+            if (buildingShapeSolver.Solve())
+            {
+                buildingShape = buildingShapeSolver.Output;
+            }
+
+            MessageBox.Show(this, string.Format("Building shape: {0}", Core.Query.Description(buildingShape)), "Building Shape", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private TypologyFile? GetActiveTypologyFile()
@@ -96,35 +150,41 @@ namespace DiGi.GIS.UI.Windows
             return gISModelFileManager.GetPath(gISModel);
         }
 
-        private void ListBox_References_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private Building2D? GetActiveBuilding2D(out GISModel? gISModel)
         {
-            WrapPanel_Main.Children.Clear();
+            gISModel = null;
 
-            if (ListBox_References.SelectedItem is not string reference)
+            if (ListBox_References?.SelectedItem is not string reference)
             {
-                return;
+                return null;
             }
 
             List<GISModel>? gISModels = GetActiveGISModels();
-            if(gISModels is null || gISModels.Count == 0)
+            if (gISModels is null || gISModels.Count == 0)
             {
-                return;
+                return null;
             }
-
-            GISModel? gISModel = null;
-            Building2D? building2D = null;
 
             foreach (GISModel gISModel_Temp in gISModels)
             {
-                building2D = gISModel_Temp.GetObject<Building2D>(reference);
-                if (building2D is null)
+                Building2D? result = gISModel_Temp.GetObject<Building2D>(reference);
+                if (result is null)
                 {
                     continue;
                 }
 
                 gISModel = gISModel_Temp;
-                break;
+                return result;
             }
+
+            return null;
+        }
+
+        private void ListBox_References_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            WrapPanel_Main.Children.Clear();
+
+            Building2D? building2D = GetActiveBuilding2D(out GISModel? gISModel);
 
             if (GetPath(gISModel) is not string path)
             {

@@ -1,0 +1,21 @@
+﻿<Window x:Class="DiGi.GIS.UI.Windows.Building2DWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DiGi.GIS.UI.Windows"
+        xmlns:Controls="clr-namespace:DiGi.GIS.UI.Controls"
+        mc:Ignorable="d"
+        Title="Building2D" Height="280" Width="450" ShowInTaskbar="False" ResizeMode="NoResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        
+        <Controls:Building2DControl x:Name="Building2DControl_Main" Grid.Row="0" Margin="10,10,10,0"/>
+
+        <Button x:Name="Button_OK" Content="OK" Grid.Row="1" Margin="0,0,20,0" HorizontalAlignment="Right" Width="70" Height="21" Grid.Column="1" Click="Button_OK_Click"/>
+
+    </Grid>
+</Window>

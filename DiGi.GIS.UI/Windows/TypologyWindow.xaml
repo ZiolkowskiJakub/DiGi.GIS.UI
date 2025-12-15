@@ -27,7 +27,7 @@
         </StatusBar>
         <Grid DockPanel.Dock="Left">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="450" MinWidth="350"/>
+                <ColumnDefinition Width="600" MinWidth="350"/>
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="*" MinWidth="200"/>
             </Grid.ColumnDefinitions>
@@ -35,9 +35,9 @@
                 <TabItem Header="Typology">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="4.5*"/>
                             <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="5.5*"/>
                         </Grid.ColumnDefinitions>
                         <Controls:TreeViewControl Grid.Column="0" x:Name="TreeViewControl_Typology" />
                         <GridSplitter Grid.Column="1" Width="5" VerticalAlignment="Stretch" HorizontalAlignment="Center" Margin="0,0,0,30"/>
