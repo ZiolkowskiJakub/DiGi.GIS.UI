@@ -581,6 +581,11 @@ namespace DiGi.GIS.UI.Application.Windows
             Close();
         }
 
+        private void Button_RecalculateOrtoDatas_Building2D_Click(object sender, RoutedEventArgs e)
+        {
+            RecalculateOrtoDatas_Building2D(100);
+        }
+
         private void Button_Reduce_Click(object sender, RoutedEventArgs e)
         {
             Reduce();
@@ -667,16 +672,24 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = "Calculating...";
 
-            OrtoDatasBuilding2DOptions ortoDatasBuilding2DOptions = new ()
-            {
-                MaxFileSize = (1024UL * 1024UL * 1024UL * 5) / 10
-            };
-
-            await Modify.CalculateOrtoDatas(this, ortoDatasBuilding2DOptions, count, false);
+            await Modify.CalculateOrtoDatas(this, Create.OrtoDatasBuilding2DOptions(), count, true);
 
             TimeSpan timeSpan = new ((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
+
+        private async void RecalculateOrtoDatas_Building2D(int count = 100)
+        {
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Recalculating...";
+
+            await Modify.CalculateOrtoDatas(this, Create.OrtoDatasBuilding2DOptions(), count, false);
+
+            TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Recalculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
         private async void CalculateOrtoDatas_OrtoRange(int count = 100)

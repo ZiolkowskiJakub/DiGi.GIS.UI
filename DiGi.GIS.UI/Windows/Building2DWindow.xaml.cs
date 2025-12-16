@@ -33,12 +33,6 @@ namespace DiGi.GIS.UI.Windows
             Building2D = building2D;
         }
 
-        private void Button_OK_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = true;
-            Close();
-        }
-
         public Building2D? Building2D
         {
             get
@@ -50,6 +44,12 @@ namespace DiGi.GIS.UI.Windows
             {
                 Building2DControl_Main.Building2D = value;
             }
+        }
+
+        private void Button_OK_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+            Close();
         }
     }
 }

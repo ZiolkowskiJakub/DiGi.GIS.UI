@@ -1,5 +1,4 @@
-﻿using DiGi.CityGML.Classes;
-using DiGi.Core.Classes;
+﻿using DiGi.Core.Classes;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Enums;
 using DiGi.GIS.UI.Controls;
@@ -8,7 +7,6 @@ using DiGi.UI.WPF.Core.Classes;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace DiGi.GIS.UI.Windows
 {
@@ -38,7 +36,39 @@ namespace DiGi.GIS.UI.Windows
 
             contextMenu.Items.Add(menuItem);
 
+            menuItem = new MenuItem { Name = "MenuItem_RecalculateOrtoDatas", Header = "Recalculate Orto Datas" };
+            menuItem.Click += MenuItem_RecalculateOrtoDatas_Click;
+
+            contextMenu.Items.Add(menuItem);
+
             ListBox_References.ContextMenu = contextMenu;
+        }
+
+        private async void MenuItem_RecalculateOrtoDatas_Click(object sender, RoutedEventArgs e)
+        {
+            Building2D? building2D = GetActiveBuilding2D(out GISModel? gISModel);
+            if (building2D is null)
+            {
+                return;
+            }
+
+            if(GetPath(gISModel) is not string path || string.IsNullOrWhiteSpace(path))
+            {
+                return;
+            }
+
+            if(System.IO.Path.GetDirectoryName(path) is not string directoryName)
+            {
+                return;
+            }
+
+            string path_OrtoDatasFile = System.IO.Path.Combine(directoryName, string.Format("{0}.{1}", System.IO.Path.GetFileNameWithoutExtension(path), Constans.FileExtension.OrtoDatasFile));
+
+            HashSet<GuidReference>? guidReferences = await GIS.Modify.CalculateOrtoDatas([building2D], path_OrtoDatasFile, Create.OrtoDatasBuilding2DOptions(), true);
+            if(guidReferences != null && guidReferences.Count != 0)
+            {
+                LoadBuidling2D();
+            }
         }
 
         private void MenuItem_Properties_Click(object sender, RoutedEventArgs e)
@@ -61,7 +91,7 @@ namespace DiGi.GIS.UI.Windows
                 return;
             }
 
-            BuildingShapeSolver buildingShapeSolver = new BuildingShapeSolver
+            BuildingShapeSolver buildingShapeSolver = new()
             {
                 Input = building2D
             };
@@ -182,53 +212,7 @@ namespace DiGi.GIS.UI.Windows
 
         private void ListBox_References_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            WrapPanel_Main.Children.Clear();
-
-            Building2D? building2D = GetActiveBuilding2D(out GISModel? gISModel);
-
-            if (GetPath(gISModel) is not string path)
-            {
-                return;
-            }
-
-            string? directory = System.IO.Path.GetDirectoryName(path);
-            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
-            {
-                return;
-            }
-
-            string? directory_OrtoDatas = GIS.Query.OrtoDatasDirectory_Building2D(directory);
-
-            List<OrtoDataControl>? ortoDataControls = Create.OrtoDataControls(gISModel, building2D, directory_OrtoDatas);
-            if(ortoDataControls is null)
-            {
-                return;
-            }
-
-            foreach (OrtoDataControl ortoDataControl in ortoDataControls)
-            {
-                WrapPanel_Main.Children.Add(ortoDataControl);
-                ortoDataControl.MouseDown += OrtoDataControl_MouseDown;
-            }
-
-            //string? directory = System.IO.Path.GetDirectoryName(path);
-            //if (string.IsNullOrWhiteSpace(directory) || !System.IO.Directory.Exists(directory))
-            //{
-            //    return;
-            //}
-
-            //string? directory_OrtoDatas = GIS.Query.OrtoDatasDirectory_Building2D(directory);
-
-            //OrtoDatas? ortoDatas = GIS.Query.OrtoDatas(building2D, directory_OrtoDatas);
-            //if (ortoDatas == null || !ortoDatas.Any())
-            //{
-            //    return;
-            //}
-
-            //short? userYear = GIS.Query.UserYearBuilt(directory, building2D);
-
-            //short? predictedYear = GIS.Query.LatestPredictedYearBuilt(directory, building2D);
-
+            LoadBuidling2D();
         }
 
         private void OrtoDataControl_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -275,6 +259,56 @@ namespace DiGi.GIS.UI.Windows
             TreeViewControl_Typology.SetItems(typologies);
 
             TreeViewControl_Typology.ItemAdding -= TreeViewControl_Typology_ItemAdding;
+        }
+
+        private void LoadBuidling2D()
+        {
+            WrapPanel_Main.Children.Clear();
+
+            Building2D? building2D = GetActiveBuilding2D(out GISModel? gISModel);
+
+            if (GetPath(gISModel) is not string path)
+            {
+                return;
+            }
+
+            string? directory = System.IO.Path.GetDirectoryName(path);
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string? directory_OrtoDatas = GIS.Query.OrtoDatasDirectory_Building2D(directory);
+
+            List<OrtoDataControl>? ortoDataControls = Create.OrtoDataControls(gISModel, building2D, directory_OrtoDatas);
+            if (ortoDataControls is null)
+            {
+                return;
+            }
+
+            foreach (OrtoDataControl ortoDataControl in ortoDataControls)
+            {
+                WrapPanel_Main.Children.Add(ortoDataControl);
+                ortoDataControl.MouseDown += OrtoDataControl_MouseDown;
+            }
+
+            //string? directory = System.IO.Path.GetDirectoryName(path);
+            //if (string.IsNullOrWhiteSpace(directory) || !System.IO.Directory.Exists(directory))
+            //{
+            //    return;
+            //}
+
+            //string? directory_OrtoDatas = GIS.Query.OrtoDatasDirectory_Building2D(directory);
+
+            //OrtoDatas? ortoDatas = GIS.Query.OrtoDatas(building2D, directory_OrtoDatas);
+            //if (ortoDatas == null || !ortoDatas.Any())
+            //{
+            //    return;
+            //}
+
+            //short? userYear = GIS.Query.UserYearBuilt(directory, building2D);
+
+            //short? predictedYear = GIS.Query.LatestPredictedYearBuilt(directory, building2D);
         }
 
         private void MenuItem_About_Click(object sender, RoutedEventArgs e)
