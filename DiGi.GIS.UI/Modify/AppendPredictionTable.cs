@@ -49,7 +49,7 @@ namespace DiGi.GIS.UI
 
             SaveFileDialog saveFileDialog = new()
             {
-                Title = "Save Table File",
+                Title = "Save Table File (ML input)",
                 Filter = "Tab Separated Value Files (*.tsv)|*.tsv|All files (*.*)|*.*",
                 FileName = "ML_Input.tsv"
             };

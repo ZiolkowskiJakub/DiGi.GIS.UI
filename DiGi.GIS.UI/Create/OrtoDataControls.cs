@@ -1,6 +1,5 @@
 ﻿using DiGi.GIS.Classes;
 using DiGi.GIS.UI.Controls;
-//using System.Windows.Controls;
 
 namespace DiGi.GIS.UI
 {
@@ -13,30 +12,23 @@ namespace DiGi.GIS.UI
                 return null;
             }
 
-            string? path = gISModelFile.Path;
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                return null;
-            }
-
-            string? directory = System.IO.Path.GetDirectoryName(path);
-            if (!System.IO.Directory.Exists(directory))
-            {
-                return null;
-            }
-
-            directory = GIS.Query.OrtoDatasDirectory_Building2D(directory);
-
-            return OrtoDataControls(gISModelFile.Value, building2D, directory);
+            return OrtoDataControls(gISModelFile.Value, gISModelFile.Path, building2D);
         }
 
-        public static List<OrtoDataControl>? OrtoDataControls(this GISModel? gISModel, Building2D? building2D, string? directory_OrtoDatas)
+        public static List<OrtoDataControl>? OrtoDataControls(this GISModel? gISModel, string? path_GISModel, Building2D? building2D)
         {
-            if (gISModel is null || building2D == null || directory_OrtoDatas == null || string.IsNullOrWhiteSpace(directory_OrtoDatas))
+            if (gISModel is null || building2D == null || path_GISModel == null || string.IsNullOrWhiteSpace(path_GISModel))
             {
                 return null;
             }
 
+            string? directory_GISModel = System.IO.Path.GetDirectoryName(path_GISModel);
+            if (!System.IO.Directory.Exists(directory_GISModel))
+            {
+                return null;
+            }
+
+            string? directory_OrtoDatas = GIS.Query.OrtoDatasDirectory_Building2D(directory_GISModel);
             if (!System.IO.Directory.Exists(directory_OrtoDatas))
             {
                 return null;
@@ -63,7 +55,7 @@ namespace DiGi.GIS.UI
                 return [ortoDataControl];
             }
 
-            short? userYear = GIS.Query.UserYearBuilt(directory_OrtoDatas, building2D);
+            short? userYear = GIS.Query.UserYearBuilt(directory_GISModel, building2D);
 
             SortedDictionary<short, OrtoDataControl> dictionary = [];
 
@@ -110,7 +102,7 @@ namespace DiGi.GIS.UI
 
             ortoDataControl.BitmapImage = BitmapImage(building2D, directory_OrtoDatas, DateTime.Now.Year);
 
-            short? predictedYear = GIS.Query.LatestPredictedYearBuilt(directory_OrtoDatas, building2D);
+            short? predictedYear = GIS.Query.LatestPredictedYearBuilt(directory_GISModel, building2D);
 
             if (predictedYear != null && predictedYear.HasValue && dictionary.Count != 0)
             {

@@ -36,8 +36,7 @@
                 <Button x:Name="Button_AppendPredictionYearBuilts" Content="Append Prediction Year Builts" HorizontalAlignment="Center" Margin="0,5,0,0" VerticalAlignment="Top" Width="190" Click="Button_AppendPredictionYearBuilts_Click"  Visibility="Visible"/>
                 <Button x:Name="Button_AppendBuildingModels" Content="Append Building Models" HorizontalAlignment="Center" Margin="0,5,0,0" VerticalAlignment="Top" Width="190" Click="Button_AppendBuildingModels_Click"  Visibility="Visible"/>
             </StackPanel>
-
-
+            
             <StackPanel Grid.Column="2" Margin="0,5,0,0">
 
                 <Button x:Name="Button_YearBuilts" Content="Year Builts" HorizontalAlignment="Center" Margin="0,5,0,0" VerticalAlignment="Top" Width="190" Click="Button_YearBuilts_Click"/>
@@ -47,8 +46,6 @@
                 <Button x:Name="Button_RecalculateOrtoDatas_Building2D" Content="Recalculate OrtoDatas (Building2D)" HorizontalAlignment="Center" Margin="0,5,0,0" VerticalAlignment="Top" Width="190" Click="Button_RecalculateOrtoDatas_Building2D_Click" Visibility="Visible"/>
                 <Button x:Name="Button_Test" Content="Test" HorizontalAlignment="Center" Margin="0,5,0,0" VerticalAlignment="Top" Width="190" Click="Button_Test_Click" Visibility="Visible"/>
             </StackPanel>
-
-
 
         </Grid>
         <StatusBarItem DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="3,3,3,3">

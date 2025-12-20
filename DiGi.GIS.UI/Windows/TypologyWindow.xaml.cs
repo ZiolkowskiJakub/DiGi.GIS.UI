@@ -4,6 +4,9 @@ using DiGi.GIS.Enums;
 using DiGi.GIS.UI.Controls;
 using DiGi.Typology.Classes;
 using DiGi.UI.WPF.Core.Classes;
+using LiveCharts;
+using System;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -44,142 +47,6 @@ namespace DiGi.GIS.UI.Windows
             ListBox_References.ContextMenu = contextMenu;
         }
 
-        private async void MenuItem_RecalculateOrtoDatas_Click(object sender, RoutedEventArgs e)
-        {
-            Building2D? building2D = GetActiveBuilding2D(out GISModel? gISModel);
-            if (building2D is null)
-            {
-                return;
-            }
-
-            if(GetPath(gISModel) is not string path || string.IsNullOrWhiteSpace(path))
-            {
-                return;
-            }
-
-            if(System.IO.Path.GetDirectoryName(path) is not string directoryName)
-            {
-                return;
-            }
-
-            string path_OrtoDatasFile = System.IO.Path.Combine(directoryName, string.Format("{0}.{1}", System.IO.Path.GetFileNameWithoutExtension(path), Constans.FileExtension.OrtoDatasFile));
-
-            HashSet<GuidReference>? guidReferences = await GIS.Modify.CalculateOrtoDatas([building2D], path_OrtoDatasFile, Create.OrtoDatasBuilding2DOptions(), true);
-            if(guidReferences != null && guidReferences.Count != 0)
-            {
-                LoadBuidling2D();
-            }
-        }
-
-        private void MenuItem_Properties_Click(object sender, RoutedEventArgs e)
-        {
-            Building2D? building2D = GetActiveBuilding2D(out GISModel? gISModel);
-            if (building2D is null)
-            {
-                return;
-            }
-
-            Building2DWindow building2DWindow = new(building2D);
-            building2DWindow.Show();
-        }
-
-        private void MenuItem_BuildingShape_Click(object sender, RoutedEventArgs e)
-        {
-            Building2D? building2D = GetActiveBuilding2D(out GISModel? gISModel);
-            if (building2D is null)
-            {
-                return;
-            }
-
-            BuildingShapeSolver buildingShapeSolver = new()
-            {
-                Input = building2D
-            };
-
-            BuildingShape buildingShape = BuildingShape.Undefined;
-            if (buildingShapeSolver.Solve())
-            {
-                buildingShape = buildingShapeSolver.Output;
-            }
-
-            MessageBox.Show(this, string.Format("Building shape: {0}", Core.Query.Description(buildingShape)), "Building Shape", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-        private TypologyFile? GetActiveTypologyFile()
-        {
-            if (TreeViewControl_Typology.Tag is not TypologyFile typologyFile)
-            {
-                return null;
-            }
-
-            return typologyFile;
-        }
-
-        private string? GetActiveDirectory()
-        {
-            if(GetActiveTypologyFile()?.Path is not string path)
-            {
-                return null;
-            }
-
-            return System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(path));
-        }
-
-        private List<string>? GetActiveGISModelFilePaths()
-        {
-            if(GetActiveDirectory() is not string directory || string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
-            {
-                return null;
-            }
-
-            return [.. Directory.GetFiles(directory, string.Format("*.{0}", Constans.FileExtension.GISModelFile), SearchOption.TopDirectoryOnly)];
-        }
-
-        private List<GISModel>? GetActiveGISModels()
-        {
-            List<string>? gISModelFilePaths = GetActiveGISModelFilePaths();
-            if(gISModelFilePaths is null || gISModelFilePaths.Count == 0)
-            {
-                return null;
-            }
-
-            List<GISModel> result = [];
-            foreach (string gISModelFilePath in gISModelFilePaths)
-            {
-                GISModel? gISModel = null;
-
-                if(gISModelFileManager.GetGuidExternalReference(gISModelFilePath) is GuidExternalReference guidExternalReference)
-                {
-                    gISModel = gISModelFileManager.GetGISModel(guidExternalReference);
-                }
-
-                if(gISModel is null)
-                {
-                    GuidExternalReference? guidExternalReference_Temp = gISModelFileManager.Open(gISModelFilePath);
-                    if(guidExternalReference_Temp is null)
-                    {
-                        continue;
-                    }
-
-                    gISModel = gISModelFileManager.GetGISModel(guidExternalReference_Temp);
-                }
-
-                if(gISModel is null)
-                {
-                    continue;
-                }
-
-                result.Add(gISModel);
-            }
-
-            return result;
-        }
-
-        private string? GetPath(GISModel? gISModel)
-        {
-            return gISModelFileManager.GetPath(gISModel);
-        }
-
         private Building2D? GetActiveBuilding2D(out GISModel? gISModel)
         {
             gISModel = null;
@@ -210,14 +77,138 @@ namespace DiGi.GIS.UI.Windows
             return null;
         }
 
+        private string? GetActiveDirectory()
+        {
+            if (GetActiveTypologyFile()?.Path is not string path)
+            {
+                return null;
+            }
+
+            return System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(path));
+        }
+
+        private List<string>? GetActiveGISModelFilePaths()
+        {
+            if (GetActiveDirectory() is not string directory || string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return null;
+            }
+
+            return [.. Directory.GetFiles(directory, string.Format("*.{0}", Constans.FileExtension.GISModelFile), SearchOption.TopDirectoryOnly)];
+        }
+
+        private List<GISModel>? GetActiveGISModels()
+        {
+            List<string>? gISModelFilePaths = GetActiveGISModelFilePaths();
+            if (gISModelFilePaths is null || gISModelFilePaths.Count == 0)
+            {
+                return null;
+            }
+
+            List<GISModel> result = [];
+            foreach (string gISModelFilePath in gISModelFilePaths)
+            {
+                GISModel? gISModel = null;
+
+                if (gISModelFileManager.GetGuidExternalReference(gISModelFilePath) is GuidExternalReference guidExternalReference)
+                {
+                    gISModel = gISModelFileManager.GetGISModel(guidExternalReference);
+                }
+
+                if (gISModel is null)
+                {
+                    IndeterminateWindowWorker indeterminateProgressVisualWorker = new(this)
+                    {
+                        Text = "Loading..."
+                    };
+
+                    indeterminateProgressVisualWorker.DoWork += (sender, e) =>
+                    {
+                        GuidExternalReference? guidExternalReference_Temp = gISModelFileManager.Open(gISModelFilePath);
+                        if (guidExternalReference_Temp is not null)
+                        {
+                            gISModel = gISModelFileManager.GetGISModel(guidExternalReference_Temp);
+                        }
+                    };
+
+                    indeterminateProgressVisualWorker.RunWorkerCompleted += (sender, e) =>
+                    {
+                        LoadBuidling2D();
+                    };
+
+                    indeterminateProgressVisualWorker.Run();
+                }
+
+                if (gISModel is null)
+                {
+                    continue;
+                }
+
+                result.Add(gISModel);
+            }
+
+            return result;
+        }
+
+        private TypologyFile? GetActiveTypologyFile()
+        {
+            if (TreeViewControl_Typology.Tag is not TypologyFile typologyFile)
+            {
+                return null;
+            }
+
+            return typologyFile;
+        }
+
+        private string? GetPath(GISModel? gISModel)
+        {
+            return gISModelFileManager.GetPath(gISModel);
+        }
+
         private void ListBox_References_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             LoadBuidling2D();
         }
 
-        private void OrtoDataControl_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void LoadBuidling2D()
         {
-            throw new NotImplementedException();
+            WrapPanel_Main.Children.Clear();
+
+            Building2D? building2D = GetActiveBuilding2D(out GISModel? gISModel);
+
+            if (GetPath(gISModel) is not string path)
+            {
+                return;
+            }
+
+            List<OrtoDataControl>? ortoDataControls = Create.OrtoDataControls(gISModel, path, building2D);
+            if (ortoDataControls is null)
+            {
+                return;
+            }
+
+            foreach (OrtoDataControl ortoDataControl in ortoDataControls)
+            {
+                WrapPanel_Main.Children.Add(ortoDataControl);
+            }
+
+            //string? directory = System.IO.Path.GetDirectoryName(path);
+            //if (string.IsNullOrWhiteSpace(directory) || !System.IO.Directory.Exists(directory))
+            //{
+            //    return;
+            //}
+
+            //string? directory_OrtoDatas = GIS.Query.OrtoDatasDirectory_Building2D(directory);
+
+            //OrtoDatas? ortoDatas = GIS.Query.OrtoDatas(building2D, directory_OrtoDatas);
+            //if (ortoDatas == null || !ortoDatas.Any())
+            //{
+            //    return;
+            //}
+
+            //short? userYear = GIS.Query.UserYearBuilt(directory, building2D);
+
+            //short? predictedYear = GIS.Query.LatestPredictedYearBuilt(directory, building2D);
         }
 
         private void LoadTypologyFile(TypologyFile? typologyFile)
@@ -261,59 +252,31 @@ namespace DiGi.GIS.UI.Windows
             TreeViewControl_Typology.ItemAdding -= TreeViewControl_Typology_ItemAdding;
         }
 
-        private void LoadBuidling2D()
-        {
-            WrapPanel_Main.Children.Clear();
-
-            Building2D? building2D = GetActiveBuilding2D(out GISModel? gISModel);
-
-            if (GetPath(gISModel) is not string path)
-            {
-                return;
-            }
-
-            string? directory = System.IO.Path.GetDirectoryName(path);
-            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
-            {
-                return;
-            }
-
-            string? directory_OrtoDatas = GIS.Query.OrtoDatasDirectory_Building2D(directory);
-
-            List<OrtoDataControl>? ortoDataControls = Create.OrtoDataControls(gISModel, building2D, directory_OrtoDatas);
-            if (ortoDataControls is null)
-            {
-                return;
-            }
-
-            foreach (OrtoDataControl ortoDataControl in ortoDataControls)
-            {
-                WrapPanel_Main.Children.Add(ortoDataControl);
-                ortoDataControl.MouseDown += OrtoDataControl_MouseDown;
-            }
-
-            //string? directory = System.IO.Path.GetDirectoryName(path);
-            //if (string.IsNullOrWhiteSpace(directory) || !System.IO.Directory.Exists(directory))
-            //{
-            //    return;
-            //}
-
-            //string? directory_OrtoDatas = GIS.Query.OrtoDatasDirectory_Building2D(directory);
-
-            //OrtoDatas? ortoDatas = GIS.Query.OrtoDatas(building2D, directory_OrtoDatas);
-            //if (ortoDatas == null || !ortoDatas.Any())
-            //{
-            //    return;
-            //}
-
-            //short? userYear = GIS.Query.UserYearBuilt(directory, building2D);
-
-            //short? predictedYear = GIS.Query.LatestPredictedYearBuilt(directory, building2D);
-        }
-
         private void MenuItem_About_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void MenuItem_BuildingShape_Click(object sender, RoutedEventArgs e)
+        {
+            Building2D? building2D = GetActiveBuilding2D(out GISModel? gISModel);
+            if (building2D is null)
+            {
+                return;
+            }
+
+            BuildingShapeSolver buildingShapeSolver = new()
+            {
+                Input = building2D
+            };
+
+            BuildingShape buildingShape = BuildingShape.Undefined;
+            if (buildingShapeSolver.Solve())
+            {
+                buildingShape = buildingShapeSolver.Output;
+            }
+
+            MessageBox.Show(this, string.Format("Building shape: {0}", Core.Query.Description(buildingShape)), "Building Shape", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void MenuItem_Close_Click(object sender, RoutedEventArgs e)
@@ -333,6 +296,45 @@ namespace DiGi.GIS.UI.Windows
             typologyFile.Open();
 
             LoadTypologyFile(typologyFile);
+        }
+
+        private void MenuItem_Properties_Click(object sender, RoutedEventArgs e)
+        {
+            Building2D? building2D = GetActiveBuilding2D(out GISModel? gISModel);
+            if (building2D is null)
+            {
+                return;
+            }
+
+            Building2DWindow building2DWindow = new(building2D);
+            building2DWindow.Show();
+        }
+
+        private async void MenuItem_RecalculateOrtoDatas_Click(object sender, RoutedEventArgs e)
+        {
+            Building2D? building2D = GetActiveBuilding2D(out GISModel? gISModel);
+            if (building2D is null)
+            {
+                return;
+            }
+
+            if(GetPath(gISModel) is not string path || string.IsNullOrWhiteSpace(path))
+            {
+                return;
+            }
+
+            if(System.IO.Path.GetDirectoryName(path) is not string directoryName)
+            {
+                return;
+            }
+
+            string path_OrtoDatasFile = System.IO.Path.Combine(directoryName, string.Format("{0}.{1}", System.IO.Path.GetFileNameWithoutExtension(path), Constans.FileExtension.OrtoDatasFile));
+
+            HashSet<GuidReference>? guidReferences = await GIS.Modify.CalculateOrtoDatas([building2D], path_OrtoDatasFile, Create.OrtoDatasBuilding2DOptions(), true);
+            if(guidReferences != null && guidReferences.Count != 0)
+            {
+                LoadBuidling2D();
+            }
         }
         
         private void TreeViewControl_Typology_ItemAdding(object sender, TreeViewItemAddingEventArgs e)
@@ -368,11 +370,13 @@ namespace DiGi.GIS.UI.Windows
                 return;
             }
 
-            ItemPath? itemPath = itemPathTreeViewItem.ItemPath;
+            //ItemPath? itemPath = itemPathTreeViewItem.ItemPath;
+
+            Typology.Classes.Typology? typology = itemPathTreeViewItem.Tag as Typology.Classes.Typology;
 
             HashSet<string> references = [];
 
-            List<Typology.Classes.Typology>? typologies = itemPathTreeViewItem.Tag is Typology.Classes.Typology typology ? [typology] : DiGi.UI.WPF.Core.Query.TagItems<Typology.Classes.Typology, TreeViewItem>(itemPathTreeViewItem.Items, true, false);
+            List<Typology.Classes.Typology>? typologies = typology is not null ? [typology] : DiGi.UI.WPF.Core.Query.TagItems<Typology.Classes.Typology, TreeViewItem>(itemPathTreeViewItem.Items, true, false);
             if (typologies != null)
             {
                 foreach (Typology.Classes.Typology typology_Temp in typologies)
@@ -390,6 +394,41 @@ namespace DiGi.GIS.UI.Windows
             }
 
             Label_Count.Content = string.Format("Count: {0}", references.Count);
+
+
+            PieChart_Main.Series = [];
+
+            if(itemPathTreeViewItem.Items != null)
+            {
+                foreach (ItemPathTreeViewItem itemPathTreeViewItem_Temp in itemPathTreeViewItem.Items)
+                {
+                    HashSet<string> references_SubTypology = [];
+
+                    List<Typology.Classes.Typology>? subTypologies = DiGi.UI.WPF.Core.Query.TagItems<Typology.Classes.Typology, TreeViewItem>(itemPathTreeViewItem_Temp.Items, true, false);
+                    if (subTypologies != null)
+                    {
+                        foreach (Typology.Classes.Typology subTypology in subTypologies)
+                        {
+                            if (subTypology.GetReferences(true) is HashSet<string> references_Temp)
+                            {
+                                references_SubTypology.UnionWith(references_Temp);
+                            }
+                        }
+                    }
+
+                    if (references_SubTypology.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    PieChart_Main.Series.Add(new LiveCharts.Wpf.PieSeries { Title = itemPathTreeViewItem_Temp.Header.ToString(), Values = new ChartValues<double> { references_SubTypology.Count }, DataLabels = true });
+                }
+
+                if(PieChart_Main.Series.Count == 0)
+                {
+                    PieChart_Main.Series.Add(new LiveCharts.Wpf.PieSeries { Title = itemPathTreeViewItem.Header.ToString(), Values = new ChartValues<double> { references.Count }, DataLabels = true });
+                }
+            }
 
             ListBox_References.SelectionChanged += ListBox_References_SelectionChanged;
         }
