@@ -95,12 +95,10 @@ namespace DiGi.GIS.UI
                 dictionary[max] = ortoDataControl;
             }
 
-            if(ortoDataControl is null)
+            if(ortoDataControl is not null)
             {
-                //TODO: Add code here
+                ortoDataControl.BitmapImage = BitmapImage(building2D, directory_OrtoDatas, DateTime.Now.Year);
             }
-
-            ortoDataControl.BitmapImage = BitmapImage(building2D, directory_OrtoDatas, DateTime.Now.Year);
 
             short? predictedYear = GIS.Query.LatestPredictedYearBuilt(directory_GISModel, building2D);
 
