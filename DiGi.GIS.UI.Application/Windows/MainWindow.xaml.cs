@@ -398,7 +398,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TimeSpan timeSpan = new ((DateTime.Now - dateTime).Ticks);
 
-            TextBlock_Progress.Text = string.Format("Done Appending! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+            TextBlock_Progress.Text = string.Format("Done Appending Building Models! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
         private void AppendPredictionYearBuilts()
@@ -424,7 +424,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TimeSpan timeSpan = new ((DateTime.Now - dateTime).Ticks);
 
-            TextBlock_Progress.Text = string.Format("Done Appending! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+            TextBlock_Progress.Text = string.Format("Done Appending Table! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
         private void AppendVoTTModel_OrtoRange()
