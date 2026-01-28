@@ -8,7 +8,7 @@ namespace DiGi.GIS.UI.Windows
     /// </summary>
     public partial class GISWindow : Window
     {
-        private readonly GISModelFileManager gISModelFileManager = new ();
+        private readonly GISModelFileManager gISModelFileManager = new();
 
         public GISWindow()
         {
@@ -17,7 +17,6 @@ namespace DiGi.GIS.UI.Windows
 
         private void MenuItem_About_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void MenuItem_Close_Click(object sender, RoutedEventArgs e)
@@ -27,7 +26,6 @@ namespace DiGi.GIS.UI.Windows
 
         private void MenuItem_Load_Click(object sender, RoutedEventArgs e)
         {
-
         }
     }
 }

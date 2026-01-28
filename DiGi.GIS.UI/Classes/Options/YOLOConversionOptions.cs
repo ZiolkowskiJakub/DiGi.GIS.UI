@@ -30,7 +30,6 @@ namespace DiGi.GIS.UI.Classes
         public YOLOConversionOptions()
             : base()
         {
-
         }
 
         public YOLOConversionOptions(YOLOConversionOptions YOLOConversionOptions)
@@ -48,14 +47,13 @@ namespace DiGi.GIS.UI.Classes
         public YOLOConversionOptions(JsonObject jsonObject)
             : base(jsonObject)
         {
-
         }
 
         public double this[YOLO.Enums.Category category]
         {
             get
             {
-                if(Weights == null || !Weights.TryGetValue(category, out double result))
+                if (Weights == null || !Weights.TryGetValue(category, out double result))
                 {
                     result = 1;
                 }
@@ -72,4 +70,3 @@ namespace DiGi.GIS.UI.Classes
         }
     }
 }
-

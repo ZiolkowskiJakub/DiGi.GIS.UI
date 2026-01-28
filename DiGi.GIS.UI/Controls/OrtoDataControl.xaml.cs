@@ -11,7 +11,7 @@ namespace DiGi.GIS.UI.Controls
     {
         private short year;
         private short? predictedYear;
-        
+
         public OrtoDataControl()
         {
             InitializeComponent();
@@ -83,12 +83,12 @@ namespace DiGi.GIS.UI.Controls
 
         private void SetText()
         {
-            if(predictedYear == null || !predictedYear.HasValue)
+            if (predictedYear == null || !predictedYear.HasValue)
             {
                 TextBlock_Main.Text = year.ToString();
                 TextBlock_Main.FontWeight = FontWeights.Normal;
             }
-            else 
+            else
             {
                 TextBlock_Main.Text = year.Equals(predictedYear.Value) ? year.ToString() : string.Format("{0} ({1})", year, predictedYear);
                 TextBlock_Main.FontWeight = FontWeights.Bold;
@@ -102,17 +102,17 @@ namespace DiGi.GIS.UI.Controls
                 return;
             }
 
-            ContextMenu contextMenu = new ();
+            ContextMenu contextMenu = new();
 
             MenuItem menuItem = new() { Header = "Save As..." };
-            menuItem.Click += (s, args) => 
+            menuItem.Click += (s, args) =>
             {
-                if(GetBitmapImage() is BitmapImage bitmapImage)
+                if (GetBitmapImage() is BitmapImage bitmapImage)
                 {
                     DiGi.UI.WPF.Core.Modify.Write(bitmapImage);
                 }
             };
-           
+
             contextMenu.Items.Add(menuItem);
 
             frameworkElement.ContextMenu = contextMenu;

@@ -24,7 +24,7 @@ namespace DiGi.GIS.UI
             }
 
             string[] lines = File.ReadAllLines(openFileDialog.FileName);
-            if(lines == null || lines.Length == 0)
+            if (lines == null || lines.Length == 0)
             {
                 return false;
             }
@@ -33,7 +33,7 @@ namespace DiGi.GIS.UI
             foreach (string line in lines)
             {
                 string[] values = line.Split('\t');
-                if(values == null || values.Length < 2)
+                if (values == null || values.Length < 2)
                 {
                     continue;
                 }
@@ -46,12 +46,12 @@ namespace DiGi.GIS.UI
                 dictionary[values[0]] = year;
             }
 
-            if(dictionary == null || dictionary.Count == 0)
+            if (dictionary == null || dictionary.Count == 0)
             {
                 return false;
             }
 
-            FileInfo fileInfo = new (openFileDialog.FileName);
+            FileInfo fileInfo = new(openFileDialog.FileName);
             DateTime dateTime = fileInfo.LastWriteTimeUtc;
 
             OpenFolderDialog openFolderDialog = new()
@@ -76,15 +76,15 @@ namespace DiGi.GIS.UI
                 return false;
             }
 
-            Parallel.ForEach(paths_GISModelFile, Core.Create.ParallelOptions(), path_GISModelFile => 
+            Parallel.ForEach(paths_GISModelFile, Core.Create.ParallelOptions(), path_GISModelFile =>
             {
-                if(Path.GetDirectoryName(path_GISModelFile) is not string directory)
+                if (Path.GetDirectoryName(path_GISModelFile) is not string directory)
                 {
                     return;
                 }
 
                 Dictionary<string, short> dictionary_GISModelFile = [];
-                using (GISModelFile gISModelFile = new (path_GISModelFile))
+                using (GISModelFile gISModelFile = new(path_GISModelFile))
                 {
                     gISModelFile.Open();
 
@@ -110,7 +110,7 @@ namespace DiGi.GIS.UI
 
                 string path = Path.Combine(directory, string.Format("{0}.{1}", Path.GetFileNameWithoutExtension(path_GISModelFile), FileExtension.YearBuiltDataFile));
 
-                using YearBuiltDataFile yearBuiltDataFile = new (path);
+                using YearBuiltDataFile yearBuiltDataFile = new(path);
                 yearBuiltDataFile.Open();
                 foreach (KeyValuePair<string, short> keyValuePair in dictionary_GISModelFile)
                 {

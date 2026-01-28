@@ -31,7 +31,6 @@ namespace DiGi.GIS.UI
                 return;
             }
 
-
             openFolderDialog = new()
             {
                 Title = "Select Statistical Data Directory"
@@ -48,14 +47,14 @@ namespace DiGi.GIS.UI
                 return;
             }
 
-            SaveFileDialog saveFileDialog = new ();
+            SaveFileDialog saveFileDialog = new();
             result = saveFileDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {
                 return;
             }
 
-            ComparisonTableConversionOptions comparisonTableConversionOptions = new ()
+            ComparisonTableConversionOptions comparisonTableConversionOptions = new()
             {
                 IncludeModel = true,
                 IncludeStatistical = true,
@@ -72,14 +71,14 @@ namespace DiGi.GIS.UI
                 string path_Input = paths_Input[i];
 
                 Table? table = null;
-                using (GISModelFile gISModelFile = new (path_Input))
+                using (GISModelFile gISModelFile = new(path_Input))
                 {
                     gISModelFile.Open();
 
                     table = Convert.ToDiGi_Table(gISModelFile, comparisonTableConversionOptions: comparisonTableConversionOptions);
                 }
 
-                if(table != null)
+                if (table != null)
                 {
                     Core.IO.DelimitedData.Modify.Append(saveFileDialog.FileName, table, '\t');
                 }

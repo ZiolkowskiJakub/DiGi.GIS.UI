@@ -31,7 +31,6 @@ namespace DiGi.GIS.UI.Windows
 
         private void MenuItem_About_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void MenuItem_Close_Click(object sender, RoutedEventArgs e)
@@ -47,7 +46,7 @@ namespace DiGi.GIS.UI.Windows
                 return;
             }
 
-            GISModelFile gISModelFile = new (path);
+            GISModelFile gISModelFile = new(path);
             gISModelFile.Open();
 
             YearBuiltsControl_Main.GISModelFile = gISModelFile;

@@ -59,7 +59,7 @@ namespace DiGi.GIS.UI
                 List<Point2D> point2Ds_Temp = [];
                 for (int j = 0; j < point2Ds.Count; j++)
                 {
-                    if(ortoData!.ToOrto(point2Ds[j]) is Point2D point2D)
+                    if (ortoData!.ToOrto(point2Ds[j]) is Point2D point2D)
                     {
                         point2Ds_Temp.Add(point2D);
                     }
@@ -71,7 +71,7 @@ namespace DiGi.GIS.UI
                     point2Ds_Offset_Temp = [];
                     for (int j = 0; j < point2Ds_Offset.Count; j++)
                     {
-                        if(ortoData!.ToOrto(point2Ds_Offset[j]) is Point2D point2D)
+                        if (ortoData!.ToOrto(point2Ds_Offset[j]) is Point2D point2D)
                         {
                             point2Ds_Offset_Temp.Add(point2D);
                         }
@@ -80,20 +80,19 @@ namespace DiGi.GIS.UI
 
                 using (Graphics graphics = Graphics.FromImage(image))
                 {
-                    Polygon2D polygon2D_OrtoData = new (point2Ds_Temp);
+                    Polygon2D polygon2D_OrtoData = new(point2Ds_Temp);
 
                     Geometry.Drawing.Modify.Draw(graphics, polygon2D_OrtoData, new Pen(Color.Black.ToDiGi(), 3), false);
                     Geometry.Drawing.Modify.Draw(graphics, polygon2D_OrtoData.GetBoundingBox(), new Pen(Color.Gray.ToDiGi(), 1), false);
 
                     if (point2Ds_Offset_Temp != null)
                     {
-                        Polygon2D polygon2D_OrtoData_Offset = new (point2Ds_Offset_Temp);
+                        Polygon2D polygon2D_OrtoData_Offset = new(point2Ds_Offset_Temp);
 
                         Geometry.Drawing.Modify.Draw(graphics, polygon2D_OrtoData_Offset, new Pen(Color.Red.ToDiGi(), 3), false);
                         Geometry.Drawing.Modify.Draw(graphics, polygon2D_OrtoData_Offset.GetBoundingBox(), new Pen(Color.Gray.ToDiGi(), 1), false);
                     }
                 }
-
 
                 result = DiGi.UI.WPF.Core.Create.BitmapImage(image);
             }
@@ -103,7 +102,7 @@ namespace DiGi.GIS.UI
 
         public static BitmapImage? BitmapImage(this Building2D? building2D, int width, int height, double offset = 0.1)
         {
-            if(building2D == null || width == -1 || height == -1)
+            if (building2D == null || width == -1 || height == -1)
             {
                 return null;
             }
@@ -111,7 +110,7 @@ namespace DiGi.GIS.UI
             Polygon2D? polygon2D = building2D?.PolygonalFace2D?.ExternalEdge as Polygon2D;
 
             polygon2D = new BoundingBox2D(Geometry.Planar.Constans.Point2D.Zero, new Point2D(width, height)).Fit(polygon2D, offset);
-            if(polygon2D is null)
+            if (polygon2D is null)
             {
                 return null;
             }

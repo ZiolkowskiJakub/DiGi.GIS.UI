@@ -2,7 +2,6 @@
 using DiGi.GIS.UI.Delegates;
 using System.Windows.Controls;
 
-
 namespace DiGi.GIS.UI.Controls
 {
     /// <summary>
@@ -91,17 +90,17 @@ namespace DiGi.GIS.UI.Controls
         {
             OrtoDataSelectionChanged?.Invoke(this, e);
         }
-        
+
         private void SetOrtoDatasList(IEnumerable<OrtoDatas>? ortoDatasList)
         {
             ListBox_Main.Items.Clear();
 
-            if(ortoDatasList == null)
+            if (ortoDatasList == null)
             {
                 return;
             }
 
-            for(int i =0; i < ortoDatasList.Count(); i++)
+            for (int i = 0; i < ortoDatasList.Count(); i++)
             {
                 OrtoDatas ortoDatas = ortoDatasList.ElementAt(i);
 

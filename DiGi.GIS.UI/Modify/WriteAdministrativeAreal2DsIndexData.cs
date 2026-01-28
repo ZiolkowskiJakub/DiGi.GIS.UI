@@ -10,7 +10,7 @@ namespace DiGi.GIS.UI
     {
         public static bool WriteAdministrativeAreal2DsIndexData(Window? owner, string? path)
         {
-            OpenFolderDialog openFolderDialog = new ();
+            OpenFolderDialog openFolderDialog = new();
             bool? result = openFolderDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -37,11 +37,11 @@ namespace DiGi.GIS.UI
             //    MaxDegreeOfParallelism = GIS.Query.DefaultProcessorCount(0.5)
             //};
 
-            Parallel.For(0, paths_Input.Length, parallelOptions, i => 
+            Parallel.For(0, paths_Input.Length, parallelOptions, i =>
             {
                 string path_Input = paths_Input[i];
 
-                using GISModelFile gISModelFile = new (path_Input);
+                using GISModelFile gISModelFile = new(path_Input);
 
                 gISModelFile.Open();
 
@@ -53,9 +53,9 @@ namespace DiGi.GIS.UI
             });
 
             List<AdministrativeAreal2D> administrativeAreal2Ds = [];
-            foreach(List<AdministrativeAreal2D>? administrativeAreal2Ds_Temp in dictionary.Values)
+            foreach (List<AdministrativeAreal2D>? administrativeAreal2Ds_Temp in dictionary.Values)
             {
-                if(administrativeAreal2Ds_Temp is null)
+                if (administrativeAreal2Ds_Temp is null)
                 {
                     continue;
                 }
@@ -66,7 +66,7 @@ namespace DiGi.GIS.UI
             administrativeAreal2Ds.Sort((x, y) => (x.Name ?? string.Empty).CompareTo(y.Name ?? string.Empty));
 
             IndexDataFile? indexDataFile = GIS.Create.IndexDataFile(administrativeAreal2Ds);
-            if(indexDataFile == null)
+            if (indexDataFile == null)
             {
                 return false;
             }

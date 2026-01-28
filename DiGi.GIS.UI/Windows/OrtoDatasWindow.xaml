@@ -11,26 +11,24 @@
         <StackPanel DockPanel.Dock="Top">
             <Menu>
                 <MenuItem Header="File">
-                    <MenuItem x:Name="MenuItem_New" Header="New" Click="MenuItem_New_Click"/>
-                    <MenuItem x:Name="MenuItem_Load" Header="Load" Click="MenuItem_Load_Click"/>
-                    <Separator/>
-                    <MenuItem x:Name="MenuItem_Close" Header="Close" Click="MenuItem_Close_Click"/>
+                    <MenuItem x:Name="MenuItem_New" Header="New" Click="MenuItem_New_Click" />
+                    <MenuItem x:Name="MenuItem_Load" Header="Load" Click="MenuItem_Load_Click" />
+                    <Separator />
+                    <MenuItem x:Name="MenuItem_Close" Header="Close" Click="MenuItem_Close_Click" />
                 </MenuItem>
                 <MenuItem Header="Help">
-                    <MenuItem x:Name="MenuItem_About" Header="About" Click="MenuItem_About_Click"/>
+                    <MenuItem x:Name="MenuItem_About" Header="About" Click="MenuItem_About_Click" />
                 </MenuItem>
             </Menu>
-
         </StackPanel>
         <Grid DockPanel.Dock="Bottom">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Controls:OrtoDatasListControl x:Name="OrtoDatasListControl_Main" Grid.Column="1" Grid.Row="1">
-
             </Controls:OrtoDatasListControl>
         </Grid>
     </DockPanel>

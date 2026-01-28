@@ -53,7 +53,8 @@ namespace DiGi.GIS.UI
 
                     ortoRangeFile.Save();
                 }
-            };
+            }
+            ;
 
             return true;
         }

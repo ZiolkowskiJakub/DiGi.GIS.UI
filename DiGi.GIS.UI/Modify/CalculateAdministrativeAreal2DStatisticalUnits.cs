@@ -26,7 +26,7 @@ namespace DiGi.GIS.UI
 
             string path_StatisticalUnitFile = openFileDialog.FileName;
 
-            OpenFolderDialog openFolderDialog = new ();
+            OpenFolderDialog openFolderDialog = new();
             result = openFolderDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -47,7 +47,7 @@ namespace DiGi.GIS.UI
             }
 
             StatisticalUnit? statisticalUnit = null;
-            using (StatisticalUnitFile statisticalUnitFile = new (path_StatisticalUnitFile))
+            using (StatisticalUnitFile statisticalUnitFile = new(path_StatisticalUnitFile))
             {
                 statisticalUnitFile.Open();
 
@@ -59,7 +59,6 @@ namespace DiGi.GIS.UI
                 return;
             }
 
-
             fileNameSufix ??= string.Empty;
 
             //int count = GIS.Query.DefaultProcessorCount();
@@ -69,7 +68,7 @@ namespace DiGi.GIS.UI
             ParallelOptions parallelOptions = Core.Create.ParallelOptions();
 
             string path_Report = Path.Combine(directory, "Report.txt");
-            if(File.Exists(path_Report))
+            if (File.Exists(path_Report))
             {
                 File.Delete(path_Report);
             }
@@ -79,7 +78,7 @@ namespace DiGi.GIS.UI
                 int count_Temp = Math.Min(parallelOptions.MaxDegreeOfParallelism, paths_GISModelFile.Count);
 
                 Dictionary<string, List<AdministrativeAreal2D>?> dictionary = [];
-                for(int i=0; i < count_Temp; i++)
+                for (int i = 0; i < count_Temp; i++)
                 {
                     dictionary[paths_GISModelFile[i]] = null;
                 }
@@ -88,7 +87,7 @@ namespace DiGi.GIS.UI
                 {
                     string path_Input = paths_GISModelFile[i];
 
-                    if(Path.GetDirectoryName(path_Input) is not string directory)
+                    if (Path.GetDirectoryName(path_Input) is not string directory)
                     {
                         return;
                     }
@@ -104,7 +103,7 @@ namespace DiGi.GIS.UI
                     }
 
                     GISModel? gISModel = null;
-                    using (GISModelFile gISModelFile = new (path_Input))
+                    using (GISModelFile gISModelFile = new(path_Input))
                     {
                         gISModelFile.Open();
 
@@ -115,13 +114,12 @@ namespace DiGi.GIS.UI
 
                     dictionary[path_Input] = invalidAdministrativeAreal2Ds;
 
-                    using (GISModelFile gISModelFile = new (path_Output))
+                    using (GISModelFile gISModelFile = new(path_Output))
                     {
                         gISModelFile.Value = gISModel;
 
                         gISModelFile.Save();
                     }
-
                 });
 
                 paths_GISModelFile.RemoveRange(0, count_Temp);

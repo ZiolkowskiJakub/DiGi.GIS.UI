@@ -20,20 +20,20 @@ namespace DiGi.GIS.UI
             }
 
             List<Unit>? units = await BDL.Create.Units();
-            if(units == null)
+            if (units == null)
             {
                 return false;
             }
 
             StatisticalUnit? statisticalUnit = GIS.Create.StatisticalUnit(units);
-            if(statisticalUnit == null)
+            if (statisticalUnit == null)
             {
                 return false;
             }
 
             bool result = false;
 
-            using(StatisticalUnitFile statisticalUnitFile = new (saveFileDialog.FileName))
+            using (StatisticalUnitFile statisticalUnitFile = new(saveFileDialog.FileName))
             {
                 statisticalUnitFile.Value = statisticalUnit;
                 result = statisticalUnitFile.Save();

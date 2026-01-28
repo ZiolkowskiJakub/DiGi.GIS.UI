@@ -9,7 +9,7 @@ namespace DiGi.GIS.UI
     {
         public static Typology.Classes.Typology? Typology_Residential_1(GISModel? gISModel, string? description, double thinnesRatio = 0.90, double offset = 1)
         {
-            if(gISModel is null)
+            if (gISModel is null)
             {
                 return null;
             }
@@ -67,7 +67,7 @@ namespace DiGi.GIS.UI
                 }
 
                 List<AdministrativeSubdivision>? administrativeSubdivisions = dictionary[new Core.Classes.GuidReference(building2D)];
-                if(administrativeSubdivisions != null && administrativeSubdivisions.Count > 1)
+                if (administrativeSubdivisions != null && administrativeSubdivisions.Count > 1)
                 {
                     administrativeSubdivisions?.RemoveAll(x => x.PolygonalFace2D is null || x.PolygonalFace2D.GetArea() < area);
                     administrativeSubdivisions?.Sort((x, y) => x.PolygonalFace2D!.GetArea().CompareTo(y.PolygonalFace2D!.GetArea()));
@@ -433,7 +433,6 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-
                 BuildingShapeSolver buildingShapeSolver = new(offset, thinnesRatio)
                 {
                     Input = building2D
@@ -580,7 +579,7 @@ namespace DiGi.GIS.UI
             List<AdministrativeDivision>? administrativeDivisions = Query.AdministrativeAreal2Ds<AdministrativeDivision>(gISModel, building2Ds);
 
             AdministrativeDivision? administrativeDivision = null;
-            if(administrativeDivisions != null && administrativeDivisions.Count != 0)
+            if (administrativeDivisions != null && administrativeDivisions.Count != 0)
             {
                 administrativeDivisions.Sort((x, y) => ((int)y.AdministrativeDivisionType).CompareTo((int)x.AdministrativeDivisionType));
                 administrativeDivision = administrativeDivisions[0];
@@ -643,7 +642,6 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-
                 HashSet<BuildingSpecificFunction> buildingSpecificFunctions = building2D.BuildingSpecificFunctions;
 
                 int storeys = building2D.Storeys;
@@ -704,13 +702,13 @@ namespace DiGi.GIS.UI
                 double ratio = 0;
                 string ratioName = "???";
                 int ratioIndex = 0;
-                if(isoperimetricRatio > thinnesRatio || (isoperimetricRatio > rectangularThinnessRatio && isoperimetricRatio > squareThinnessRatio))
+                if (isoperimetricRatio > thinnesRatio || (isoperimetricRatio > rectangularThinnessRatio && isoperimetricRatio > squareThinnessRatio))
                 {
                     ratio = isoperimetricRatio;
                     ratioName = "Circural";
                     ratioIndex = 1;
                 }
-                else if(squareThinnessRatio > thinnesRatio || (squareThinnessRatio > isoperimetricRatio && squareThinnessRatio > rectangularThinnessRatio))
+                else if (squareThinnessRatio > thinnesRatio || (squareThinnessRatio > isoperimetricRatio && squareThinnessRatio > rectangularThinnessRatio))
                 {
                     ratio = squareThinnessRatio;
                     ratioName = "Square";
@@ -755,7 +753,6 @@ namespace DiGi.GIS.UI
                 {
                     continue;
                 }
-
 
                 uint? occupancy = null;
                 if (gISModel!.TryGetRelatedObjects<OccupancyCalculationResult, Building2DOccupancyCalculationResultRelation>(building2D, out List<OccupancyCalculationResult>? occupancyCalculationResults) && occupancyCalculationResults != null)
@@ -1217,7 +1214,6 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-
                 HashSet<BuildingSpecificFunction> buildingSpecificFunctions = building2D.BuildingSpecificFunctions;
 
                 int storeys = building2D.Storeys;
@@ -1329,7 +1325,6 @@ namespace DiGi.GIS.UI
                 {
                     continue;
                 }
-
 
                 uint? occupancy = null;
                 if (gISModel!.TryGetRelatedObjects<OccupancyCalculationResult, Building2DOccupancyCalculationResultRelation>(building2D, out List<OccupancyCalculationResult>? occupancyCalculationResults) && occupancyCalculationResults != null)
@@ -1451,7 +1446,6 @@ namespace DiGi.GIS.UI
 
             return result;
         }
-
 
         public static Typology.Classes.Typology? Typology_NonResidential_1(GISModel? gISModel, string? description, double thinnesRatio = 0.90, double offset = 1)
         {
@@ -2017,7 +2011,6 @@ namespace DiGi.GIS.UI
             return result;
         }
 
-
         public static Typology.Classes.Typology? Typology_Residential_YearBuiltData_1(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.90, double offset = 1)
         {
             if (gISModelFile?.Value is not GISModel gISModel)
@@ -2032,7 +2025,7 @@ namespace DiGi.GIS.UI
             }
 
             Dictionary<string, YearBuiltData>? dictionary_YearBuiltData = GIS.Query.YearBuiltDataDictionary<YearBuiltData>(gISModelFile, building2Ds.ConvertAll(x => x.Reference ?? string.Empty));
-            if(dictionary_YearBuiltData is null || dictionary_YearBuiltData.Count == 0)
+            if (dictionary_YearBuiltData is null || dictionary_YearBuiltData.Count == 0)
             {
                 return null;
             }
@@ -2117,7 +2110,7 @@ namespace DiGi.GIS.UI
 
                 if (building2D.Reference is string reference && !string.IsNullOrWhiteSpace(reference))
                 {
-                    if(dictionary_YearBuiltData.TryGetValue(reference, out YearBuiltData? yearBuiltData) && yearBuiltData != null)
+                    if (dictionary_YearBuiltData.TryGetValue(reference, out YearBuiltData? yearBuiltData) && yearBuiltData != null)
                     {
                         if (yearBuiltData.GetLatestPredictedYearBuilt() is PredictedYearBuilt predictedYearBuilt)
                         {
@@ -2148,7 +2141,6 @@ namespace DiGi.GIS.UI
                                 yearBuiltIndex = 5;
                             }
                         }
-
                     }
                 }
 
@@ -2457,7 +2449,6 @@ namespace DiGi.GIS.UI
                                 yearBuiltIndex = 5;
                             }
                         }
-
                     }
                 }
 
@@ -2545,7 +2536,6 @@ namespace DiGi.GIS.UI
                 {
                     continue;
                 }
-
 
                 BuildingShapeSolver buildingShapeSolver = new(offset, thinnesRatio)
                 {
@@ -2762,7 +2752,6 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-
                 HashSet<BuildingSpecificFunction> buildingSpecificFunctions = building2D.BuildingSpecificFunctions;
 
                 int storeys = building2D.Storeys;
@@ -2810,7 +2799,6 @@ namespace DiGi.GIS.UI
                                 yearBuiltIndex = 5;
                             }
                         }
-
                     }
                 }
 
@@ -2919,7 +2907,6 @@ namespace DiGi.GIS.UI
                 {
                     continue;
                 }
-
 
                 uint? occupancy = null;
                 if (gISModel!.TryGetRelatedObjects<OccupancyCalculationResult, Building2DOccupancyCalculationResultRelation>(building2D, out List<OccupancyCalculationResult>? occupancyCalculationResults) && occupancyCalculationResults != null)
@@ -3165,7 +3152,6 @@ namespace DiGi.GIS.UI
                                 yearBuiltIndex = 5;
                             }
                         }
-
                     }
                 }
 
@@ -3438,7 +3424,6 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-
                 HashSet<BuildingSpecificFunction> buildingSpecificFunctions = building2D.BuildingSpecificFunctions;
 
                 int storeys = building2D.Storeys;
@@ -3486,7 +3471,6 @@ namespace DiGi.GIS.UI
                                 yearBuiltIndex = 5;
                             }
                         }
-
                     }
                 }
 
@@ -3595,7 +3579,6 @@ namespace DiGi.GIS.UI
                 {
                     continue;
                 }
-
 
                 uint? occupancy = null;
                 if (gISModel!.TryGetRelatedObjects<OccupancyCalculationResult, Building2DOccupancyCalculationResultRelation>(building2D, out List<OccupancyCalculationResult>? occupancyCalculationResults) && occupancyCalculationResults != null)
@@ -3717,7 +3700,6 @@ namespace DiGi.GIS.UI
 
             return result;
         }
-
 
         public static Typology.Classes.Typology? Typology_NonResidential_YearBuiltData_1(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.90, double offset = 1)
         {
@@ -3854,7 +3836,6 @@ namespace DiGi.GIS.UI
                                 yearBuiltIndex = 5;
                             }
                         }
-
                     }
                 }
 
@@ -4057,7 +4038,6 @@ namespace DiGi.GIS.UI
                                 yearBuiltIndex = 5;
                             }
                         }
-
                     }
                 }
 
@@ -4308,7 +4288,6 @@ namespace DiGi.GIS.UI
                                 yearBuiltIndex = 5;
                             }
                         }
-
                     }
                 }
 

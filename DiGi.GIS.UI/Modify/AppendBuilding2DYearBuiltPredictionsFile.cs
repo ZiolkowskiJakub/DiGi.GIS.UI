@@ -54,7 +54,7 @@ namespace DiGi.GIS.UI
 
             string path_Building2DYearBuiltPredictionsFile_Temp = Path.Combine(directory_GISModelFile, string.Format("{0}.{1}", "TEMP", FileExtension.Building2DYearBuiltPredictionsFile));
 
-            using (Building2DYearBuiltPredictionsFile building2DYearBuiltPredictionsFile_Temp = new (path_Building2DYearBuiltPredictionsFile_Temp))
+            using (Building2DYearBuiltPredictionsFile building2DYearBuiltPredictionsFile_Temp = new(path_Building2DYearBuiltPredictionsFile_Temp))
             {
                 building2DYearBuiltPredictionsFile_Temp.Open();
 
@@ -70,7 +70,7 @@ namespace DiGi.GIS.UI
                 }
 
                 //foreach (string path_GISModelFile in paths_GISModelFile)
-                Parallel.ForEach(paths_GISModelFile, Core.Create.ParallelOptions(), path_GISModelFile => 
+                Parallel.ForEach(paths_GISModelFile, Core.Create.ParallelOptions(), path_GISModelFile =>
                 {
                     if (Path.GetDirectoryName(path_GISModelFile) is not string directory)
                     {
@@ -78,7 +78,7 @@ namespace DiGi.GIS.UI
                     }
 
                     List<Building2DYearBuiltPredictions> building2DYearBuiltPredictionsList = [];
-                    using (GISModelFile gISModelFile = new (path_GISModelFile))
+                    using (GISModelFile gISModelFile = new(path_GISModelFile))
                     {
                         gISModelFile.Open();
 
@@ -97,7 +97,6 @@ namespace DiGi.GIS.UI
                             }
 
                             building2DYearBuiltPredictionsList.Add(building2DYearBuiltPredictions);
-
                         }
                     }
 
@@ -107,7 +106,7 @@ namespace DiGi.GIS.UI
                     }
 
                     string path_Building2DYearBuiltPredictionsFile = Path.Combine(directory, string.Format("{0}.{1}", Path.GetFileNameWithoutExtension(path_GISModelFile), FileExtension.Building2DYearBuiltPredictionsFile));
-                    using (Building2DYearBuiltPredictionsFile building2DYearBuiltPredictionsFile = new (path_Building2DYearBuiltPredictionsFile))
+                    using (Building2DYearBuiltPredictionsFile building2DYearBuiltPredictionsFile = new(path_Building2DYearBuiltPredictionsFile))
                     {
                         building2DYearBuiltPredictionsFile.Open();
 

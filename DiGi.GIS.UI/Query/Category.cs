@@ -6,7 +6,7 @@ namespace DiGi.GIS.UI
     {
         public static YOLO.Enums.Category? Category(this Dictionary<YOLO.Enums.Category, double>? weights, Random? random = null)
         {
-            if(weights == null || weights.Count == 0)
+            if (weights == null || weights.Count == 0)
             {
                 return null;
             }
@@ -14,7 +14,7 @@ namespace DiGi.GIS.UI
             random ??= new Random();
 
             double sum = 0;
-            foreach(double weight in weights.Values)
+            foreach (double weight in weights.Values)
             {
                 sum += weight;
             }
@@ -22,10 +22,10 @@ namespace DiGi.GIS.UI
             double value = sum * (System.Convert.ToDouble(random.Next(1, 100)) / 100.0);
 
             double current = 0;
-            foreach(KeyValuePair<YOLO.Enums.Category, double> keyValuePair in weights)
+            foreach (KeyValuePair<YOLO.Enums.Category, double> keyValuePair in weights)
             {
                 current += keyValuePair.Value;
-                if(current >= value)
+                if (current >= value)
                 {
                     return keyValuePair.Key;
                 }

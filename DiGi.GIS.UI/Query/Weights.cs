@@ -6,7 +6,7 @@
         {
             Dictionary<YOLO.Enums.Category, double> result = [];
 
-            foreach(YOLO.Enums.Category category in Enum.GetValues(typeof(YOLO.Enums.Category)))
+            foreach (YOLO.Enums.Category category in Enum.GetValues(typeof(YOLO.Enums.Category)))
             {
                 result[category] = 1;
             }

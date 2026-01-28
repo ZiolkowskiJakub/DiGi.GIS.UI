@@ -25,7 +25,7 @@ namespace DiGi.GIS.UI
 
             string path_Input = openFileDialog.FileName;
 
-            if(Path.GetDirectoryName(path_Input) is not string directory_Input)
+            if (Path.GetDirectoryName(path_Input) is not string directory_Input)
             {
                 return null;
             }
@@ -79,26 +79,26 @@ namespace DiGi.GIS.UI
             }
 
             HashSet<string> result = [];
-            foreach(Tuple<string, string> tuple in tuples)
+            foreach (Tuple<string, string> tuple in tuples)
             {
-                if(result.Contains(tuple.Item2))
+                if (result.Contains(tuple.Item2))
                 {
                     continue;
                 }
 
                 bool succedded = await TryDownload(tuple.Item1, tuple.Item2);
-                if(!succedded)
+                if (!succedded)
                 {
                     continue;
                 }
 
-                if(Path.Exists(tuple.Item2))
+                if (Path.Exists(tuple.Item2))
                 {
                     result.Add(tuple.Item2);
                 }
             }
 
-            return result; 
+            return result;
         }
     }
 }

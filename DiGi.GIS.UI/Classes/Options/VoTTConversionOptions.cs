@@ -18,7 +18,6 @@ namespace DiGi.GIS.UI.Classes
         public VoTTConversionOptions()
             : base()
         {
-
         }
 
         public VoTTConversionOptions(VoTTConversionOptions voTTConversionOptions)
@@ -33,8 +32,6 @@ namespace DiGi.GIS.UI.Classes
         public VoTTConversionOptions(JsonObject jsonObject)
             : base(jsonObject)
         {
-
         }
     }
 }
-

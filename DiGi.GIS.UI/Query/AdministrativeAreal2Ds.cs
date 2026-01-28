@@ -85,14 +85,14 @@ namespace DiGi.GIS.UI
 
             foreach (HashSet<GuidReference>? guidReferences_Temp in dictionary.Values)
             {
-                if(guidReferences_Temp is null || guidReferences_Temp.Count == 0)
+                if (guidReferences_Temp is null || guidReferences_Temp.Count == 0)
                 {
                     continue;
                 }
 
                 List<GuidReference> guidReferences_ToRemove = [.. guidReferences];
 
-                foreach(GuidReference guidReference_Temp in guidReferences_Temp)
+                foreach (GuidReference guidReference_Temp in guidReferences_Temp)
                 {
                     guidReferences_ToRemove.Remove(guidReference_Temp);
                 }
@@ -105,7 +105,7 @@ namespace DiGi.GIS.UI
 
             foreach (GuidReference guidReference in guidReferences)
             {
-                if(gISModel.GetObject<TAdministrativeAreal2D>(guidReference)is not TAdministrativeAreal2D administrativeAreal2D)
+                if (gISModel.GetObject<TAdministrativeAreal2D>(guidReference) is not TAdministrativeAreal2D administrativeAreal2D)
                 {
                     continue;
                 }

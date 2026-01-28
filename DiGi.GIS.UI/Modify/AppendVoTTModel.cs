@@ -73,12 +73,12 @@ namespace DiGi.GIS.UI
 
                     gISModel = gISModelFile.Value;
                     List<Building2D>? building2Ds = gISModel?.GetObjects<Building2D>();
-                    if(building2Ds != null)
+                    if (building2Ds != null)
                     {
-                        foreach(Building2D building2D in building2Ds)
+                        foreach (Building2D building2D in building2Ds)
                         {
                             short? yearBuilt = gISModelFile.UserYearBuilt(building2D);
-                            if(yearBuilt == null || !yearBuilt.HasValue)
+                            if (yearBuilt == null || !yearBuilt.HasValue)
                             {
                                 continue;
                             }
@@ -86,7 +86,6 @@ namespace DiGi.GIS.UI
                             tuples.Add(new Tuple<Building2D, short>(building2D, yearBuilt.Value));
                         }
                     }
-
                 }
 
                 if (tuples == null || tuples.Count == 0)
@@ -94,7 +93,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                if(gISModel is null || Path.GetDirectoryName(path_VoTT) is not string directory_VoTT)
+                if (gISModel is null || Path.GetDirectoryName(path_VoTT) is not string directory_VoTT)
                 {
                     continue;
                 }
@@ -108,7 +107,7 @@ namespace DiGi.GIS.UI
                 {
                     Building2D building2D = tuple.Item1;
 
-                    if(string.IsNullOrWhiteSpace(building2D?.Reference))
+                    if (string.IsNullOrWhiteSpace(building2D?.Reference))
                     {
                         continue;
                     }
@@ -146,14 +145,14 @@ namespace DiGi.GIS.UI
 
                         string path_OrtoData = string.Format("{0}_{1}.jpeg", pathPrefix, year);
 
-                        JpegBitmapEncoder jpegBitmapEncoder = new ();
+                        JpegBitmapEncoder jpegBitmapEncoder = new();
                         jpegBitmapEncoder.Frames.Add(BitmapFrame.Create(bitmapImage));
-                        using (FileStream fileStream = new (path_OrtoData, FileMode.Create))
+                        using (FileStream fileStream = new(path_OrtoData, FileMode.Create))
                         {
                             jpegBitmapEncoder.Save(fileStream);
                         }
 
-                        if(building2DGeometryCalculationResult.BoundingBox is not BoundingBox2D boundingBox2D)
+                        if (building2DGeometryCalculationResult.BoundingBox is not BoundingBox2D boundingBox2D)
                         {
                             continue;
                         }
@@ -163,12 +162,12 @@ namespace DiGi.GIS.UI
                             boundingBox2D.Offset(voTTConversionOptions.Offset);
                         }
 
-                        if(ortoData.ToOrto(boundingBox2D.Min) is not Point2D min || ortoData.ToOrto(boundingBox2D.Max) is not Point2D max)
+                        if (ortoData.ToOrto(boundingBox2D.Min) is not Point2D min || ortoData.ToOrto(boundingBox2D.Max) is not Point2D max)
                         {
                             continue;
                         }
 
-                        if( VoTT.Create.Asset(path_OrtoData) is not Asset asset)
+                        if (VoTT.Create.Asset(path_OrtoData) is not Asset asset)
                         {
                             continue;
                         }
@@ -235,7 +234,7 @@ namespace DiGi.GIS.UI
             {
                 string path_Input = paths_Input[i];
 
-                if(Path.GetDirectoryName(path_Input) is not string directory_Input)
+                if (Path.GetDirectoryName(path_Input) is not string directory_Input)
                 {
                     continue;
                 }
@@ -271,7 +270,7 @@ namespace DiGi.GIS.UI
                 }
 
                 string path_OrtoRange = Path.Combine(directory_Input, string.Format("{0}.{1}", Path.GetFileNameWithoutExtension(path_Input), Constans.FileExtension.OrtoRangeFile));
-                if(!File.Exists(path_OrtoRange))
+                if (!File.Exists(path_OrtoRange))
                 {
                     continue;
                 }
@@ -282,7 +281,7 @@ namespace DiGi.GIS.UI
                     ortoRanges = ortoRangeFile.Values?.FilterNulls();
                 }
 
-                if(ortoRanges is null)
+                if (ortoRanges is null)
                 {
                     continue;
                 }
@@ -293,18 +292,17 @@ namespace DiGi.GIS.UI
                     Directory.CreateDirectory(directory_VoTT);
                 }
 
-
-                for(int j = 0; j < ortoRanges.Count(); j++)
+                for (int j = 0; j < ortoRanges.Count(); j++)
                 {
                     OrtoRange ortoRange = ortoRanges.ElementAt(j);
 
-                    if(string.IsNullOrWhiteSpace(ortoRange?.UniqueId))
+                    if (string.IsNullOrWhiteSpace(ortoRange?.UniqueId))
                     {
                         continue;
                     }
 
                     HashSet<string>? references_Inside = ortoRange?.References_Inside;
-                    if(references_Inside == null || references_Inside.Count == 0)
+                    if (references_Inside == null || references_Inside.Count == 0)
                     {
                         continue;
                     }
@@ -316,7 +314,7 @@ namespace DiGi.GIS.UI
                     }
 
                     OrtoDatas? ortoDatas = ortoRange.OrtoDatas(directory_OrtoDatas);
-                    if(ortoDatas == null)
+                    if (ortoDatas == null)
                     {
                         continue;
                     }
@@ -335,9 +333,9 @@ namespace DiGi.GIS.UI
 
                         string path_OrtoData = string.Format("{0}_{1}.jpeg", pathPrefix, year);
 
-                        JpegBitmapEncoder jpegBitmapEncoder = new ();
+                        JpegBitmapEncoder jpegBitmapEncoder = new();
                         jpegBitmapEncoder.Frames.Add(BitmapFrame.Create(bitmapImage));
-                        using (FileStream fileStream = new (path_OrtoData, FileMode.Create))
+                        using (FileStream fileStream = new(path_OrtoData, FileMode.Create))
                         {
                             jpegBitmapEncoder.Save(fileStream);
                         }
@@ -363,30 +361,30 @@ namespace DiGi.GIS.UI
                             Building2DGeometryCalculationResult? building2DGeometryCalculationResult = gISModel.GetRelatedObject<Building2DGeometryCalculationResult>(building2D);
                             building2DGeometryCalculationResult ??= building2D.Building2DGeometryCalculationResult();
 
-                            if(building2DGeometryCalculationResult?.BoundingBox is not BoundingBox2D boundingBox2D)
+                            if (building2DGeometryCalculationResult?.BoundingBox is not BoundingBox2D boundingBox2D)
                             {
                                 continue;
                             }
 
-                            if(voTTConversionOptions != null)
+                            if (voTTConversionOptions != null)
                             {
                                 boundingBox2D.Offset(voTTConversionOptions.Offset);
                             }
 
-                            if(ortoData.ToOrto(boundingBox2D.Min) is not Point2D min || ortoData.ToOrto(boundingBox2D.Max) is not Point2D max)
+                            if (ortoData.ToOrto(boundingBox2D.Min) is not Point2D min || ortoData.ToOrto(boundingBox2D.Max) is not Point2D max)
                             {
                                 continue;
                             }
-                            
+
                             voTTModel.Add(asset.id, VoTT.Create.Region(min.X, min.Y, max.X, max.Y, "Building"));
                             break;
                         }
 
-                        if(voTTModel.assets != null && voTTModel.assets.Count != 0)
+                        if (voTTModel.assets != null && voTTModel.assets.Count != 0)
                         {
-                            if(voTTModel.assets.TryGetValue(asset.id, out AssetData? assetData))
+                            if (voTTModel.assets.TryGetValue(asset.id, out AssetData? assetData))
                             {
-                                if(assetData.regions == null || assetData.regions.Count == 0)
+                                if (assetData.regions == null || assetData.regions.Count == 0)
                                 {
                                     voTTModel.assets.Remove(asset.id);
                                 }

@@ -6,7 +6,7 @@ namespace DiGi.GIS.UI
     {
         public static string? ColumnName(this Variable variable)
         {
-            if(variable == Variable.population_thousand_persons)
+            if (variable == Variable.population_thousand_persons)
             {
                 return "Polpulation";
             }

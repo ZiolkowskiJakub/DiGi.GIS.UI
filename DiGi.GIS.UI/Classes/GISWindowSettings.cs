@@ -9,15 +9,14 @@ namespace DiGi.GIS.UI.Classes
         [JsonInclude, JsonPropertyName("Paths")]
         public List<string>? Paths { get; set; }
 
-        public GISWindowSettings() 
+        public GISWindowSettings()
         {
-            
         }
 
         public GISWindowSettings(GISWindowSettings? gISWindowSettings)
-            :base(gISWindowSettings)
+            : base(gISWindowSettings)
         {
-            if(gISWindowSettings != null)
+            if (gISWindowSettings != null)
             {
                 Paths = gISWindowSettings.Paths == null ? null : [.. gISWindowSettings.Paths];
             }
@@ -26,7 +25,6 @@ namespace DiGi.GIS.UI.Classes
         public GISWindowSettings(JsonObject? jsonObject)
             : base(jsonObject)
         {
-
         }
     }
 }

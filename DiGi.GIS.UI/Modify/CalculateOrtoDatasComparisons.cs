@@ -47,7 +47,7 @@ namespace DiGi.GIS.UI
             {
                 string path_Input = paths_Input[i];
 
-                using GISModelFile gISModelFile = new (path_Input);
+                using GISModelFile gISModelFile = new(path_Input);
 
                 gISModelFile.Open();
 
@@ -82,8 +82,6 @@ namespace DiGi.GIS.UI
                                     {
                                         result.Add(reference);
                                     }
-
-
                                 }
                             }
 

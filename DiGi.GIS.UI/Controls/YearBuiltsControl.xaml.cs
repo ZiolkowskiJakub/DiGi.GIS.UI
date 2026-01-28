@@ -86,7 +86,6 @@ namespace DiGi.GIS.UI.Controls
                 ortoDataControl.MouseDown += OrtoDataControl_MouseDown;
             }
 
-
             //WrapPanel_Main.Children.Clear();
 
             //Building2D? building2D = Building2D;
@@ -138,7 +137,7 @@ namespace DiGi.GIS.UI.Controls
 
             //    ortoDataControl.MouseDown += OrtoDataControl_MouseDown;
 
-            //    dictionary[year_Temp] = ortoDataControl;   
+            //    dictionary[year_Temp] = ortoDataControl;
             //}
 
             //short max = System.Convert.ToInt16(Math.Min(dictionary.Keys.Max() + 1, DateTime.Now.Year));
@@ -220,13 +219,13 @@ namespace DiGi.GIS.UI.Controls
             ListBox_Main.SelectionChanged -= ListBox_Main_SelectionChanged;
 
             GISModel? gISModel = gISModelFile?.Value;
-            if(gISModel == null)
+            if (gISModel == null)
             {
                 return;
             }
 
             List<Building2D>? building2Ds = gISModel.GetObjects<Building2D>();
-            if(building2Ds == null || building2Ds.Count == 0)
+            if (building2Ds == null || building2Ds.Count == 0)
             {
                 return;
             }
@@ -236,12 +235,12 @@ namespace DiGi.GIS.UI.Controls
             for (int i = 0; i < building2Ds.Count; i++)
             {
                 Building2D building2D = building2Ds[i];
-                if(building2D?.Reference is not string reference)
+                if (building2D?.Reference is not string reference)
                 {
                     continue;
                 }
 
-                if(!string.IsNullOrEmpty(searchText) && !reference.Contains(searchText))
+                if (!string.IsNullOrEmpty(searchText) && !reference.Contains(searchText))
                 {
                     continue;
                 }

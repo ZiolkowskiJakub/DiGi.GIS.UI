@@ -15,12 +15,12 @@ namespace DiGi.GIS.UI
     {
         public static bool WriteImages(this Building2D? building2D, string? directory_OrtoDatasFiles, string? directory_Output)
         {
-            if(directory_OrtoDatasFiles == null || building2D == null || string.IsNullOrWhiteSpace(directory_Output))
+            if (directory_OrtoDatasFiles == null || building2D == null || string.IsNullOrWhiteSpace(directory_Output))
             {
                 return false;
             }
 
-            if(!Directory.Exists(directory_OrtoDatasFiles) || !Directory.Exists(directory_Output))
+            if (!Directory.Exists(directory_OrtoDatasFiles) || !Directory.Exists(directory_Output))
             {
                 return false;
             }
@@ -78,7 +78,6 @@ namespace DiGi.GIS.UI
                     }
                 }
 
-
                 using (Graphics graphics = Graphics.FromImage(image))
                 {
                     Polygon2D polygon2D_OrtoData = new(point2Ds_Temp);
@@ -88,7 +87,7 @@ namespace DiGi.GIS.UI
 
                     if (point2Ds_Offset_Temp != null)
                     {
-                        Polygon2D polygon2D_OrtoData_Offset = new (point2Ds_Offset_Temp);
+                        Polygon2D polygon2D_OrtoData_Offset = new(point2Ds_Offset_Temp);
 
                         Geometry.Drawing.Modify.Draw(graphics, polygon2D_OrtoData_Offset, new Pen(Color.Red.ToDiGi(), 3), false);
                         Geometry.Drawing.Modify.Draw(graphics, polygon2D_OrtoData_Offset.GetBoundingBox(), new Pen(Color.Gray.ToDiGi(), 1), false);
@@ -132,7 +131,7 @@ namespace DiGi.GIS.UI
             string directory_Output = openFolderDialog.FolderName;
 
             List<Building2D>? building2Ds = [];
-            using (GISModelFile gISModelFile = new (path_GISModel))
+            using (GISModelFile gISModelFile = new(path_GISModel))
             {
                 gISModelFile.Open();
 
@@ -144,7 +143,7 @@ namespace DiGi.GIS.UI
                 building2Ds = building2Ds?.GetRange(range.Min, range.Max - range.Min);
             }
 
-            if(building2Ds is null)
+            if (building2Ds is null)
             {
                 return false;
             }
@@ -156,16 +155,16 @@ namespace DiGi.GIS.UI
             }
 
             Dictionary<Core.Classes.GuidReference, OrtoDatas>? dictionary = GIS.Query.OrtoDatasDictionary(directory_OrtoDatas, building2Ds);
-            if(dictionary is null)
+            if (dictionary is null)
             {
                 return false;
             }
 
             bool result = false;
 
-            foreach(Building2D building2D in building2Ds)
+            foreach (Building2D building2D in building2Ds)
             {
-                if(building2D == null || !dictionary.TryGetValue(new Core.Classes.GuidReference(building2D), out OrtoDatas? ortoDatas) || ortoDatas == null)
+                if (building2D == null || !dictionary.TryGetValue(new Core.Classes.GuidReference(building2D), out OrtoDatas? ortoDatas) || ortoDatas == null)
                 {
                     continue;
                 }
@@ -238,7 +237,6 @@ namespace DiGi.GIS.UI
             }
 
             return result;
-
         }
     }
 }

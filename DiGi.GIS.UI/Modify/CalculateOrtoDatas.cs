@@ -12,7 +12,7 @@ namespace DiGi.GIS.UI
     {
         public static async Task<bool> CalculateOrtoDatas(Window? owner, OrtoDatasBuilding2DOptions? ortoDatasBuilding2DOptions, int count, bool overrideExisting = false)
         {
-            OpenFolderDialog openFolderDialog = new ();
+            OpenFolderDialog openFolderDialog = new();
             bool? result = openFolderDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -32,12 +32,12 @@ namespace DiGi.GIS.UI
             {
                 string path_Input = paths_Input[i];
 
-                if(System.IO.Path.GetDirectoryName(path_Input) is not string directory_Input)
+                if (System.IO.Path.GetDirectoryName(path_Input) is not string directory_Input)
                 {
                     continue;
                 }
 
-                using GISModelFile gISModelFile = new (path_Input);
+                using GISModelFile gISModelFile = new(path_Input);
                 gISModelFile.Open();
 
                 GISModel? gISModel = gISModelFile.Value;
@@ -58,7 +58,8 @@ namespace DiGi.GIS.UI
                         }
                     }
                 }
-            };
+            }
+            ;
 
             //MessageBox.Show("Finished!");
 
@@ -67,7 +68,7 @@ namespace DiGi.GIS.UI
 
         public static async Task<bool> CalculateOrtoDatas(Window? owner, OrtoDatasOrtoRangeOptions? ortoDatasOrtoRangeOptions, int count)
         {
-            OpenFolderDialog openFolderDialog = new ();
+            OpenFolderDialog openFolderDialog = new();
             bool? result = openFolderDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {
@@ -87,7 +88,7 @@ namespace DiGi.GIS.UI
             {
                 string path_Input = paths_Input[i];
 
-                if(System.IO.Path.GetDirectoryName(path_Input) is not string directory_Input)
+                if (System.IO.Path.GetDirectoryName(path_Input) is not string directory_Input)
                 {
                     continue;
                 }

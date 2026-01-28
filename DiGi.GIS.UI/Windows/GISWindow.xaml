@@ -11,25 +11,25 @@
         <StackPanel DockPanel.Dock="Top">
             <Menu>
                 <MenuItem Header="File">
-                    <MenuItem x:Name="MenuItem_Load" Header="Load" Click="MenuItem_Load_Click"/>
-                    <Separator/>
-                    <MenuItem x:Name="MenuItem_Close" Header="Close" Click="MenuItem_Close_Click"/>
+                    <MenuItem x:Name="MenuItem_Load" Header="Load" Click="MenuItem_Load_Click" />
+                    <Separator />
+                    <MenuItem x:Name="MenuItem_Close" Header="Close" Click="MenuItem_Close_Click" />
                 </MenuItem>
                 <MenuItem Header="Help">
-                    <MenuItem x:Name="MenuItem_About" Header="About" Click="MenuItem_About_Click"/>
+                    <MenuItem x:Name="MenuItem_About" Header="About" Click="MenuItem_About_Click" />
                 </MenuItem>
             </Menu>
         </StackPanel>
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBarItem>
-                <Controls:ProgressBarControl x:Name="ProgressBarControl_Main" Width="300" VerticalAlignment="Center"/>
+                <Controls:ProgressBarControl x:Name="ProgressBarControl_Main" Width="300" VerticalAlignment="Center" />
             </StatusBarItem>
         </StatusBar>
         <Grid DockPanel.Dock="Left">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="250" MinWidth="200"/>
+                <ColumnDefinition Width="250" MinWidth="200" />
                 <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="*" MinWidth="200"/>
+                <ColumnDefinition Width="*" MinWidth="200" />
             </Grid.ColumnDefinitions>
             <TabControl Grid.Column="0" TabStripPlacement="Bottom" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <TabItem Header="Areals">
@@ -37,7 +37,7 @@
                     </TreeView>
                 </TabItem>
             </TabControl>
-            <GridSplitter Grid.Column="1" Width="5" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+            <GridSplitter Grid.Column="1" Width="5" VerticalAlignment="Stretch" HorizontalAlignment="Center" />
             <TabControl Grid.Column="2" TabStripPlacement="Top"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <TabItem Header="Test"></TabItem>
             </TabControl>

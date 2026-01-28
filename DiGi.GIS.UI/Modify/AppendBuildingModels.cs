@@ -9,11 +9,10 @@ namespace DiGi.GIS.UI
         public static HashSet<string>? AppendBuildingModels(this Window? owner)
         {
             Dictionary<string, List<BuildingModel>>? dictionary = Create.BuildingModels(owner);
-            if(dictionary == null || dictionary.Count == 0)
+            if (dictionary == null || dictionary.Count == 0)
             {
                 return null;
             }
-
 
             HashSet<string> result = [];
             foreach (KeyValuePair<string, List<BuildingModel>> keyValuePair in dictionary)
@@ -21,17 +20,17 @@ namespace DiGi.GIS.UI
                 string path = keyValuePair.Key;
                 List<BuildingModel> buildingModels = keyValuePair.Value;
 
-                if(string.IsNullOrWhiteSpace(path))
+                if (string.IsNullOrWhiteSpace(path))
                 {
                     continue;
                 }
 
-                if(buildingModels == null || buildingModels.Count == 0)
+                if (buildingModels == null || buildingModels.Count == 0)
                 {
                     continue;
                 }
 
-                if(System.IO.Path.GetDirectoryName(path) is not string directory)
+                if (System.IO.Path.GetDirectoryName(path) is not string directory)
                 {
                     continue;
                 }
@@ -42,7 +41,7 @@ namespace DiGi.GIS.UI
                 {
                     buildingModelsFile.Open();
 
-                    foreach(BuildingModel buildingModel in buildingModels)
+                    foreach (BuildingModel buildingModel in buildingModels)
                     {
                         buildingModelsFile.AddValue(buildingModel);
                     }

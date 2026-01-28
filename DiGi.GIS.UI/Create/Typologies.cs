@@ -162,4 +162,3 @@ namespace DiGi.GIS.UI
         }
     }
 }
-    

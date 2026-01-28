@@ -54,7 +54,7 @@ namespace DiGi.GIS.UI
             Dictionary<string, List<BuildingModel>> result = [];
             foreach (string path_GISModel in paths_GISModel)
             {
-                using GISModelFile gISModelFile = new (path_GISModel);
+                using GISModelFile gISModelFile = new(path_GISModel);
 
                 gISModelFile.Open();
 

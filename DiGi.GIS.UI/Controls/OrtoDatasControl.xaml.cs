@@ -14,7 +14,7 @@ namespace DiGi.GIS.UI.Controls
     {
         private Core.Classes.Size? imageSize = new(300, 300);
         private int margin = 5;
-        
+
         private OrtoDatas? ortoDatas;
 
         public OrtoDatasControl()
@@ -91,7 +91,6 @@ namespace DiGi.GIS.UI.Controls
 
                     ortoDataControl_Temp.Margin = new System.Windows.Thickness(margin, margin, margin, margin);
                 }
-
             }
         }
 
@@ -196,7 +195,7 @@ namespace DiGi.GIS.UI.Controls
 
         private void OrtoDataControl_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if(e.ChangedButton != MouseButton.Left)
+            if (e.ChangedButton != MouseButton.Left)
             {
                 return;
             }
@@ -270,12 +269,11 @@ namespace DiGi.GIS.UI.Controls
             {
                 ortoDataControl_Active.Active = true;
             }
-
         }
 
         private bool Update(OrtoData? ortoData)
         {
-            if(ortoData == null)
+            if (ortoData == null)
             {
                 return false;
             }
@@ -286,7 +284,7 @@ namespace DiGi.GIS.UI.Controls
         private bool Update(BitmapImage? bitmapImage, short year, OrtoData? ortoData)
         {
             OrtoDataControl? ortoDataControl = GetOrtoDataControl(year);
-            if(ortoDataControl != null)
+            if (ortoDataControl != null)
             {
                 ortoDataControl.BitmapImage = bitmapImage;
                 return true;
@@ -302,7 +300,7 @@ namespace DiGi.GIS.UI.Controls
                 Margin = new System.Windows.Thickness(margin, margin, margin, margin),
             };
 
-            if(imageSize is not null)
+            if (imageSize is not null)
             {
                 ortoDataControl.Width = imageSize.Width;
                 ortoDataControl.Height = imageSize.Height;

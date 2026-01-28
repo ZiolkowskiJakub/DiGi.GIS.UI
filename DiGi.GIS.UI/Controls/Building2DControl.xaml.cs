@@ -30,12 +30,12 @@ namespace DiGi.GIS.UI.Controls
                 TextBox_Reference.Text = building2D.Reference;
                 TextBox_Storeys.Text = building2D.Storeys.ToString();
 
-                if(building2D.BuildingGeneralFunction != null)
+                if (building2D.BuildingGeneralFunction != null)
                 {
                     TextBox_BuildingGeneralFunction.Text = Core.Query.Description(building2D.BuildingGeneralFunction.Value);
                 }
 
-                if(building2D.BuildingSpecificFunctions != null)
+                if (building2D.BuildingSpecificFunctions != null)
                 {
                     TextBox_BuildingSpecificFunctions.Text = string.Join(", ", building2D.BuildingSpecificFunctions.ToList().ConvertAll(x => Core.Query.Description(x)));
                 }

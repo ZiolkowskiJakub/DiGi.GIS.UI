@@ -7,7 +7,7 @@ namespace DiGi.GIS.UI
     {
         public static List<OrtoDataControl>? OrtoDataControls(this GISModelFile? gISModelFile, Building2D? building2D)
         {
-            if(gISModelFile is null || building2D == null)
+            if (gISModelFile is null || building2D == null)
             {
                 return null;
             }
@@ -95,7 +95,7 @@ namespace DiGi.GIS.UI
                 dictionary[max] = ortoDataControl;
             }
 
-            if(ortoDataControl is not null)
+            if (ortoDataControl is not null)
             {
                 ortoDataControl.BitmapImage = BitmapImage(building2D, directory_OrtoDatas, DateTime.Now.Year);
             }

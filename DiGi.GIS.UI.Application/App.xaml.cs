@@ -8,9 +8,9 @@ namespace DiGi.GIS.UI.Application
     /// </summary>
     public partial class App : System.Windows.Application
     {
-        void App_Startup(object sender, StartupEventArgs e)
+        private void App_Startup(object sender, StartupEventArgs e)
         {
-            MainWindow mainWindow = new ();
+            MainWindow mainWindow = new();
             mainWindow.ShowDialog();
 
             //UI.Windows.GISWindow gISWindow = new UI.Windows.GISWindow();
@@ -19,5 +19,4 @@ namespace DiGi.GIS.UI.Application
             Shutdown();
         }
     }
-
 }

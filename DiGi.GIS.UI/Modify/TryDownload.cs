@@ -7,19 +7,19 @@ namespace DiGi.GIS.UI
     {
         public static async Task<bool> TryDownload(string url, string path)
         {
-            if(string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(path))
+            if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(path))
             {
                 return false;
             }
-            
+
             bool result = true;
 
             try
             {
-                using HttpClient httpClient = new ();
+                using HttpClient httpClient = new();
                 try
                 {
-                    HttpRequestMessage httpRequestMessage = new (HttpMethod.Head, url);
+                    HttpRequestMessage httpRequestMessage = new(HttpMethod.Head, url);
                     HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
 
                     if (!httpResponseMessage.IsSuccessStatusCode)
@@ -34,7 +34,7 @@ namespace DiGi.GIS.UI
                     if (stream != null)
                     {
                         string? directory = Path.GetDirectoryName(path);
-                        if(!string.IsNullOrWhiteSpace(directory))
+                        if (!string.IsNullOrWhiteSpace(directory))
                         {
                             if (!Directory.Exists(directory))
                             {

@@ -11,7 +11,7 @@ namespace DiGi.GIS.UI
     {
         public static HashSet<string>? CalculateGISModelFiles(Window? owner, IDeterminateWorker? determinateWorker = null)
         {
-            OpenFolderDialog openFolderDialog = new ();
+            OpenFolderDialog openFolderDialog = new();
             bool? openFolderDialogResult = openFolderDialog.ShowDialog(owner);
             if (openFolderDialogResult == null || !openFolderDialogResult.HasValue || !openFolderDialogResult.Value)
             {
@@ -87,7 +87,6 @@ namespace DiGi.GIS.UI
 
                 reportCount += count_Temp;
                 determinateWorker?.Report(reportCount);
-
             }
 
             return result;

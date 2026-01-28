@@ -1,5 +1,5 @@
-﻿using DiGi.UI.WPF.Core.Classes;
-using DiGi.Typology.Classes;
+﻿using DiGi.Typology.Classes;
+using DiGi.UI.WPF.Core.Classes;
 
 namespace DiGi.GIS.UI
 {
@@ -20,14 +20,14 @@ namespace DiGi.GIS.UI
                 return null;
             }
 
-            func ??= new Func<Typology.Classes.Typology?, string>(x => 
-                { 
-                    if(x is null)
+            func ??= new Func<Typology.Classes.Typology?, string>(x =>
+                {
+                    if (x is null)
                     {
                         return "???";
                     }
 
-                    return string.Format("{0} : {1} -> {2}", x.TypologyPath?.ToString() ?? "[???]" , x.Description ?? "???", x.Name ?? "???"); 
+                    return string.Format("{0} : {1} -> {2}", x.TypologyPath?.ToString() ?? "[???]", x.Description ?? "???", x.Name ?? "???");
                 });
 
             List<string> names = [func.Invoke(typology_Temp)];
@@ -48,7 +48,7 @@ namespace DiGi.GIS.UI
 
             names.Reverse();
 
-            if(names.Count > 0)
+            if (names.Count > 0)
             {
                 name = names.Last();
                 names.RemoveAt(names.Count - 1);

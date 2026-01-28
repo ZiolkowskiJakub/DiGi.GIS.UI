@@ -60,7 +60,7 @@ namespace DiGi.GIS.UI
                 return;
             }
 
-            PredictionTableConversionOptions predictionTableConversionOptions = new ()
+            PredictionTableConversionOptions predictionTableConversionOptions = new()
             {
                 IncludeModel = true,
                 IncludeStatistical = true,
@@ -88,14 +88,14 @@ namespace DiGi.GIS.UI
                 string path_Input = paths_Input[i];
 
                 Table? table = null;
-                using (GISModelFile gISModelFile = new (path_Input))
+                using (GISModelFile gISModelFile = new(path_Input))
                 {
                     gISModelFile.Open();
 
                     table = Convert.ToDiGi_Table(gISModelFile, predictionTableConversionOptions: predictionTableConversionOptions);
                 }
 
-                if(table != null)
+                if (table != null)
                 {
                     Core.IO.DelimitedData.Modify.Append(saveFileDialog.FileName, table, '\t');
                 }

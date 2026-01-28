@@ -7,13 +7,13 @@ namespace DiGi.GIS.UI
     {
         public static bool Append(this Building2DYearBuiltPredictionsFile building2DYearBuiltPredictionsFile, BoundingBoxResultFile boundingBoxResultFile)
         {
-            if(boundingBoxResultFile == null || building2DYearBuiltPredictionsFile == null)
+            if (boundingBoxResultFile == null || building2DYearBuiltPredictionsFile == null)
             {
                 return false;
             }
 
             Dictionary<string, List<YearBuiltPrediction>> dictionary = [];
-            foreach(BoundingBoxResult boundingBoxResult in boundingBoxResultFile)
+            foreach (BoundingBoxResult boundingBoxResult in boundingBoxResultFile)
             {
                 string? name = boundingBoxResult?.Name;
                 if (name is null)
@@ -22,7 +22,7 @@ namespace DiGi.GIS.UI
                 }
 
                 string[] values = name.Split("_");
-                if(values == null || values.Length < 2)
+                if (values == null || values.Length < 2)
                 {
                     continue;
                 }
@@ -34,7 +34,7 @@ namespace DiGi.GIS.UI
 
                 string reference = values[0].Trim();
 
-                if(!dictionary.TryGetValue(reference, out List<YearBuiltPrediction>? yearBuiltPredictions) || yearBuiltPredictions == null)
+                if (!dictionary.TryGetValue(reference, out List<YearBuiltPrediction>? yearBuiltPredictions) || yearBuiltPredictions == null)
                 {
                     yearBuiltPredictions = [];
                     dictionary[reference] = yearBuiltPredictions;

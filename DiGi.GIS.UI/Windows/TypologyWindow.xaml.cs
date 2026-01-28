@@ -5,8 +5,6 @@ using DiGi.GIS.UI.Controls;
 using DiGi.Typology.Classes;
 using DiGi.UI.WPF.Core.Classes;
 using LiveCharts;
-using System;
-using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,7 +16,7 @@ namespace DiGi.GIS.UI.Windows
     /// </summary>
     public partial class TypologyWindow : Window
     {
-        private readonly GISModelFileManager gISModelFileManager = new ();
+        private readonly GISModelFileManager gISModelFileManager = new();
 
         public TypologyWindow()
         {
@@ -34,7 +32,7 @@ namespace DiGi.GIS.UI.Windows
 
             contextMenu.Items.Add(menuItem);
 
-            menuItem = new MenuItem { Name ="MenuItem_BuildingShape", Header = "Building shape" };
+            menuItem = new MenuItem { Name = "MenuItem_BuildingShape", Header = "Building shape" };
             menuItem.Click += MenuItem_BuildingShape_Click;
 
             contextMenu.Items.Add(menuItem);
@@ -254,7 +252,6 @@ namespace DiGi.GIS.UI.Windows
 
         private void MenuItem_About_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void MenuItem_BuildingShape_Click(object sender, RoutedEventArgs e)
@@ -318,12 +315,12 @@ namespace DiGi.GIS.UI.Windows
                 return;
             }
 
-            if(GetPath(gISModel) is not string path || string.IsNullOrWhiteSpace(path))
+            if (GetPath(gISModel) is not string path || string.IsNullOrWhiteSpace(path))
             {
                 return;
             }
 
-            if(System.IO.Path.GetDirectoryName(path) is not string directoryName)
+            if (System.IO.Path.GetDirectoryName(path) is not string directoryName)
             {
                 return;
             }
@@ -331,12 +328,12 @@ namespace DiGi.GIS.UI.Windows
             string path_OrtoDatasFile = System.IO.Path.Combine(directoryName, string.Format("{0}.{1}", System.IO.Path.GetFileNameWithoutExtension(path), Constans.FileExtension.OrtoDatasFile));
 
             HashSet<GuidReference>? guidReferences = await GIS.Modify.CalculateOrtoDatas([building2D], path_OrtoDatasFile, Create.OrtoDatasBuilding2DOptions(), true);
-            if(guidReferences != null && guidReferences.Count != 0)
+            if (guidReferences != null && guidReferences.Count != 0)
             {
                 LoadBuidling2D();
             }
         }
-        
+
         private void TreeViewControl_Typology_ItemAdding(object sender, TreeViewItemAddingEventArgs e)
         {
             if (TreeViewControl_Typology.Tag is not TypologyFile typologyFile)
@@ -395,10 +392,9 @@ namespace DiGi.GIS.UI.Windows
 
             Label_Count.Content = string.Format("Count: {0}", references.Count);
 
-
             PieChart_Main.Series = [];
 
-            if(itemPathTreeViewItem.Items != null)
+            if (itemPathTreeViewItem.Items != null)
             {
                 foreach (ItemPathTreeViewItem itemPathTreeViewItem_Temp in itemPathTreeViewItem.Items)
                 {
@@ -424,7 +420,7 @@ namespace DiGi.GIS.UI.Windows
                     PieChart_Main.Series.Add(new LiveCharts.Wpf.PieSeries { Title = itemPathTreeViewItem_Temp.Header.ToString(), Values = new ChartValues<double> { references_SubTypology.Count }, DataLabels = true });
                 }
 
-                if(PieChart_Main.Series.Count == 0)
+                if (PieChart_Main.Series.Count == 0)
                 {
                     PieChart_Main.Series.Add(new LiveCharts.Wpf.PieSeries { Title = itemPathTreeViewItem.Header.ToString(), Values = new ChartValues<double> { references.Count }, DataLabels = true });
                 }
@@ -432,7 +428,7 @@ namespace DiGi.GIS.UI.Windows
 
             ListBox_References.SelectionChanged += ListBox_References_SelectionChanged;
         }
-        
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             TreeViewControl_Typology.SelectedItemChanged += TreeViewControl_Typology_SelectedItemChanged;

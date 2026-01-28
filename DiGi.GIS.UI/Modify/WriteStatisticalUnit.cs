@@ -23,7 +23,7 @@ namespace DiGi.GIS.UI
 
             StatisticalUnit? statisticalUnit = null;
 
-            using (StatisticalUnitFile statisticalUnitFile = new (openFileDialog.FileName))
+            using (StatisticalUnitFile statisticalUnitFile = new(openFileDialog.FileName))
             {
                 statisticalUnitFile.Open();
                 statisticalUnit = statisticalUnitFile.Value;

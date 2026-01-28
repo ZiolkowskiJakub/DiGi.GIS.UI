@@ -10,7 +10,7 @@ namespace DiGi.GIS.UI
     {
         public static void CalculateGISModelFiles(Window? owner)
         {
-            OpenFolderDialog openFolderDialog = new ();
+            OpenFolderDialog openFolderDialog = new();
             bool? result = openFolderDialog.ShowDialog(owner);
             if (result == null || !result.HasValue || !result.Value)
             {

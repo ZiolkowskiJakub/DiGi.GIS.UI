@@ -18,12 +18,10 @@ namespace DiGi.GIS.UI.Windows
 
         private void OrtoDatasListControl_Main_OrtoDataSelectionChanged(object sender, DiGi.UI.WPF.Core.Classes.OrtoDataSelectionChangedEventArgs e)
         {
-
         }
 
         private void MenuItem_About_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void MenuItem_Close_Click(object sender, RoutedEventArgs e)
@@ -34,13 +32,13 @@ namespace DiGi.GIS.UI.Windows
         private void MenuItem_Load_Click(object sender, RoutedEventArgs e)
         {
             string? path = DiGi.UI.WPF.Core.Query.Path(this, Constans.FileFilter.OrtoDatasFile);
-            if(string.IsNullOrWhiteSpace(path) || !System.IO.File.Exists(path))
+            if (string.IsNullOrWhiteSpace(path) || !System.IO.File.Exists(path))
             {
                 return;
             }
 
             List<OrtoDatas>? ortoDatasList = null;
-            using (OrtoDatasFile ortoDatasFile = new (path))
+            using (OrtoDatasFile ortoDatasFile = new(path))
             {
                 ortoDatasFile.Open();
 
@@ -49,6 +47,7 @@ namespace DiGi.GIS.UI.Windows
 
             OrtoDatasListControl_Main.OrtoDatasList = ortoDatasList;
         }
+
         private void MenuItem_New_Click(object sender, RoutedEventArgs e)
         {
             OrtoDatasListControl_Main.OrtoDatasList = null;
