@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.11.35327.3
+# Visual Studio Version 18
+VisualStudioVersion = 18.2.11415.280 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiGi.GIS.UI.Application", "DiGi.GIS.UI.Application\DiGi.GIS.UI.Application.csproj", "{A99915F2-A33E-4FBB-99EB-EF8BA505F633}"
 EndProject
@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiGi.GIS.Analytical", "..\D
 	ProjectSection(ProjectDependencies) = postProject
 		{59F486F7-F0E1-4F11-BC56-0EFC519FEDBA} = {59F486F7-F0E1-4F11-BC56-0EFC519FEDBA}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiGi.GIS.PostgreSQL", "..\DiGi.GIS.PostgreSQL\DiGi.GIS.PostgreSQL\DiGi.GIS.PostgreSQL.csproj", "{CDC1BEA9-6FFF-6533-0E47-BF67727C63D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +50,10 @@ Global
 		{1739FF8D-2FE7-A1D4-F2F8-78F75355B04F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1739FF8D-2FE7-A1D4-F2F8-78F75355B04F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1739FF8D-2FE7-A1D4-F2F8-78F75355B04F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDC1BEA9-6FFF-6533-0E47-BF67727C63D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDC1BEA9-6FFF-6533-0E47-BF67727C63D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDC1BEA9-6FFF-6533-0E47-BF67727C63D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDC1BEA9-6FFF-6533-0E47-BF67727C63D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
