@@ -1459,5 +1459,46 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = string.Format("Done Writing! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
+
+        private void Button_ResaveGISModels_Click(object sender, RoutedEventArgs e)
+        {
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Resaving...";
+
+            //Enum.GetValues<Variable>()
+            OpenFolderDialog openFolderDialog = new();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            string[] paths = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
+            if (paths is null || paths.Length == 0)
+            {
+                return;
+            }
+
+            foreach (string path in paths)
+            {
+                string reference = System.IO.Path.GetFileNameWithoutExtension(path);
+
+                using GISModelFile gISModelFile = new(path);
+                gISModelFile.Open();
+
+                GISModel? gISModel = gISModelFile.Value;
+                if (gISModel is not null)
+                {
+                    gISModelFile.Value = new GISModel(reference, gISModel);
+                    gISModelFile.Save();
+                }
+            }
+
+            TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Resaving! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
     }
 }
