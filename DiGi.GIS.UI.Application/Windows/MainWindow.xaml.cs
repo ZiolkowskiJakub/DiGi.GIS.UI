@@ -1,10 +1,11 @@
 ﻿using DiGi.BDL.Classes;
 using DiGi.BDL.Enums;
 using DiGi.Core.Classes;
+using DiGi.Core.Interfaces;
 using DiGi.EPW.Classes;
 using DiGi.Geometry.Planar;
 using DiGi.GIS.Classes;
-using DiGi.GIS.Constans;
+using DiGi.GIS.Constants;
 using DiGi.GIS.Emgu.CV.Classes;
 using DiGi.GIS.UI.Classes;
 using Microsoft.Win32;
@@ -549,6 +550,48 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
+        private void Button_CompareJsons_Click(object sender, RoutedEventArgs e)
+        {
+            bool? dialogResult;
+
+            OpenFileDialog openFileDialog;
+
+            openFileDialog = new()
+            {
+                Title = "Select json text file",
+                Filter = string.Format("{0} (*.{1})|*.{1}|{2} (*.{3})|*.{3}|All files (*.*)|*.*", "Text file", "txt", "JSON file", "json")
+            };
+
+            dialogResult = openFileDialog.ShowDialog();
+            if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
+            {
+                return;
+            }
+
+            string path_1 = openFileDialog.FileName;
+
+            openFileDialog = new()
+            {
+                Title = "Select json text file",
+                Filter = string.Format("{0} (*.{1})|*.{1}|{2} (*.{3})|*.{3}|All files (*.*)|*.*", "Text file", "txt", "JSON file", "json")
+            };
+
+            dialogResult = openFileDialog.ShowDialog();
+            if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
+            {
+                return;
+            }
+
+            string path_2 = openFileDialog.FileName;
+
+            ISerializableObject? serializableObject_1 = Core.Convert.ToDiGi<ISerializableObject>(new Core.Classes.Path(path_1))?.FirstOrDefault();
+            ISerializableObject? serializableObject_2 = Core.Convert.ToDiGi<ISerializableObject>(new Core.Classes.Path(path_2))?.FirstOrDefault();
+
+            bool result = serializableObject_1?.ToString() == serializableObject_2?.ToString();
+
+            MessageBox.Show(result ? "The same objects" : "Objects are different");
+        }
+
         private void Button_ConvertOrtoDatasToFiles_Click(object sender, RoutedEventArgs e)
         {
             Convert_ToFiles();
@@ -578,6 +621,47 @@ namespace DiGi.GIS.UI.Application.Windows
             Reduce();
         }
 
+        private void Button_ResaveGISModels_Click(object sender, RoutedEventArgs e)
+        {
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Resaving...";
+
+            //Enum.GetValues<Variable>()
+            OpenFolderDialog openFolderDialog = new();
+            bool? result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            string[] paths = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
+            if (paths is null || paths.Length == 0)
+            {
+                return;
+            }
+
+            foreach (string path in paths)
+            {
+                string reference = System.IO.Path.GetFileNameWithoutExtension(path);
+
+                using GISModelFile gISModelFile = new(path);
+                gISModelFile.Open();
+
+                GISModel? gISModel = gISModelFile.Value;
+                if (gISModel is not null)
+                {
+                    gISModelFile.Value = new GISModel(reference, gISModel);
+                    gISModelFile.Save();
+                }
+            }
+
+            TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Resaving! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
+
         private void Button_ResaveOrtoDatasFiles_Click(object sender, RoutedEventArgs e)
         {
             ResaveOrtoDatasFiles();
@@ -585,7 +669,8 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private void Button_Test_Click(object sender, RoutedEventArgs e)
         {
-            Test_1();
+            //SaveOrtoDatasToJsonFile();
+            SaveGISModelToJsonFile();
         }
 
         private void Button_ToDiGiGISModelFiles_Click(object sender, RoutedEventArgs e)
@@ -663,19 +748,6 @@ namespace DiGi.GIS.UI.Application.Windows
             TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
-        }
-
-        private async void RecalculateOrtoDatas_Building2D(int count = 100)
-        {
-            DateTime dateTime = DateTime.Now;
-
-            TextBlock_Progress.Text = "Recalculating...";
-
-            await Modify.CalculateOrtoDatas(this, Create.OrtoDatasBuilding2DOptions(), count, false);
-
-            TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
-
-            TextBlock_Progress.Text = string.Format("Done Recalculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
         private async void CalculateOrtoDatas_OrtoRange(int count = 100)
@@ -903,6 +975,19 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = "Done Reading!";
         }
 
+        private async void RecalculateOrtoDatas_Building2D(int count = 100)
+        {
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Recalculating...";
+
+            await Modify.CalculateOrtoDatas(this, Create.OrtoDatasBuilding2DOptions(), count, false);
+
+            TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Recalculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
+        
         private void Reduce()
         {
             OpenFolderDialog openFolderDialog = new();
@@ -1048,6 +1133,106 @@ namespace DiGi.GIS.UI.Application.Windows
             MessageBox.Show("Finished!");
         }
 
+        private void SaveOrtoDatasToJsonFile()
+        {
+            bool? dialogResult;
+
+            OpenFileDialog openFileDialog = new()
+            {
+                Title = $"Select {FileTypeName.OrtoDatasFile}",
+                Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.OrtoDatasFile, FileExtension.OrtoDatasFile)
+            };
+            dialogResult = openFileDialog.ShowDialog();
+            if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
+            {
+                return;
+            }
+
+            string path_OrtoDatasFile = openFileDialog.FileName;
+
+            SaveFileDialog saveFileDialog = new()
+            {
+                Title = "Save json text file",
+                Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", "Text file", "txt")
+            };
+
+            dialogResult = saveFileDialog.ShowDialog();
+            if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
+            {
+                return;
+            }
+
+            string path_OrtoDataJson = saveFileDialog.FileName;
+
+            OrtoDatas? ortoDatas = null;
+
+            using (OrtoDatasFile ortoDataFiles = new (path_OrtoDatasFile))
+            {
+                ortoDataFiles.Open();
+
+                HashSet<UniqueReference>? uniqueReferences = ortoDataFiles.GetUniqueReferences();
+                if(uniqueReferences is null || uniqueReferences.Count == 0)
+                {
+                    return;
+                }
+
+                ortoDatas = ortoDataFiles.GetValue(uniqueReferences.ElementAt(0));
+            }
+
+            if(ortoDatas is null)
+            {
+                return;
+            }
+
+            Core.Convert.ToSystem_FileInfo((ISerializableObject)ortoDatas, path_OrtoDataJson);
+        }
+
+        private void SaveGISModelToJsonFile()
+        {
+            bool? dialogResult;
+
+            OpenFileDialog openFileDialog = new()
+            {
+                Title = $"Select {FileTypeName.GISModelFile}",
+                Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.GISModelFile, FileExtension.GISModelFile)
+            };
+            dialogResult = openFileDialog.ShowDialog();
+            if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
+            {
+                return;
+            }
+
+            string path_GISModelFile = openFileDialog.FileName;
+
+            SaveFileDialog saveFileDialog = new()
+            {
+                Title = "Save json text file",
+                Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", "Text file", "txt")
+            };
+
+            dialogResult = saveFileDialog.ShowDialog();
+            if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
+            {
+                return;
+            }
+
+            string path_GISModelJson = saveFileDialog.FileName;
+
+            GISModel? gISModel = null;
+            using (GISModelFile gISModelFile = new (path_GISModelFile))
+            {
+                gISModelFile.Open();
+                gISModel = gISModelFile.Value;
+            }
+
+            if(gISModel is null)
+            {
+                return;
+            }
+
+            Core.Convert.ToSystem_FileInfo(gISModel, path_GISModelJson);
+        }
+
         private void Test_1()
         {
             OpenFolderDialog openFolderDialog;
@@ -1085,7 +1270,7 @@ namespace DiGi.GIS.UI.Application.Windows
                     continue;
                 }
 
-                string path_BuidlingModelsFile = System.IO.Path.Combine(directory, System.IO.Path.GetFileNameWithoutExtension(path_GISModel) + "." + Analytical.Constans.FileExtension.BuildingModelsFile);
+                string path_BuidlingModelsFile = System.IO.Path.Combine(directory, System.IO.Path.GetFileNameWithoutExtension(path_GISModel) + "." + Analytical.Constants.FileExtension.BuildingModelsFile);
 
                 if (!File.Exists(path_BuidlingModelsFile))
                 {
@@ -1458,47 +1643,6 @@ namespace DiGi.GIS.UI.Application.Windows
             TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Writing! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
-        }
-
-        private void Button_ResaveGISModels_Click(object sender, RoutedEventArgs e)
-        {
-            DateTime dateTime = DateTime.Now;
-
-            TextBlock_Progress.Text = "Resaving...";
-
-            //Enum.GetValues<Variable>()
-            OpenFolderDialog openFolderDialog = new();
-            bool? result = openFolderDialog.ShowDialog(this);
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-            string directory = openFolderDialog.FolderName;
-            string[] paths = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
-            if (paths is null || paths.Length == 0)
-            {
-                return;
-            }
-
-            foreach (string path in paths)
-            {
-                string reference = System.IO.Path.GetFileNameWithoutExtension(path);
-
-                using GISModelFile gISModelFile = new(path);
-                gISModelFile.Open();
-
-                GISModel? gISModel = gISModelFile.Value;
-                if (gISModel is not null)
-                {
-                    gISModelFile.Value = new GISModel(reference, gISModel);
-                    gISModelFile.Save();
-                }
-            }
-
-            TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
-
-            TextBlock_Progress.Text = string.Format("Done Resaving! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
     }
 }

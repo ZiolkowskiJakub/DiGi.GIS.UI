@@ -1,5 +1,5 @@
 ﻿using DiGi.GIS.Classes;
-using DiGi.GIS.Constans;
+using DiGi.GIS.Constants;
 using Microsoft.Win32;
 using System.IO;
 using System.Windows;

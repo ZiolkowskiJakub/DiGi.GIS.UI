@@ -1,6 +1,6 @@
 ﻿using DiGi.Core.Classes;
 using DiGi.GIS.Classes;
-using DiGi.GIS.Constans;
+using DiGi.GIS.Constants;
 using DiGi.GIS.Emgu.CV.Classes;
 using Microsoft.Win32;
 using System.IO;
@@ -64,7 +64,7 @@ namespace DiGi.GIS.UI
 
                         ortoDatasComparisonOptions ??= new OrtoDatasComparisonOptions();
 
-                        string? path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path_Input)!, string.Format("{0}.{1}", System.IO.Path.GetFileNameWithoutExtension(path_Input), Emgu.CV.Constans.FileExtension.OrtoDatasComparisonFile));
+                        string? path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path_Input)!, string.Format("{0}.{1}", System.IO.Path.GetFileNameWithoutExtension(path_Input), Emgu.CV.Constants.FileExtension.OrtoDatasComparisonFile));
 
                         while (building2Ds.Count > 0)
                         {

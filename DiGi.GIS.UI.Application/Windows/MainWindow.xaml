@@ -45,6 +45,7 @@
                 <Button x:Name="Button_CalculateTypologies" Content="Calculate Typologies" HorizontalAlignment="Center" Margin="0,5,0,0" VerticalAlignment="Top" Width="190" Click="Button_CalculateTypologies_Click" Visibility="Visible" />
                 <Button x:Name="Button_RecalculateOrtoDatas_Building2D" Content="Recalculate OrtoDatas (Building2D)" HorizontalAlignment="Center" Margin="0,5,0,0" VerticalAlignment="Top" Width="190" Click="Button_RecalculateOrtoDatas_Building2D_Click" Visibility="Visible" />
                 <Button x:Name="Button_ResaveGISModels" Content="Resave GISModels" HorizontalAlignment="Center" Margin="0,5,0,0" VerticalAlignment="Top" Width="190" Click="Button_ResaveGISModels_Click" Visibility="Visible" />
+                <Button x:Name="Button_CompareJsons" Content="Compare jsons" HorizontalAlignment="Center" Margin="0,5,0,0" VerticalAlignment="Top" Width="190" Click="Button_CompareJsons_Click" Visibility="Visible" />
                 <Button x:Name="Button_Test" Content="Test" HorizontalAlignment="Center" Margin="0,5,0,0" VerticalAlignment="Top" Width="190" Click="Button_Test_Click" Visibility="Visible" />
             </StackPanel>
         </Grid>

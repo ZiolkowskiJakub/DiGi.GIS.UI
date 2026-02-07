@@ -203,9 +203,9 @@ namespace DiGi.GIS.UI
                         row.SetValue(index_BuildingGeneralFunction, buildingGeneralFunction?.ToString());
                         row.SetValue(index_BuildingPhase, buidlingPhase?.ToString());
                         row.SetValue(index_Storeys, storeys.ToString());
-                        row.SetValue(index_Area, area == null || !area.HasValue ? null : Core.Query.Round(area.Value, Core.Constans.Tolerance.MacroDistance).ToString());
-                        row.SetValue(index_Location_X, location == null ? null : Core.Query.Round(location.X, Core.Constans.Tolerance.MacroDistance).ToString());
-                        row.SetValue(index_Location_Y, location == null ? null : Core.Query.Round(location.Y, Core.Constans.Tolerance.MacroDistance).ToString());
+                        row.SetValue(index_Area, area == null || !area.HasValue ? null : Core.Query.Round(area.Value, Core.Constants.Tolerance.MacroDistance).ToString());
+                        row.SetValue(index_Location_X, location == null ? null : Core.Query.Round(location.X, Core.Constants.Tolerance.MacroDistance).ToString());
+                        row.SetValue(index_Location_Y, location == null ? null : Core.Query.Round(location.Y, Core.Constants.Tolerance.MacroDistance).ToString());
                         row.SetValue(index_VoivodeshipName, voivodeshipName);
                         row.SetValue(index_CountyName, countyName);
                         row.SetValue(index_MunicipalityName, municipalityName);
@@ -294,7 +294,7 @@ namespace DiGi.GIS.UI
                     {
                         Range<int>? range_Years = comparisonTableConversionOptions?.Years;
 
-                        string[] paths_StatisticalDataCollectionFile = Directory.GetFiles(comparisonTableConversionOptions!.StatisticalDirectory, string.Format("*.{0}", Constans.FileExtension.StatisticalDataCollectionFile));
+                        string[] paths_StatisticalDataCollectionFile = Directory.GetFiles(comparisonTableConversionOptions!.StatisticalDirectory, string.Format("*.{0}", Constants.FileExtension.StatisticalDataCollectionFile));
                         if (paths_StatisticalDataCollectionFile != null && paths_StatisticalDataCollectionFile.Length != 0)
                         {
                             foreach (string path_StatisticalDataCollectionFile in paths_StatisticalDataCollectionFile)
@@ -884,7 +884,7 @@ namespace DiGi.GIS.UI
                     {
                         Range<int>? range_Years = predictionTableConversionOptions?.Years;
 
-                        string[] paths_StatisticalDataCollectionFile = Directory.GetFiles(predictionTableConversionOptions!.StatisticalDirectory, string.Format("*.{0}", Constans.FileExtension.StatisticalDataCollectionFile));
+                        string[] paths_StatisticalDataCollectionFile = Directory.GetFiles(predictionTableConversionOptions!.StatisticalDirectory, string.Format("*.{0}", Constants.FileExtension.StatisticalDataCollectionFile));
                         if (paths_StatisticalDataCollectionFile != null && paths_StatisticalDataCollectionFile.Length != 0)
                         {
                             foreach (string path_StatisticalDataCollectionFile in paths_StatisticalDataCollectionFile)

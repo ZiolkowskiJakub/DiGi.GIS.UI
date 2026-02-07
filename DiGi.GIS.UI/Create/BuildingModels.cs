@@ -29,7 +29,7 @@ namespace DiGi.GIS.UI
                 return null;
             }
 
-            List<string>? paths_GISModel = Directory.GetFiles(directory, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories)?.ToList();
+            List<string>? paths_GISModel = Directory.GetFiles(directory, "*." + Constants.FileExtension.GISModelFile, SearchOption.AllDirectories)?.ToList();
             if (paths_GISModel == null || paths_GISModel.Count == 0)
             {
                 return null;

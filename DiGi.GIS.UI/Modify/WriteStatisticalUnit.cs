@@ -1,6 +1,6 @@
 ﻿using DiGi.BDL.Enums;
 using DiGi.GIS.Classes;
-using DiGi.GIS.Constans;
+using DiGi.GIS.Constants;
 using Microsoft.Win32;
 
 namespace DiGi.GIS.UI

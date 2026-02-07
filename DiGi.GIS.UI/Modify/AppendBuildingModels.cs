@@ -35,7 +35,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                path = System.IO.Path.Combine(directory, System.IO.Path.GetFileNameWithoutExtension(path) + "." + Analytical.Constans.FileExtension.BuildingModelsFile);
+                path = System.IO.Path.Combine(directory, System.IO.Path.GetFileNameWithoutExtension(path) + "." + Analytical.Constants.FileExtension.BuildingModelsFile);
 
                 using (BuildingModelsFile buildingModelsFile = new(path))
                 {

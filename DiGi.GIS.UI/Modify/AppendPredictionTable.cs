@@ -82,7 +82,7 @@ namespace DiGi.GIS.UI
                 predictionTableConversionOptions.AdministrativeAreal2DsIndexDataFilePath = openFileDialog.FileName;
             }
 
-            string[] paths_Input = Directory.GetFiles(directory_GISModelFiles, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory_GISModelFiles, "*." + Constants.FileExtension.GISModelFile, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
             {
                 string path_Input = paths_Input[i];

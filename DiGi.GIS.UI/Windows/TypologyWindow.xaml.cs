@@ -92,7 +92,7 @@ namespace DiGi.GIS.UI.Windows
                 return null;
             }
 
-            return [.. Directory.GetFiles(directory, string.Format("*.{0}", Constans.FileExtension.GISModelFile), SearchOption.TopDirectoryOnly)];
+            return [.. Directory.GetFiles(directory, string.Format("*.{0}", Constants.FileExtension.GISModelFile), SearchOption.TopDirectoryOnly)];
         }
 
         private List<GISModel>? GetActiveGISModels()
@@ -283,7 +283,7 @@ namespace DiGi.GIS.UI.Windows
 
         private void MenuItem_Load_Click(object sender, RoutedEventArgs e)
         {
-            string? path = DiGi.UI.WPF.Core.Query.Path(this, Typology.Constans.FileFilter.TypologyFile);
+            string? path = DiGi.UI.WPF.Core.Query.Path(this, Typology.Constants.FileFilter.TypologyFile);
             if (string.IsNullOrEmpty(path))
             {
                 return;
@@ -325,7 +325,7 @@ namespace DiGi.GIS.UI.Windows
                 return;
             }
 
-            string path_OrtoDatasFile = System.IO.Path.Combine(directoryName, string.Format("{0}.{1}", System.IO.Path.GetFileNameWithoutExtension(path), Constans.FileExtension.OrtoDatasFile));
+            string path_OrtoDatasFile = System.IO.Path.Combine(directoryName, string.Format("{0}.{1}", System.IO.Path.GetFileNameWithoutExtension(path), Constants.FileExtension.OrtoDatasFile));
 
             HashSet<GuidReference>? guidReferences = await GIS.Modify.CalculateOrtoDatas([building2D], path_OrtoDatasFile, Create.OrtoDatasBuilding2DOptions(), true);
             if (guidReferences != null && guidReferences.Count != 0)

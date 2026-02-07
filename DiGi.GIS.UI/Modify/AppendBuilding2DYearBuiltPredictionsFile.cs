@@ -1,5 +1,5 @@
 ﻿using DiGi.GIS.Classes;
-using DiGi.GIS.Constans;
+using DiGi.GIS.Constants;
 using Microsoft.Win32;
 using System.IO;
 using System.Windows;
@@ -26,7 +26,7 @@ namespace DiGi.GIS.UI
 
             string directory_BoundingBoxResultFile = openFolderDialog.FolderName;
 
-            string[] paths_BoundingBoxResultFile = Directory.GetFiles(directory_BoundingBoxResultFile, string.Format("*.{0}", YOLO.Constans.FileExtension.BoundingBoxResultFile), SearchOption.AllDirectories);
+            string[] paths_BoundingBoxResultFile = Directory.GetFiles(directory_BoundingBoxResultFile, string.Format("*.{0}", YOLO.Constants.FileExtension.BoundingBoxResultFile), SearchOption.AllDirectories);
             if (paths_BoundingBoxResultFile == null || paths_BoundingBoxResultFile.Length == 0)
             {
                 return false;
@@ -141,7 +141,7 @@ namespace DiGi.GIS.UI
 
         //    string directory_Input = openFolderDialog.FolderName;
 
-        //    string[] paths_Input = Directory.GetFiles(directory_Input, string.Format("*.{0}", YOLO.Constans.FileExtension.BoundingBoxResultFile));
+        //    string[] paths_Input = Directory.GetFiles(directory_Input, string.Format("*.{0}", YOLO.Constants.FileExtension.BoundingBoxResultFile));
         //    if (paths_Input == null || paths_Input.Length == 0)
         //    {
         //        return false;

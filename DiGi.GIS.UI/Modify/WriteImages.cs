@@ -2,7 +2,7 @@
 using DiGi.Geometry.Planar;
 using DiGi.Geometry.Planar.Classes;
 using DiGi.GIS.Classes;
-using DiGi.GIS.Constans;
+using DiGi.GIS.Constants;
 using Microsoft.Win32;
 using System.Drawing;
 using System.Drawing.Imaging;

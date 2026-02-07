@@ -58,7 +58,7 @@ namespace DiGi.GIS.UI
                 name = "Building2D VoTT",
             };
 
-            string[] paths_Input = Directory.GetFiles(directory_GISModelFiles, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory_GISModelFiles, "*." + Constants.FileExtension.GISModelFile, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
             {
                 string path_Input = paths_Input[i];
@@ -229,7 +229,7 @@ namespace DiGi.GIS.UI
                 name = "OrtoRange VoTT",
             };
 
-            string[] paths_Input = Directory.GetFiles(directory_GISModelFiles, "*." + Constans.FileExtension.GISModelFile, SearchOption.AllDirectories);
+            string[] paths_Input = Directory.GetFiles(directory_GISModelFiles, "*." + Constants.FileExtension.GISModelFile, SearchOption.AllDirectories);
             for (int i = 0; i < paths_Input.Length; i++)
             {
                 string path_Input = paths_Input[i];
@@ -269,7 +269,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                string path_OrtoRange = Path.Combine(directory_Input, string.Format("{0}.{1}", Path.GetFileNameWithoutExtension(path_Input), Constans.FileExtension.OrtoRangeFile));
+                string path_OrtoRange = Path.Combine(directory_Input, string.Format("{0}.{1}", Path.GetFileNameWithoutExtension(path_Input), Constants.FileExtension.OrtoRangeFile));
                 if (!File.Exists(path_OrtoRange))
                 {
                     continue;
