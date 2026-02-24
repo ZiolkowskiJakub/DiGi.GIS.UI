@@ -3,12 +3,16 @@ using DiGi.BDL.Enums;
 using DiGi.Core.Classes;
 using DiGi.Core.Interfaces;
 using DiGi.EPW.Classes;
+using DiGi.Geometry.Core.Enums;
 using DiGi.Geometry.Planar;
+using DiGi.Geometry.Planar.Classes;
+using DiGi.Geometry.Planar.Interfaces;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Constants;
 using DiGi.GIS.Emgu.CV.Classes;
 using DiGi.GIS.UI.Classes;
 using Microsoft.Win32;
+using System.Collections.Concurrent;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -670,7 +674,107 @@ namespace DiGi.GIS.UI.Application.Windows
         private void Button_Test_Click(object sender, RoutedEventArgs e)
         {
             //SaveOrtoDatasToJsonFile();
-            SaveGISModelToJsonFile();
+            //SaveGISModelToJsonFile();
+            ChceckAdministrativeAreal2D();
+        }
+
+        private void ChceckAdministrativeAreal2D()
+        {
+            OpenFolderDialog openFolderDialog = new();
+            bool? openFolderDialogResult = openFolderDialog.ShowDialog(this);
+            if (openFolderDialogResult == null || !openFolderDialogResult.HasValue || !openFolderDialogResult.Value)
+            {
+                return;
+            }
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            bool? saveFileDialogResult = saveFileDialog.ShowDialog(this);
+            if (saveFileDialogResult == null || !saveFileDialogResult.HasValue || !saveFileDialogResult.Value)
+            {
+                return;
+            }
+
+            string path = saveFileDialog.FileName;
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            List<string>? paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories)?.ToList();
+            if (paths_Input == null || paths_Input.Count == 0)
+            {
+                return;
+            }
+
+            ConcurrentBag<GuidReference> concurrentBag = [];
+
+            ParallelOptions parallelOptions = new ParallelOptions()
+            {
+                MaxDegreeOfParallelism = 20,
+            };
+
+            //Parallel.ForEach(paths_Input, parallelOptions, (string path) =>
+            foreach(string path_Temp in paths_Input)
+            {
+                using GISModelFile gISModelFile = new(path_Temp);
+
+                gISModelFile.Open();
+
+                if (gISModelFile.Value is not GISModel gISModel)
+                {
+                    return;
+                }
+
+                List<Building2D>? building2Ds = gISModel.GetObjects<Building2D>();
+                if (building2Ds is null)
+                {
+                    return;
+                }
+
+                Dictionary<GuidReference, List<AdministrativeAreal2D>?>? dictionary = gISModel.AdministrativeAreal2DsDictionary<AdministrativeAreal2D>(building2Ds);
+                if (dictionary is null)
+                {
+                    return;
+                }
+
+                List<AdministrativeDivision>? administrativeDivisions_All = gISModel.GetObjects<AdministrativeDivision>(x => x?.AdministrativeDivisionType == Enums.AdministrativeDivisionType.municipality);
+
+                foreach (Building2D building2D in building2Ds)
+                {
+                    if (building2D is null)
+                    {
+                        continue;
+                    }
+
+                    GuidReference guidReference = new GuidReference(building2D);
+
+                    if (!dictionary.TryGetValue(guidReference, out List<AdministrativeAreal2D>? administrativeDivisions) || administrativeDivisions is null)
+                    {
+                        continue;
+                    }
+
+                    AdministrativeAreal2D? administrativeAreal2D = administrativeDivisions.Find(div => div is AdministrativeDivision && ((AdministrativeDivision)div).AdministrativeDivisionType == Enums.AdministrativeDivisionType.municipality);
+                    if (administrativeAreal2D is not null)
+                    {
+                        continue;
+                    }
+
+                    Point2D? point2D = building2D?.PolygonalFace2D?.GetInternalPoint();
+                    if(point2D is not null)
+                    {
+                        AdministrativeAreal2D? administrativeAreal2D_Inside = administrativeDivisions_All?.Find(x => x.PolygonalFace2D is PolygonalFace2D polygonalFace2D && polygonalFace2D.Inside(point2D));
+
+                        List<Tuple<AdministrativeAreal2D, double>>? tuples = administrativeDivisions_All?.ConvertAll(x => new Tuple<AdministrativeAreal2D, double>(x, x.PolygonalFace2D is not PolygonalFace2D polygonalFace2D ? double.MaxValue : Geometry.Planar.Query.Distance(point2D, polygonalFace2D.ExternalEdge)));
+                        tuples?.Sort((x, y) => x.Item2.CompareTo(y.Item2));
+                    }
+
+                    concurrentBag.Add(guidReference);
+                }
+            }//);
+
+            File.WriteAllLines(path, concurrentBag.Cast<GuidReference>().ToList().ConvertAll(x => x.ToString() is string value ? value : string.Empty));
         }
 
         private void Button_ToDiGiGISModelFiles_Click(object sender, RoutedEventArgs e)
@@ -1133,6 +1237,52 @@ namespace DiGi.GIS.UI.Application.Windows
             MessageBox.Show("Finished!");
         }
 
+        private void SaveGISModelToJsonFile()
+        {
+            bool? dialogResult;
+
+            OpenFileDialog openFileDialog = new()
+            {
+                Title = $"Select {FileTypeName.GISModelFile}",
+                Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.GISModelFile, FileExtension.GISModelFile)
+            };
+            dialogResult = openFileDialog.ShowDialog();
+            if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
+            {
+                return;
+            }
+
+            string path_GISModelFile = openFileDialog.FileName;
+
+            SaveFileDialog saveFileDialog = new()
+            {
+                Title = "Save json text file",
+                Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", "Text file", "txt")
+            };
+
+            dialogResult = saveFileDialog.ShowDialog();
+            if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
+            {
+                return;
+            }
+
+            string path_GISModelJson = saveFileDialog.FileName;
+
+            GISModel? gISModel = null;
+            using (GISModelFile gISModelFile = new(path_GISModelFile))
+            {
+                gISModelFile.Open();
+                gISModel = gISModelFile.Value;
+            }
+
+            if (gISModel is null)
+            {
+                return;
+            }
+
+            Core.Convert.ToSystem_FileInfo(gISModel, path_GISModelJson);
+        }
+
         private void SaveOrtoDatasToJsonFile()
         {
             bool? dialogResult;
@@ -1186,53 +1336,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             Core.Convert.ToSystem_FileInfo((ISerializableObject)ortoDatas, path_OrtoDataJson);
         }
-
-        private void SaveGISModelToJsonFile()
-        {
-            bool? dialogResult;
-
-            OpenFileDialog openFileDialog = new()
-            {
-                Title = $"Select {FileTypeName.GISModelFile}",
-                Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.GISModelFile, FileExtension.GISModelFile)
-            };
-            dialogResult = openFileDialog.ShowDialog();
-            if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
-            {
-                return;
-            }
-
-            string path_GISModelFile = openFileDialog.FileName;
-
-            SaveFileDialog saveFileDialog = new()
-            {
-                Title = "Save json text file",
-                Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", "Text file", "txt")
-            };
-
-            dialogResult = saveFileDialog.ShowDialog();
-            if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
-            {
-                return;
-            }
-
-            string path_GISModelJson = saveFileDialog.FileName;
-
-            GISModel? gISModel = null;
-            using (GISModelFile gISModelFile = new (path_GISModelFile))
-            {
-                gISModelFile.Open();
-                gISModel = gISModelFile.Value;
-            }
-
-            if(gISModel is null)
-            {
-                return;
-            }
-
-            Core.Convert.ToSystem_FileInfo(gISModel, path_GISModelJson);
-        }
-
+        
         private void Test_1()
         {
             OpenFolderDialog openFolderDialog;
