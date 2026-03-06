@@ -3,19 +3,19 @@ using DiGi.BDL.Enums;
 using DiGi.Core.Classes;
 using DiGi.Core.Interfaces;
 using DiGi.EPW.Classes;
-using DiGi.Geometry.Core.Enums;
 using DiGi.Geometry.Planar;
 using DiGi.Geometry.Planar.Classes;
-using DiGi.Geometry.Planar.Interfaces;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Constants;
 using DiGi.GIS.Emgu.CV.Classes;
 using DiGi.GIS.UI.Classes;
+using DiGi.PostgreSQL.Classes;
 using Microsoft.Win32;
 using System.Collections.Concurrent;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Reflection;
 using System.Text.Json;
 using System.Windows;
 
@@ -625,6 +625,35 @@ namespace DiGi.GIS.UI.Application.Windows
             Reduce();
         }
 
+        private async void Button_RefreshAdministrativeAreal2Ds_Click(object sender, RoutedEventArgs e)
+        {
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Refreshing...";
+
+            string? directory_ExecutingAssembly = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            if (string.IsNullOrWhiteSpace(directory_ExecutingAssembly) || !Directory.Exists(directory_ExecutingAssembly))
+            {
+                return;
+            }
+
+            string? path_ConnectionData = System.IO.Path.Combine(directory_ExecutingAssembly, "PostgreSQL_Main.conf");
+
+            ConnectionData? connectionData = DiGi.PostgreSQL.Create.ConnectionData(DiGi.PostgreSQL.Create.PostgreSQLConfigurationFile(path_ConnectionData));
+            if (connectionData is null)
+            {
+                return;
+            }
+
+            PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter administrativeAreal2DPostgreSQLConverter = new(connectionData);
+
+            await administrativeAreal2DPostgreSQLConverter.RefreshAsync();
+
+            TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Refreshing! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
+
         private void Button_ResaveGISModels_Click(object sender, RoutedEventArgs e)
         {
             DateTime dateTime = DateTime.Now;
@@ -671,110 +700,13 @@ namespace DiGi.GIS.UI.Application.Windows
             ResaveOrtoDatasFiles();
         }
 
-        private void Button_Test_Click(object sender, RoutedEventArgs e)
+        private async void Button_Test_Click(object sender, RoutedEventArgs e)
         {
             //SaveOrtoDatasToJsonFile();
             //SaveGISModelToJsonFile();
-            ChceckAdministrativeAreal2D();
-        }
-
-        private void ChceckAdministrativeAreal2D()
-        {
-            OpenFolderDialog openFolderDialog = new();
-            bool? openFolderDialogResult = openFolderDialog.ShowDialog(this);
-            if (openFolderDialogResult == null || !openFolderDialogResult.HasValue || !openFolderDialogResult.Value)
-            {
-                return;
-            }
-
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            bool? saveFileDialogResult = saveFileDialog.ShowDialog(this);
-            if (saveFileDialogResult == null || !saveFileDialogResult.HasValue || !saveFileDialogResult.Value)
-            {
-                return;
-            }
-
-            string path = saveFileDialog.FileName;
-
-            string directory = openFolderDialog.FolderName;
-            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
-            {
-                return;
-            }
-
-            List<string>? paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories)?.ToList();
-            if (paths_Input == null || paths_Input.Count == 0)
-            {
-                return;
-            }
-
-            ConcurrentBag<GuidReference> concurrentBag = [];
-
-            ParallelOptions parallelOptions = new ParallelOptions()
-            {
-                MaxDegreeOfParallelism = 20,
-            };
-
-            //Parallel.ForEach(paths_Input, parallelOptions, (string path) =>
-            foreach(string path_Temp in paths_Input)
-            {
-                using GISModelFile gISModelFile = new(path_Temp);
-
-                gISModelFile.Open();
-
-                if (gISModelFile.Value is not GISModel gISModel)
-                {
-                    return;
-                }
-
-                List<Building2D>? building2Ds = gISModel.GetObjects<Building2D>();
-                if (building2Ds is null)
-                {
-                    return;
-                }
-
-                Dictionary<GuidReference, List<AdministrativeAreal2D>?>? dictionary = gISModel.AdministrativeAreal2DsDictionary<AdministrativeAreal2D>(building2Ds);
-                if (dictionary is null)
-                {
-                    return;
-                }
-
-                List<AdministrativeDivision>? administrativeDivisions_All = gISModel.GetObjects<AdministrativeDivision>(x => x?.AdministrativeDivisionType == Enums.AdministrativeDivisionType.municipality);
-
-                foreach (Building2D building2D in building2Ds)
-                {
-                    if (building2D is null)
-                    {
-                        continue;
-                    }
-
-                    GuidReference guidReference = new GuidReference(building2D);
-
-                    if (!dictionary.TryGetValue(guidReference, out List<AdministrativeAreal2D>? administrativeDivisions) || administrativeDivisions is null)
-                    {
-                        continue;
-                    }
-
-                    AdministrativeAreal2D? administrativeAreal2D = administrativeDivisions.Find(div => div is AdministrativeDivision && ((AdministrativeDivision)div).AdministrativeDivisionType == Enums.AdministrativeDivisionType.municipality);
-                    if (administrativeAreal2D is not null)
-                    {
-                        continue;
-                    }
-
-                    Point2D? point2D = building2D?.PolygonalFace2D?.GetInternalPoint();
-                    if(point2D is not null)
-                    {
-                        AdministrativeAreal2D? administrativeAreal2D_Inside = administrativeDivisions_All?.Find(x => x.PolygonalFace2D is PolygonalFace2D polygonalFace2D && polygonalFace2D.Inside(point2D));
-
-                        List<Tuple<AdministrativeAreal2D, double>>? tuples = administrativeDivisions_All?.ConvertAll(x => new Tuple<AdministrativeAreal2D, double>(x, x.PolygonalFace2D is not PolygonalFace2D polygonalFace2D ? double.MaxValue : Geometry.Planar.Query.Distance(point2D, polygonalFace2D.ExternalEdge)));
-                        tuples?.Sort((x, y) => x.Item2.CompareTo(y.Item2));
-                    }
-
-                    concurrentBag.Add(guidReference);
-                }
-            }//);
-
-            File.WriteAllLines(path, concurrentBag.Cast<GuidReference>().ToList().ConvertAll(x => x.ToString() is string value ? value : string.Empty));
+            //CheckAdministrativeAreal2D();
+            //UpdateUpdateAdministrativeAreal2DsCodes();
+            CheckPoint();
         }
 
         private void Button_ToDiGiGISModelFiles_Click(object sender, RoutedEventArgs e)
@@ -794,6 +726,196 @@ namespace DiGi.GIS.UI.Application.Windows
             typologyWindow.ShowDialog();
 
             Close();
+        }
+
+        private async void Button_UpdateAdministrativeAreal2Ds_Click(object sender, RoutedEventArgs e)
+        {
+            bool clear = true;
+
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Updating...";
+
+            string? directory_ExecutingAssembly = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            if (string.IsNullOrWhiteSpace(directory_ExecutingAssembly) || !Directory.Exists(directory_ExecutingAssembly))
+            {
+                return;
+            }
+
+            string? path_ConnectionData = System.IO.Path.Combine(directory_ExecutingAssembly, "PostgreSQL_Main.conf");
+
+            ConnectionData? connectionData = DiGi.PostgreSQL.Create.ConnectionData(DiGi.PostgreSQL.Create.PostgreSQLConfigurationFile(path_ConnectionData));
+            if (connectionData is null)
+            {
+                return;
+            }
+
+            bool created = await DiGi.PostgreSQL.Create.DatabaseAsync(connectionData);
+            if (!created)
+            {
+                return;
+            }
+
+            bool? result;
+
+            OpenFolderDialog openFolderDialog = new();
+            result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
+            if (paths_Input == null || paths_Input.Length == 0)
+            {
+                return;
+            }
+
+            PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter administrativeAreal2DPostgreSQLConverter = new(connectionData);
+            if (clear)
+            {
+                await administrativeAreal2DPostgreSQLConverter.Clear();
+            }
+
+            foreach (string path_Input in paths_Input)
+            {
+                GISModel? gISModel_Input = null;
+
+                using (GISModelFile gISModelFile = new(path_Input))
+                {
+                    gISModelFile.Open();
+                    gISModel_Input = gISModelFile.Value;
+                }
+
+                if (gISModel_Input == null)
+                {
+                    continue;
+                }
+
+                List<AdministrativeAreal2D>? administrativeAreal2Ds_GIS = gISModel_Input.GetObjects<AdministrativeAreal2D>();
+                if (administrativeAreal2Ds_GIS is null || administrativeAreal2Ds_GIS.Count == 0)
+                {
+                    continue;
+                }
+
+                List<PostgreSQL.Classes.AdministrativeAreal2D>? administrativeAreal2Ds_PostgreSQL = [];
+                foreach (AdministrativeAreal2D administrativeAreal2D_GIS in administrativeAreal2Ds_GIS)
+                {
+                    if (PostgreSQL.Convert.ToPostgreSQL(administrativeAreal2D_GIS) is not PostgreSQL.Classes.AdministrativeAreal2D administrativeAreal2D_PostgreSQL)
+                    {
+                        continue;
+                    }
+
+                    administrativeAreal2Ds_PostgreSQL.Add(administrativeAreal2D_PostgreSQL);
+                }
+
+                await administrativeAreal2DPostgreSQLConverter.UpdateAsync(administrativeAreal2Ds_PostgreSQL);
+            }
+
+            TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Updating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
+
+        private async void Button_UpdateBuiliding2Ds_Click(object sender, RoutedEventArgs e)
+        {
+            bool clear = true;
+
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Updating...";
+
+            string? directory_ExecutingAssembly = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            if (string.IsNullOrWhiteSpace(directory_ExecutingAssembly) || !Directory.Exists(directory_ExecutingAssembly))
+            {
+                return;
+            }
+
+            string? path_ConnectionData = System.IO.Path.Combine(directory_ExecutingAssembly, "PostgreSQL_Main.conf");
+
+            ConnectionData? connectionData = DiGi.PostgreSQL.Create.ConnectionData(DiGi.PostgreSQL.Create.PostgreSQLConfigurationFile(path_ConnectionData));
+            if (connectionData is null)
+            {
+                return;
+            }
+
+            bool created = await DiGi.PostgreSQL.Create.DatabaseAsync(connectionData);
+            if (!created)
+            {
+                return;
+            }
+
+            bool? result;
+
+            OpenFolderDialog openFolderDialog = new();
+            result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
+            if (paths_Input == null || paths_Input.Length == 0)
+            {
+                return;
+            }
+
+            PostgreSQL.Classes.Building2DPostgreSQLConverter building2DPostgreSQLConverter = new(connectionData);
+            if (clear)
+            {
+                await building2DPostgreSQLConverter.Clear();
+            }
+
+            foreach (string path_Input in paths_Input)
+            {
+                GISModel? gISModel_Input = null;
+
+                using (GISModelFile gISModelFile = new(path_Input))
+                {
+                    gISModelFile.Open();
+                    gISModel_Input = gISModelFile.Value;
+                }
+
+                if (gISModel_Input == null)
+                {
+                    continue;
+                }
+
+                List<Building2D>? building2Ds_GIS = gISModel_Input.GetObjects<Building2D>();
+                if (building2Ds_GIS is null || building2Ds_GIS.Count == 0)
+                {
+                    continue;
+                }
+
+                List<PostgreSQL.Classes.Building2D>? building2Ds_PostgreSQL = [];
+                foreach (Building2D building2D_GIS in building2Ds_GIS)
+                {
+                    if (PostgreSQL.Convert.ToPostgreSQL(building2D_GIS) is not PostgreSQL.Classes.Building2D building2D_PostgreSQL)
+                    {
+                        continue;
+                    }
+
+                    building2Ds_PostgreSQL.Add(building2D_PostgreSQL);
+                }
+
+                await building2DPostgreSQLConverter.UpdateAsync(building2Ds_PostgreSQL);
+            }
+
+            TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Updating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
         private void Button_WriteStatisticalDataCollections_Click(object sender, RoutedEventArgs e)
@@ -908,6 +1030,135 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = string.Format("Done Calculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
+        private void CheckAdministrativeAreal2D()
+        {
+            OpenFolderDialog openFolderDialog = new();
+            bool? openFolderDialogResult = openFolderDialog.ShowDialog(this);
+            if (openFolderDialogResult == null || !openFolderDialogResult.HasValue || !openFolderDialogResult.Value)
+            {
+                return;
+            }
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            bool? saveFileDialogResult = saveFileDialog.ShowDialog(this);
+            if (saveFileDialogResult == null || !saveFileDialogResult.HasValue || !saveFileDialogResult.Value)
+            {
+                return;
+            }
+
+            string path = saveFileDialog.FileName;
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            List<string>? paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories)?.ToList();
+            if (paths_Input == null || paths_Input.Count == 0)
+            {
+                return;
+            }
+
+            ConcurrentBag<GuidReference> concurrentBag = [];
+
+            ParallelOptions parallelOptions = new ParallelOptions()
+            {
+                MaxDegreeOfParallelism = 20,
+            };
+
+            //Parallel.ForEach(paths_Input, parallelOptions, (string path) =>
+            foreach (string path_Temp in paths_Input)
+            {
+                using GISModelFile gISModelFile = new(path_Temp);
+
+                gISModelFile.Open();
+
+                if (gISModelFile.Value is not GISModel gISModel)
+                {
+                    return;
+                }
+
+                List<Building2D>? building2Ds = gISModel.GetObjects<Building2D>();
+                if (building2Ds is null)
+                {
+                    return;
+                }
+
+                Dictionary<GuidReference, List<AdministrativeAreal2D>?>? dictionary = gISModel.AdministrativeAreal2DsDictionary<AdministrativeAreal2D>(building2Ds);
+                if (dictionary is null)
+                {
+                    return;
+                }
+
+                List<AdministrativeDivision>? administrativeDivisions_All = gISModel.GetObjects<AdministrativeDivision>(x => x?.AdministrativeDivisionType == Enums.AdministrativeDivisionType.municipality);
+
+                foreach (Building2D building2D in building2Ds)
+                {
+                    if (building2D is null)
+                    {
+                        continue;
+                    }
+
+                    GuidReference guidReference = new GuidReference(building2D);
+
+                    if (!dictionary.TryGetValue(guidReference, out List<AdministrativeAreal2D>? administrativeDivisions) || administrativeDivisions is null)
+                    {
+                        continue;
+                    }
+
+                    AdministrativeAreal2D? administrativeAreal2D = administrativeDivisions.Find(div => div is AdministrativeDivision && ((AdministrativeDivision)div).AdministrativeDivisionType == Enums.AdministrativeDivisionType.municipality);
+                    if (administrativeAreal2D is not null)
+                    {
+                        continue;
+                    }
+
+                    Point2D? point2D = building2D?.PolygonalFace2D?.GetInternalPoint();
+                    if (point2D is not null)
+                    {
+                        AdministrativeAreal2D? administrativeAreal2D_Inside = administrativeDivisions_All?.Find(x => x.PolygonalFace2D is PolygonalFace2D polygonalFace2D && polygonalFace2D.Inside(point2D));
+
+                        List<Tuple<AdministrativeAreal2D, double>>? tuples = administrativeDivisions_All?.ConvertAll(x => new Tuple<AdministrativeAreal2D, double>(x, x.PolygonalFace2D is not PolygonalFace2D polygonalFace2D ? double.MaxValue : Geometry.Planar.Query.Distance(point2D, polygonalFace2D.ExternalEdge)));
+                        tuples?.Sort((x, y) => x.Item2.CompareTo(y.Item2));
+                    }
+
+                    concurrentBag.Add(guidReference);
+                }
+            }//);
+
+            File.WriteAllLines(path, concurrentBag.Cast<GuidReference>().ToList().ConvertAll(x => x.ToString() is string value ? value : string.Empty));
+        }
+
+        private async void CheckPoint()
+        {
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Checking...";
+
+            string? directory_ExecutingAssembly = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            if (string.IsNullOrWhiteSpace(directory_ExecutingAssembly) || !Directory.Exists(directory_ExecutingAssembly))
+            {
+                return;
+            }
+
+            string? path_ConnectionData = System.IO.Path.Combine(directory_ExecutingAssembly, "PostgreSQL_Main.conf");
+
+            ConnectionData? connectionData = DiGi.PostgreSQL.Create.ConnectionData(DiGi.PostgreSQL.Create.PostgreSQLConfigurationFile(path_ConnectionData));
+            if (connectionData is null)
+            {
+                return;
+            }
+
+            PostgreSQL.Enums.AdministrativeArealType administrativeArealType = Core.Query.Enum<PostgreSQL.Enums.AdministrativeArealType>("subdivision");
+
+            PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter administrativeAreal2DPostgreSQLConverter = new(connectionData);
+
+            List<PostgreSQL.Classes.AdministrativeAreal2D>? administrativeAreal2Ds = await administrativeAreal2DPostgreSQLConverter.GetAdministrativeAreal2DsByPoint2DAsync(new Point2D(338301.58, 397037.55), administrativeArealType);
+
+            TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Checking! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s:{4}ms", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, timeSpan.Milliseconds));
+        }
         private void Convert_ToFiles(int count = 10)
         {
             OpenFolderDialog openFolderDialog;
@@ -1091,7 +1342,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = string.Format("Done Recalculating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
-        
+
         private void Reduce()
         {
             OpenFolderDialog openFolderDialog = new();
@@ -1316,12 +1567,12 @@ namespace DiGi.GIS.UI.Application.Windows
 
             OrtoDatas? ortoDatas = null;
 
-            using (OrtoDatasFile ortoDataFiles = new (path_OrtoDatasFile))
+            using (OrtoDatasFile ortoDataFiles = new(path_OrtoDatasFile))
             {
                 ortoDataFiles.Open();
 
                 HashSet<UniqueReference>? uniqueReferences = ortoDataFiles.GetUniqueReferences();
-                if(uniqueReferences is null || uniqueReferences.Count == 0)
+                if (uniqueReferences is null || uniqueReferences.Count == 0)
                 {
                     return;
                 }
@@ -1329,14 +1580,14 @@ namespace DiGi.GIS.UI.Application.Windows
                 ortoDatas = ortoDataFiles.GetValue(uniqueReferences.ElementAt(0));
             }
 
-            if(ortoDatas is null)
+            if (ortoDatas is null)
             {
                 return;
             }
 
             Core.Convert.ToSystem_FileInfo((ISerializableObject)ortoDatas, path_OrtoDataJson);
         }
-        
+
         private void Test_1()
         {
             OpenFolderDialog openFolderDialog;
@@ -1719,6 +1970,136 @@ namespace DiGi.GIS.UI.Application.Windows
             TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Converting! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
+
+        private void UpdateUpdateAdministrativeAreal2DsCodes()
+        {
+            OpenFolderDialog? openFolderDialog = null;
+            bool? openFolderDialogResult = null;
+            string? directory = null;
+
+            openFolderDialog = new()
+            {
+                Title = "Source"
+            };
+
+            openFolderDialogResult = openFolderDialog.ShowDialog(this);
+            if (openFolderDialogResult == null || !openFolderDialogResult.HasValue || !openFolderDialogResult.Value)
+            {
+                return;
+            }
+
+            directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            List<string>? paths_Source = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories)?.ToList();
+            if (paths_Source == null || paths_Source.Count == 0)
+            {
+                return;
+            }
+
+            openFolderDialog = new()
+            {
+                Title = "Destination"
+            };
+
+            openFolderDialogResult = openFolderDialog.ShowDialog(this);
+            if (openFolderDialogResult == null || !openFolderDialogResult.HasValue || !openFolderDialogResult.Value)
+            {
+                return;
+            }
+
+            directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            List<string>? paths_Destination = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories)?.ToList();
+            if (paths_Destination == null || paths_Destination.Count == 0)
+            {
+                return;
+            }
+
+            foreach (string path_Destination in paths_Destination)
+            {
+                if (string.IsNullOrWhiteSpace(path_Destination))
+                {
+                    continue;
+                }
+
+                string fileName = System.IO.Path.GetFileName(path_Destination);
+                if (string.IsNullOrWhiteSpace(fileName))
+                {
+                    continue;
+                }
+
+                string? path_Source = paths_Source.Find(x => System.IO.Path.GetFileName(x) == fileName);
+                if (string.IsNullOrWhiteSpace(path_Source))
+                {
+                    continue;
+                }
+
+                using (GISModelFile gISModelFile_Destination = new(path_Destination))
+                {
+                    gISModelFile_Destination.Open();
+                    GISModel? gISModel_Destination = gISModelFile_Destination.Value;
+                    if (gISModel_Destination is null)
+                    {
+                        continue;
+                    }
+
+                    using (GISModelFile gISModelFile_Source = new(path_Source))
+                    {
+                        gISModelFile_Source.Open();
+                        GISModel? gISModel_Source = gISModelFile_Source.Value;
+                        if (gISModel_Source is null)
+                        {
+                            continue;
+                        }
+
+                        if (!gISModel_Destination.TryGetObjects(out List<AdministrativeAreal2D>? administrativeAreal2Ds_Destination) || administrativeAreal2Ds_Destination is null)
+                        {
+                            continue;
+                        }
+
+                        foreach (AdministrativeAreal2D administrativeAreal2D_Destination in administrativeAreal2Ds_Destination)
+                        {
+                            if (administrativeAreal2D_Destination == null)
+                            {
+                                continue;
+                            }
+
+                            List<AdministrativeAreal2D>? administrativeAreal2Ds_Source = gISModel_Source.GetObjects<AdministrativeAreal2D>(x => x?.Reference == administrativeAreal2D_Destination.Reference && administrativeAreal2D_Destination.GetType() == x?.GetType());
+                            if (administrativeAreal2Ds_Source == null || administrativeAreal2Ds_Source.Count != 1)
+                            {
+                                continue;
+                            }
+
+                            AdministrativeAreal2D administrativeAreal2D_Source = administrativeAreal2Ds_Source[0];
+
+                            if (administrativeAreal2D_Destination is AdministrativeDivision administrativeDivision)
+                            {
+                                gISModel_Destination.Update(new AdministrativeDivision(administrativeDivision, administrativeAreal2D_Source.Code));
+                            }
+                            else if (administrativeAreal2D_Destination is AdministrativeSubdivision administrativeSubdivision)
+                            {
+                                gISModel_Destination.Update(new AdministrativeSubdivision(administrativeSubdivision, administrativeAreal2D_Source.Code));
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+
+                        gISModelFile_Destination.Value = gISModel_Destination;
+                        gISModelFile_Destination.Save();
+                    }
+                }
+            }
         }
 
         private void WriteImages()

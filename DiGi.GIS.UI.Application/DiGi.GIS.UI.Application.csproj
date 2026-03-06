@@ -34,6 +34,16 @@
     <ProjectReference Include="..\DiGi.GIS.UI\DiGi.GIS.UI.csproj" />
   </ItemGroup>
 
+	<Target Name="CopyFiles" AfterTargets="Build">
+		<!-- List files to copy -->
+		<ItemGroup Condition="Exists('$(ProjectDir)..\user files\PostgreSQL_Main.conf')">
+			<Files Include="$(ProjectDir)..\user files\PostgreSQL_Main.conf" />
+		</ItemGroup>
+
+		<!-- Copy them to bin directory -->
+		<Copy SourceFiles="@(Files)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+	</Target>
+
   <ItemGroup>
     <Reference Include="DiGi.Analytical">
       <HintPath>..\..\DiGi.Analytical\bin\DiGi.Analytical.dll</HintPath>
@@ -64,6 +74,9 @@
     </Reference>
     <Reference Include="DiGi.GML">
       <HintPath>..\..\DiGi.GML\bin\DiGi.GML.dll</HintPath>
+    </Reference>
+    <Reference Include="DiGi.PostgreSQL">
+      <HintPath>..\..\DiGi.PostgreSQL\bin\DiGi.PostgreSQL.dll</HintPath>
     </Reference>
     <Reference Include="DiGi.Typology">
       <HintPath>..\..\DiGi.Typology\bin\DiGi.Typology.dll</HintPath>
