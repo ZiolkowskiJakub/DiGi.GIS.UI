@@ -654,6 +654,35 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = string.Format("Done Refreshing! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
+        private async void Button_RefreshBuiliding2Ds_Click(object sender, RoutedEventArgs e)
+        {
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Refreshing...";
+
+            string? directory_ExecutingAssembly = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            if (string.IsNullOrWhiteSpace(directory_ExecutingAssembly) || !Directory.Exists(directory_ExecutingAssembly))
+            {
+                return;
+            }
+
+            string? path_ConnectionData = System.IO.Path.Combine(directory_ExecutingAssembly, "PostgreSQL_Main.conf");
+
+            ConnectionData? connectionData = DiGi.PostgreSQL.Create.ConnectionData(DiGi.PostgreSQL.Create.PostgreSQLConfigurationFile(path_ConnectionData));
+            if (connectionData is null)
+            {
+                return;
+            }
+
+            PostgreSQL.Classes.Building2DPostgreSQLConverter building2DPostgreSQLConverter = new(connectionData);
+
+            await building2DPostgreSQLConverter.RefreshAsync();
+
+            TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Refreshing! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
+
         private void Button_ResaveGISModels_Click(object sender, RoutedEventArgs e)
         {
             DateTime dateTime = DateTime.Now;
@@ -899,10 +928,22 @@ namespace DiGi.GIS.UI.Application.Windows
                     continue;
                 }
 
+                //string? code = null;
+                string? code = gISModel_Input.Reference;
+                if (!string.IsNullOrWhiteSpace(code))
+                {
+                    code = code.ToUpper();
+                    int index = code.IndexOf("_");
+                    if (index != -1)
+                    {
+                        code = code.Substring(0, index);
+                    }
+                }
+
                 List<PostgreSQL.Classes.Building2D>? building2Ds_PostgreSQL = [];
                 foreach (Building2D building2D_GIS in building2Ds_GIS)
                 {
-                    if (PostgreSQL.Convert.ToPostgreSQL(building2D_GIS) is not PostgreSQL.Classes.Building2D building2D_PostgreSQL)
+                    if (PostgreSQL.Convert.ToPostgreSQL(building2D_GIS, code) is not PostgreSQL.Classes.Building2D building2D_PostgreSQL)
                     {
                         continue;
                     }
@@ -1159,6 +1200,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = string.Format("Done Checking! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s:{4}ms", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, timeSpan.Milliseconds));
         }
+        
         private void Convert_ToFiles(int count = 10)
         {
             OpenFolderDialog openFolderDialog;
