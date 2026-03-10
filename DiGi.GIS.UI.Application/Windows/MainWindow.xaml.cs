@@ -1200,7 +1200,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = string.Format("Done Checking! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s:{4}ms", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, timeSpan.Milliseconds));
         }
-        
+
         private void Convert_ToFiles(int count = 10)
         {
             OpenFolderDialog openFolderDialog;
