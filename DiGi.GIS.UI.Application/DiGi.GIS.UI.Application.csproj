@@ -36,8 +36,12 @@
 
 	<Target Name="CopyFiles" AfterTargets="Build">
 		<!-- List files to copy -->
-		<ItemGroup Condition="Exists('$(ProjectDir)..\user files\PostgreSQL_Main.conf')">
-			<Files Include="$(ProjectDir)..\user files\PostgreSQL_Main.conf" />
+		<ItemGroup Condition="Exists('$(ProjectDir)..\user files\GIS_PostgreSQL_Main.conf')">
+			<Files Include="$(ProjectDir)..\user files\GIS_PostgreSQL_Main.conf" />
+		</ItemGroup>
+
+		<ItemGroup Condition="Exists('$(ProjectDir)..\user files\GIS_PostgreSQL_Storage.conf')">
+			<Files Include="$(ProjectDir)..\user files\GIS_PostgreSQL_Storage.conf" />
 		</ItemGroup>
 
 		<!-- Copy them to bin directory -->
