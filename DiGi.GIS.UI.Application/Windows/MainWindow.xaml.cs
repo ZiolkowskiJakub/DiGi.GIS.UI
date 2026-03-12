@@ -9,13 +9,11 @@ using DiGi.GIS.Classes;
 using DiGi.GIS.Constants;
 using DiGi.GIS.Emgu.CV.Classes;
 using DiGi.GIS.UI.Classes;
-using DiGi.PostgreSQL.Classes;
 using Microsoft.Win32;
 using System.Collections.Concurrent;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Reflection;
 using System.Text.Json;
 using System.Windows;
 
@@ -634,7 +632,7 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = "Refreshing...";
 
             PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter? administrativeAreal2DPostgreSQLConverter = gISPostgreSQLConverterManager?.GetPostgreSQLConverter<PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter>();
-            if(administrativeAreal2DPostgreSQLConverter is null)
+            if (administrativeAreal2DPostgreSQLConverter is null)
             {
                 return;
             }
@@ -747,7 +745,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             TextBlock_Progress.Text = "Updating...";
 
-            if(gISPostgreSQLConverterManager is null || !(await gISPostgreSQLConverterManager.TryCreateDatabase<PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter>()))
+            if (gISPostgreSQLConverterManager is null || !(await gISPostgreSQLConverterManager.TryCreateDatabase<PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter>()))
             {
                 return;
             }
@@ -774,7 +772,7 @@ namespace DiGi.GIS.UI.Application.Windows
             }
 
             PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter? administrativeAreal2DPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter>();
-            if(administrativeAreal2DPostgreSQLConverter is null)
+            if (administrativeAreal2DPostgreSQLConverter is null)
             {
                 return;
             }
@@ -859,7 +857,7 @@ namespace DiGi.GIS.UI.Application.Windows
             }
 
             PostgreSQL.Classes.Building2DPostgreSQLConverter? building2DPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<PostgreSQL.Classes.Building2DPostgreSQLConverter>();
-            if(building2DPostgreSQLConverter is null)
+            if (building2DPostgreSQLConverter is null)
             {
                 return;
             }
@@ -898,7 +896,7 @@ namespace DiGi.GIS.UI.Application.Windows
                     int index = code.IndexOf('_');
                     if (index != -1)
                     {
-                        code = code[.. index];
+                        code = code[..index];
                     }
                 }
 
@@ -1042,7 +1040,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            SaveFileDialog saveFileDialog = new ();
+            SaveFileDialog saveFileDialog = new();
             bool? saveFileDialogResult = saveFileDialog.ShowDialog(this);
             if (saveFileDialogResult == null || !saveFileDialogResult.HasValue || !saveFileDialogResult.Value)
             {
@@ -1065,7 +1063,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             ConcurrentBag<GuidReference> concurrentBag = [];
 
-            ParallelOptions parallelOptions = new ()
+            ParallelOptions parallelOptions = new()
             {
                 MaxDegreeOfParallelism = 20,
             };
@@ -1103,7 +1101,7 @@ namespace DiGi.GIS.UI.Application.Windows
                         continue;
                     }
 
-                    GuidReference guidReference = new (building2D);
+                    GuidReference guidReference = new(building2D);
 
                     if (!dictionary.TryGetValue(guidReference, out List<AdministrativeAreal2D>? administrativeDivisions) || administrativeDivisions is null)
                     {
@@ -1145,7 +1143,7 @@ namespace DiGi.GIS.UI.Application.Windows
             }
 
             PostgreSQL.Enums.AdministrativeArealType administrativeArealType = Core.Query.Enum<PostgreSQL.Enums.AdministrativeArealType>("subdivision");
-            
+
             _ = await administrativeAreal2DPostgreSQLConverter.GetAdministrativeAreal2DsByPoint2DAsync(new Point2D(338301.58, 397037.55), administrativeArealType);
 
             TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
