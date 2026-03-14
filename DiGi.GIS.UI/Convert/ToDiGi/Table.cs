@@ -203,9 +203,9 @@ namespace DiGi.GIS.UI
                         row.SetValue(index_BuildingGeneralFunction, buildingGeneralFunction?.ToString());
                         row.SetValue(index_BuildingPhase, buidlingPhase?.ToString());
                         row.SetValue(index_Storeys, storeys.ToString());
-                        row.SetValue(index_Area, area == null || !area.HasValue ? null : Core.Query.Round(area.Value, Core.Constants.Tolerance.MacroDistance).ToString());
-                        row.SetValue(index_Location_X, location == null ? null : Core.Query.Round(location.X, Core.Constants.Tolerance.MacroDistance).ToString());
-                        row.SetValue(index_Location_Y, location == null ? null : Core.Query.Round(location.Y, Core.Constants.Tolerance.MacroDistance).ToString());
+                        row.SetValue(index_Area, area == null || !area.HasValue ? null : Core.Query.Round(area.Value, Core.Constans.Tolerance.MacroDistance).ToString());
+                        row.SetValue(index_Location_X, location == null ? null : Core.Query.Round(location.X, Core.Constans.Tolerance.MacroDistance).ToString());
+                        row.SetValue(index_Location_Y, location == null ? null : Core.Query.Round(location.Y, Core.Constans.Tolerance.MacroDistance).ToString());
                         row.SetValue(index_VoivodeshipName, voivodeshipName);
                         row.SetValue(index_CountyName, countyName);
                         row.SetValue(index_MunicipalityName, municipalityName);

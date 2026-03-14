@@ -41,7 +41,7 @@ namespace DiGi.GIS.UI
 
                 File.AppendAllLines(path, contents);
 
-                path = Path.Combine(directory_Temp, name + "." + Typology.Constants.FileExtension.TypologyFile);
+                path = Path.Combine(directory_Temp, name + "." + Typology.Constans.FileExtension.TypologyFile);
 
                 using TypologyFile typologyFile = new(path);
 
