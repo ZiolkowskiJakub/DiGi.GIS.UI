@@ -40,8 +40,11 @@ namespace DiGi.GIS.UI
                 return;
             }
 
-            DiGi.UI.WPF.Core.Windows.ListBoxWindow listBoxWindow = new DiGi.UI.WPF.Core.Windows.ListBoxWindow("File types");
-            listBoxWindow.SelectionMode = System.Windows.Controls.SelectionMode.Multiple;
+            DiGi.UI.WPF.Windows.ListBoxWindow listBoxWindow = new("File types")
+            {
+                SelectionMode = System.Windows.Controls.SelectionMode.Multiple
+            };
+
             listBoxWindow.SetItems([FileNameSufix.OT_ADJA_A, FileNameSufix.OT_ADMS_A, FileNameSufix.OT_BUBD_A]);
 
             bool? dialogResult = listBoxWindow.ShowDialog();

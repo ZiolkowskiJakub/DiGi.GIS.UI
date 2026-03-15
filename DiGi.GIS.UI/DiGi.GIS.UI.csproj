@@ -68,8 +68,8 @@
     <Reference Include="DiGi.Typology">
       <HintPath>..\..\DiGi.Typology\bin\DiGi.Typology.dll</HintPath>
     </Reference>
-    <Reference Include="DiGi.UI.WPF.Core">
-      <HintPath>..\..\DiGi.UI.WPF\bin\DiGi.UI.WPF.Core.dll</HintPath>
+    <Reference Include="DiGi.UI.WPF">
+      <HintPath>..\..\DiGi.UI.WPF\bin\DiGi.UI.WPF.dll</HintPath>
     </Reference>
     <Reference Include="DiGi.VoTT">
       <HintPath>..\..\DiGi.VoTT\bin\DiGi.VoTT.dll</HintPath>

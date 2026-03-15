@@ -17,7 +17,7 @@ namespace DiGi.GIS.UI
                 return null;
             }
 
-            return DiGi.UI.WPF.Core.Create.BitmapImage(ortoData?.Bytes);
+            return DiGi.UI.WPF.Create.BitmapImage(ortoData?.Bytes);
         }
 
         public static BitmapImage? BitmapImage(this Building2D? building2D, string? directory, int year)
@@ -94,7 +94,7 @@ namespace DiGi.GIS.UI
                     }
                 }
 
-                result = DiGi.UI.WPF.Core.Create.BitmapImage(image);
+                result = DiGi.UI.WPF.Create.BitmapImage(image);
             }
 
             return result;
@@ -125,7 +125,7 @@ namespace DiGi.GIS.UI
                     Geometry.Drawing.Modify.Draw(graphics, polygon2D.GetBoundingBox(), new Pen(Color.Gray.ToDiGi(), 1), false);
                 }
 
-                result = DiGi.UI.WPF.Core.Create.BitmapImage(image);
+                result = DiGi.UI.WPF.Create.BitmapImage(image);
             }
 
             return result;

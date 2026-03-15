@@ -3,7 +3,7 @@ using DiGi.GIS.Classes;
 using DiGi.GIS.Enums;
 using DiGi.GIS.UI.Controls;
 using DiGi.Typology.Classes;
-using DiGi.UI.WPF.Core.Classes;
+using DiGi.UI.WPF.Classes;
 using LiveCharts;
 using System.IO;
 using System.Windows;
@@ -256,7 +256,7 @@ namespace DiGi.GIS.UI.Windows
 
         private void MenuItem_BuildingShape_Click(object sender, RoutedEventArgs e)
         {
-            Building2D? building2D = GetActiveBuilding2D(out GISModel? gISModel);
+            Building2D? building2D = GetActiveBuilding2D(out _);
             if (building2D is null)
             {
                 return;
@@ -283,7 +283,7 @@ namespace DiGi.GIS.UI.Windows
 
         private void MenuItem_Load_Click(object sender, RoutedEventArgs e)
         {
-            string? path = DiGi.UI.WPF.Core.Query.Path(this, Typology.Constans.FileFilter.TypologyFile);
+            string? path = DiGi.UI.WPF.Query.Path(this, Typology.Constans.FileFilter.TypologyFile);
             if (string.IsNullOrEmpty(path))
             {
                 return;
@@ -297,7 +297,7 @@ namespace DiGi.GIS.UI.Windows
 
         private void MenuItem_Properties_Click(object sender, RoutedEventArgs e)
         {
-            Building2D? building2D = GetActiveBuilding2D(out GISModel? gISModel);
+            Building2D? building2D = GetActiveBuilding2D(out _);
             if (building2D is null)
             {
                 return;
@@ -373,7 +373,7 @@ namespace DiGi.GIS.UI.Windows
 
             HashSet<string> references = [];
 
-            List<Typology.Classes.Typology>? typologies = typology is not null ? [typology] : DiGi.UI.WPF.Core.Query.TagItems<Typology.Classes.Typology, TreeViewItem>(itemPathTreeViewItem.Items, true, false);
+            List<Typology.Classes.Typology>? typologies = typology is not null ? [typology] : DiGi.UI.WPF.Query.TagItems<Typology.Classes.Typology, TreeViewItem>(itemPathTreeViewItem.Items, true, false);
             if (typologies != null)
             {
                 foreach (Typology.Classes.Typology typology_Temp in typologies)
@@ -400,7 +400,7 @@ namespace DiGi.GIS.UI.Windows
                 {
                     HashSet<string> references_SubTypology = [];
 
-                    List<Typology.Classes.Typology>? subTypologies = DiGi.UI.WPF.Core.Query.TagItems<Typology.Classes.Typology, TreeViewItem>(itemPathTreeViewItem_Temp.Items, true, false);
+                    List<Typology.Classes.Typology>? subTypologies = DiGi.UI.WPF.Query.TagItems<Typology.Classes.Typology, TreeViewItem>(itemPathTreeViewItem_Temp.Items, true, false);
                     if (subTypologies != null)
                     {
                         foreach (Typology.Classes.Typology subTypology in subTypologies)

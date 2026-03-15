@@ -24,7 +24,7 @@ namespace DiGi.GIS.UI.Application.Windows
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly DiGi.UI.WPF.Core.Classes.DeterminateWindowWorker determinateWindowWorker;
+        private readonly DiGi.UI.WPF.Classes.DeterminateWindowWorker determinateWindowWorker;
 
         private readonly PostgreSQL.Classes.GISPostgreSQLConverterManager? gISPostgreSQLConverterManager = PostgreSQL.Create.GISPostgreSQLConverterManager();
 
@@ -32,7 +32,7 @@ namespace DiGi.GIS.UI.Application.Windows
         {
             InitializeComponent();
 
-            determinateWindowWorker = new DiGi.UI.WPF.Core.Classes.DeterminateWindowWorker();
+            determinateWindowWorker = new DiGi.UI.WPF.Classes.DeterminateWindowWorker();
 
             this.Closed += MainWindow_Closed;
         }

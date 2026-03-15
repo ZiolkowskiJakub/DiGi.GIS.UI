@@ -109,7 +109,7 @@ namespace DiGi.GIS.UI.Controls
             {
                 if (GetBitmapImage() is BitmapImage bitmapImage)
                 {
-                    DiGi.UI.WPF.Core.Modify.Write(bitmapImage);
+                    DiGi.UI.WPF.Modify.Write(bitmapImage);
                 }
             };
 

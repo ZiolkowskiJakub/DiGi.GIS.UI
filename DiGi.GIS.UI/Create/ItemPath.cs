@@ -1,5 +1,5 @@
 ﻿using DiGi.Typology.Classes;
-using DiGi.UI.WPF.Core.Classes;
+using DiGi.UI.WPF.Classes;
 
 namespace DiGi.GIS.UI
 {

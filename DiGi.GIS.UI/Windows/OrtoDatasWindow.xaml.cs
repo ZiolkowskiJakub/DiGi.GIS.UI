@@ -31,7 +31,7 @@ namespace DiGi.GIS.UI.Windows
 
         private void MenuItem_Load_Click(object sender, RoutedEventArgs e)
         {
-            string? path = DiGi.UI.WPF.Core.Query.Path(this, Constants.FileFilter.OrtoDatasFile);
+            string? path = DiGi.UI.WPF.Query.Path(this, Constants.FileFilter.OrtoDatasFile);
             if (string.IsNullOrWhiteSpace(path) || !System.IO.File.Exists(path))
             {
                 return;
