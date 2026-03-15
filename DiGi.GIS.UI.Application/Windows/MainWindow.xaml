@@ -4,7 +4,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="GIS" Height="450" Width="840" ResizeMode="NoResize" Icon="/DiGi.GIS.ico">
+        Title="GIS" Height="450" Width="840" ResizeMode="NoResize" Icon="/Resources/DiGi.GIS.ico">
     <DockPanel LastChildFill="True">
         <Grid DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>
