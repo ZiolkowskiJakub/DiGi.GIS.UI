@@ -26,7 +26,7 @@ namespace DiGi.GIS.UI
 
             string directory_BoundingBoxResultFile = openFolderDialog.FolderName;
 
-            string[] paths_BoundingBoxResultFile = Directory.GetFiles(directory_BoundingBoxResultFile, string.Format("*.{0}", YOLO.Constans.FileExtension.BoundingBoxResultFile), SearchOption.AllDirectories);
+            string[] paths_BoundingBoxResultFile = Directory.GetFiles(directory_BoundingBoxResultFile, string.Format("*.{0}", YOLO.Constants.FileExtension.BoundingBoxResultFile), SearchOption.AllDirectories);
             if (paths_BoundingBoxResultFile == null || paths_BoundingBoxResultFile.Length == 0)
             {
                 return false;

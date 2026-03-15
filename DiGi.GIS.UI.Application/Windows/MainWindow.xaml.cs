@@ -1619,7 +1619,7 @@ namespace DiGi.GIS.UI.Application.Windows
                     continue;
                 }
 
-                string path_BuidlingModelsFile = System.IO.Path.Combine(directory, System.IO.Path.GetFileNameWithoutExtension(path_GISModel) + "." + Analytical.Constans.FileExtension.BuildingModelsFile);
+                string path_BuidlingModelsFile = System.IO.Path.Combine(directory, System.IO.Path.GetFileNameWithoutExtension(path_GISModel) + "." + Analytical.Constants.FileExtension.BuildingModelsFile);
 
                 if (!File.Exists(path_BuidlingModelsFile))
                 {

@@ -95,9 +95,9 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                area = Core.Query.Round(area, Core.Constans.Tolerance.MacroDistance);
+                area = Core.Query.Round(area, Core.Constants.Tolerance.MacroDistance);
 
-                double totalArea = Core.Query.Round(area * storeys, Core.Constans.Tolerance.MacroDistance);
+                double totalArea = Core.Query.Round(area * storeys, Core.Constants.Tolerance.MacroDistance);
 
                 string totalAreaName = "???";
                 int totalAreaIndex = 0;
@@ -353,7 +353,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                area = Core.Query.Round(area, Core.Constans.Tolerance.MacroDistance);
+                area = Core.Query.Round(area, Core.Constants.Tolerance.MacroDistance);
 
                 string areaName = "???";
                 int areaIndex = 0;
@@ -653,9 +653,9 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                area = Core.Query.Round(area, Core.Constans.Tolerance.MacroDistance);
+                area = Core.Query.Round(area, Core.Constants.Tolerance.MacroDistance);
 
-                double totalArea = Core.Query.Round(area * storeys, Core.Constans.Tolerance.MacroDistance);
+                double totalArea = Core.Query.Round(area * storeys, Core.Constants.Tolerance.MacroDistance);
 
                 string totalAreaName = "???";
                 int totalAreaIndex = 0;
@@ -956,9 +956,9 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                area = Core.Query.Round(area, Core.Constans.Tolerance.MacroDistance);
+                area = Core.Query.Round(area, Core.Constants.Tolerance.MacroDistance);
 
-                double totalArea = Core.Query.Round(area * storeys, Core.Constans.Tolerance.MacroDistance);
+                double totalArea = Core.Query.Round(area * storeys, Core.Constants.Tolerance.MacroDistance);
 
                 string totalAreaName = "???";
                 int totalAreaIndex = 0;
@@ -1225,9 +1225,9 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                area = Core.Query.Round(area, Core.Constans.Tolerance.MacroDistance);
+                area = Core.Query.Round(area, Core.Constants.Tolerance.MacroDistance);
 
-                double totalArea = Core.Query.Round(area * storeys, Core.Constans.Tolerance.MacroDistance);
+                double totalArea = Core.Query.Round(area * storeys, Core.Constants.Tolerance.MacroDistance);
 
                 string totalAreaName = "???";
                 int totalAreaIndex = 0;
@@ -1540,9 +1540,9 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                area = Core.Query.Round(area, Core.Constans.Tolerance.MacroDistance);
+                area = Core.Query.Round(area, Core.Constants.Tolerance.MacroDistance);
 
-                double totalArea = Core.Query.Round(area * storeys, Core.Constans.Tolerance.MacroDistance);
+                double totalArea = Core.Query.Round(area * storeys, Core.Constants.Tolerance.MacroDistance);
 
                 string totalAreaName = "???";
                 int totalAreaIndex = 0;
@@ -1697,9 +1697,9 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                area = Core.Query.Round(area, Core.Constans.Tolerance.MacroDistance);
+                area = Core.Query.Round(area, Core.Constants.Tolerance.MacroDistance);
 
-                double totalArea = Core.Query.Round(area * storeys, Core.Constans.Tolerance.MacroDistance);
+                double totalArea = Core.Query.Round(area * storeys, Core.Constants.Tolerance.MacroDistance);
 
                 string totalAreaName = "???";
                 int totalAreaIndex = 0;
@@ -1897,9 +1897,9 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                area = Core.Query.Round(area, Core.Constans.Tolerance.MacroDistance);
+                area = Core.Query.Round(area, Core.Constants.Tolerance.MacroDistance);
 
-                double totalArea = Core.Query.Round(area * storeys, Core.Constans.Tolerance.MacroDistance);
+                double totalArea = Core.Query.Round(area * storeys, Core.Constants.Tolerance.MacroDistance);
 
                 string totalAreaName = "???";
                 int totalAreaIndex = 0;
@@ -2149,9 +2149,9 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                area = Core.Query.Round(area, Core.Constans.Tolerance.MacroDistance);
+                area = Core.Query.Round(area, Core.Constants.Tolerance.MacroDistance);
 
-                double totalArea = Core.Query.Round(area * storeys, Core.Constans.Tolerance.MacroDistance);
+                double totalArea = Core.Query.Round(area * storeys, Core.Constants.Tolerance.MacroDistance);
 
                 string totalAreaName = "???";
                 int totalAreaIndex = 0;
@@ -2457,7 +2457,7 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                area = Core.Query.Round(area, Core.Constans.Tolerance.MacroDistance);
+                area = Core.Query.Round(area, Core.Constants.Tolerance.MacroDistance);
 
                 string areaName = "???";
                 int areaIndex = 0;
@@ -2807,9 +2807,9 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                area = Core.Query.Round(area, Core.Constans.Tolerance.MacroDistance);
+                area = Core.Query.Round(area, Core.Constants.Tolerance.MacroDistance);
 
-                double totalArea = Core.Query.Round(area * storeys, Core.Constans.Tolerance.MacroDistance);
+                double totalArea = Core.Query.Round(area * storeys, Core.Constants.Tolerance.MacroDistance);
 
                 string totalAreaName = "???";
                 int totalAreaIndex = 0;
@@ -3160,9 +3160,9 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                area = Core.Query.Round(area, Core.Constans.Tolerance.MacroDistance);
+                area = Core.Query.Round(area, Core.Constants.Tolerance.MacroDistance);
 
-                double totalArea = Core.Query.Round(area * storeys, Core.Constans.Tolerance.MacroDistance);
+                double totalArea = Core.Query.Round(area * storeys, Core.Constants.Tolerance.MacroDistance);
 
                 string totalAreaName = "???";
                 int totalAreaIndex = 0;
@@ -3479,9 +3479,9 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                area = Core.Query.Round(area, Core.Constans.Tolerance.MacroDistance);
+                area = Core.Query.Round(area, Core.Constants.Tolerance.MacroDistance);
 
-                double totalArea = Core.Query.Round(area * storeys, Core.Constans.Tolerance.MacroDistance);
+                double totalArea = Core.Query.Round(area * storeys, Core.Constants.Tolerance.MacroDistance);
 
                 string totalAreaName = "???";
                 int totalAreaIndex = 0;
@@ -3844,9 +3844,9 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                area = Core.Query.Round(area, Core.Constans.Tolerance.MacroDistance);
+                area = Core.Query.Round(area, Core.Constants.Tolerance.MacroDistance);
 
-                double totalArea = Core.Query.Round(area * storeys, Core.Constans.Tolerance.MacroDistance);
+                double totalArea = Core.Query.Round(area * storeys, Core.Constants.Tolerance.MacroDistance);
 
                 string totalAreaName = "???";
                 int totalAreaIndex = 0;
@@ -4051,9 +4051,9 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                area = Core.Query.Round(area, Core.Constans.Tolerance.MacroDistance);
+                area = Core.Query.Round(area, Core.Constants.Tolerance.MacroDistance);
 
-                double totalArea = Core.Query.Round(area * storeys, Core.Constans.Tolerance.MacroDistance);
+                double totalArea = Core.Query.Round(area * storeys, Core.Constants.Tolerance.MacroDistance);
 
                 string totalAreaName = "???";
                 int totalAreaIndex = 0;
@@ -4301,9 +4301,9 @@ namespace DiGi.GIS.UI
                     continue;
                 }
 
-                area = Core.Query.Round(area, Core.Constans.Tolerance.MacroDistance);
+                area = Core.Query.Round(area, Core.Constants.Tolerance.MacroDistance);
 
-                double totalArea = Core.Query.Round(area * storeys, Core.Constans.Tolerance.MacroDistance);
+                double totalArea = Core.Query.Round(area * storeys, Core.Constants.Tolerance.MacroDistance);
 
                 string totalAreaName = "???";
                 int totalAreaIndex = 0;

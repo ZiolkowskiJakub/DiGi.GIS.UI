@@ -109,7 +109,7 @@ namespace DiGi.GIS.UI
 
             Polygon2D? polygon2D = building2D?.PolygonalFace2D?.ExternalEdge as Polygon2D;
 
-            polygon2D = new BoundingBox2D(Geometry.Planar.Constans.Point2D.Zero, new Point2D(width, height)).Fit(polygon2D, offset);
+            polygon2D = new BoundingBox2D(Geometry.Planar.Constants.Point2D.Zero, new Point2D(width, height)).Fit(polygon2D, offset);
             if (polygon2D is null)
             {
                 return null;

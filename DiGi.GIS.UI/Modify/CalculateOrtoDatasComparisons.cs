@@ -64,7 +64,7 @@ namespace DiGi.GIS.UI
 
                         ortoDatasComparisonOptions ??= new OrtoDatasComparisonOptions();
 
-                        string? path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path_Input)!, string.Format("{0}.{1}", System.IO.Path.GetFileNameWithoutExtension(path_Input), Emgu.CV.Constans.FileExtension.OrtoDatasComparisonFile));
+                        string? path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path_Input)!, string.Format("{0}.{1}", System.IO.Path.GetFileNameWithoutExtension(path_Input), Emgu.CV.Constants.FileExtension.OrtoDatasComparisonFile));
 
                         while (building2Ds.Count > 0)
                         {
