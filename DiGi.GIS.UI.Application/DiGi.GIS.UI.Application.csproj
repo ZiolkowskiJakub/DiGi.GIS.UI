@@ -14,6 +14,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\DiGi.GIS.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Emgu.CV" Version="4.12.0.5764" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.2" />
     <PackageReference Include="NetTopologySuite" Version="2.6.0" />
@@ -28,18 +32,12 @@
     <ProjectReference Include="..\DiGi.GIS.UI\DiGi.GIS.UI.csproj" />
   </ItemGroup>
 
-	<Target Name="CopyFiles" AfterTargets="Build">
-		<!-- List files to copy -->
-		<ItemGroup Condition="Exists('$(ProjectDir)..\user files\GIS_PostgreSQL_Main.conf')">
-			<Files Include="$(ProjectDir)..\user files\GIS_PostgreSQL_Main.conf" />
+	<Target Name="CopyUserFiles" AfterTargets="Build">
+		<ItemGroup>
+			<_UserFiles Include="$(ProjectDir)..\user files\**\*.*" />
 		</ItemGroup>
-
-		<ItemGroup Condition="Exists('$(ProjectDir)..\user files\GIS_PostgreSQL_Storage.conf')">
-			<Files Include="$(ProjectDir)..\user files\GIS_PostgreSQL_Storage.conf" />
-		</ItemGroup>
-
-		<!-- Copy them to bin directory -->
-		<Copy SourceFiles="@(Files)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+		<Message Text="Copying all user files from directory..." Importance="high" />
+		<Copy SourceFiles="@(_UserFiles)" DestinationFiles="@(_UserFiles->'$(OutputPath)%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
 	</Target>
 
   <ItemGroup>
@@ -85,6 +83,12 @@
     <Reference Include="DiGi.YOLO">
       <HintPath>..\..\DiGi.YOLO\bin\DiGi.YOLO.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\DiGi.GIS.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>
