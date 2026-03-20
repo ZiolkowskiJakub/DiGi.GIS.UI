@@ -9,6 +9,7 @@ using DiGi.GIS.Classes;
 using DiGi.GIS.Constants;
 using DiGi.GIS.Emgu.CV.Classes;
 using DiGi.GIS.UI.Classes;
+using DiGi.GIS.UI.Controls;
 using Microsoft.Win32;
 using System.Collections.Concurrent;
 using System.Drawing;
@@ -16,6 +17,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace DiGi.GIS.UI.Application.Windows
 {
@@ -715,7 +717,76 @@ namespace DiGi.GIS.UI.Application.Windows
             //SaveGISModelToJsonFile();
             //CheckAdministrativeAreal2D();
             //UpdateUpdateAdministrativeAreal2DsCodes();
-            CheckPoint();
+            //CheckPoint();
+            OrtoDatasTest();
+        }
+        
+        private void OrtoDatasTest()
+        {
+            OpenFileDialog openFileDialog = new()
+            {
+                Filter = "GIS Model files (*.gmf)|*.gmf|All files (*.*)|*.*"
+            };
+            bool? result = openFileDialog.ShowDialog();
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string path = openFileDialog.FileName;
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            {
+                return;
+            }
+
+            string? directory_GISModel = System.IO.Path.GetDirectoryName(path);
+            if (!Directory.Exists(directory_GISModel))
+            {
+                return;
+            }
+
+            string? directory_OrtoDatas = GIS.Query.OrtoDatasDirectory_Building2D(directory_GISModel);
+            if (!Directory.Exists(directory_OrtoDatas))
+            {
+                return;
+            }
+
+            using GISModelFile gISModelFile = new(path);
+            gISModelFile.Open();
+
+            GISModel? gISModel = gISModelFile.Value;
+
+            List<Building2D>? building2Ds = gISModel?.GetObjects<Building2D>();
+            if (building2Ds != null && building2Ds.Count > 0)
+            {
+                Building2D building2D = building2Ds[0];
+
+                Core.Convert.ToSystem_FileInfo(building2D, @"C:\Users\jakub\GitHub\DigiProject\DiGi.Test\files\OrtoDatas_BoundingBox2D_Building2D.json");
+
+                OrtoDatas? ortoDatas = GIS.Query.OrtoDatas(building2D, directory_OrtoDatas);
+
+                Core.Convert.ToSystem_FileInfo((ISerializableObject)ortoDatas, @"C:\Users\jakub\GitHub\DigiProject\DiGi.Test\files\OrtoDatas_BoundingBox2D_OrtoDatas.json");
+
+                BoundingBox2D? boundingBox2D = building2D.PolygonalFace2D.GetBoundingBox();
+
+                foreach(OrtoData ortoData in ortoDatas)
+                {
+                    BitmapImage? bitmapImage = ortoData.BitmapImage();
+
+                    Core.Classes.Size? size_1 = GIS.Query.Size(ortoData.Bytes);
+
+                    Core.Classes.Size? size_2 = ortoData.GetSize(Enums.GeometryContext.Global);
+
+                    Core.Classes.Size? size_3 = ortoData.GetSize(Enums.GeometryContext.Local);
+
+                    BoundingBox2D? boundingBox2D_1 = ortoData.GetBoundingBox(Enums.GeometryContext.Global);
+
+                    BoundingBox2D? boundingBox2D_2 = ortoData.GetBoundingBox(Enums.GeometryContext.Local);
+
+                    bool inside = boundingBox2D_1.Inside(boundingBox2D);
+                }
+            }
+
         }
 
         private void Button_ToDiGiGISModelFiles_Click(object sender, RoutedEventArgs e)
