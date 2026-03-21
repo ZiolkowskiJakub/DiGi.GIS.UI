@@ -721,7 +721,7 @@ namespace DiGi.GIS.UI.Application.Windows
             OrtoDatasTest();
         }
         
-        private void OrtoDatasTest()
+        private static void OrtoDatasTest()
         {
             OpenFileDialog openFileDialog = new()
             {
@@ -763,27 +763,36 @@ namespace DiGi.GIS.UI.Application.Windows
 
                 Core.Convert.ToSystem_FileInfo(building2D, @"C:\Users\jakub\GitHub\DigiProject\DiGi.Test\files\OrtoDatas_BoundingBox2D_Building2D.json");
 
-                OrtoDatas? ortoDatas = GIS.Query.OrtoDatas(building2D, directory_OrtoDatas);
+                OrtoDatas? ortoDatas = GIS.Query.OrtoDatas(building2D, directory_OrtoDatas) ?? throw new Exception("No OrtoDatas");
 
                 Core.Convert.ToSystem_FileInfo((ISerializableObject)ortoDatas, @"C:\Users\jakub\GitHub\DigiProject\DiGi.Test\files\OrtoDatas_BoundingBox2D_OrtoDatas.json");
 
-                BoundingBox2D? boundingBox2D = building2D.PolygonalFace2D.GetBoundingBox();
+                BoundingBox2D? boundingBox2D = (building2D?.PolygonalFace2D?.GetBoundingBox()) ?? throw new Exception("Invalid reometry of Building2D");
 
-                foreach(OrtoData ortoData in ortoDatas)
+                foreach (OrtoData ortoData in ortoDatas)
                 {
                     BitmapImage? bitmapImage = ortoData.BitmapImage();
 
-                    Core.Classes.Size? size_1 = GIS.Query.Size(ortoData.Bytes);
+                    //Core.Classes.Size? size_1 = GIS.Query.Size(ortoData.Bytes);
 
-                    Core.Classes.Size? size_2 = ortoData.GetSize(Enums.GeometryContext.Global);
+                    //Core.Classes.Size? size_2 = ortoData.GetSize(Enums.GeometryContext.Global);
 
-                    Core.Classes.Size? size_3 = ortoData.GetSize(Enums.GeometryContext.Local);
+                    //Core.Classes.Size? size_3 = ortoData.GetSize(Enums.GeometryContext.Local);
 
                     BoundingBox2D? boundingBox2D_1 = ortoData.GetBoundingBox(Enums.GeometryContext.Global);
+                    if(boundingBox2D_1 is null)
+                    {
+                        continue;
+                    }
 
-                    BoundingBox2D? boundingBox2D_2 = ortoData.GetBoundingBox(Enums.GeometryContext.Local);
+
+                    //BoundingBox2D? boundingBox2D_2 = ortoData.GetBoundingBox(Enums.GeometryContext.Local);
 
                     bool inside = boundingBox2D_1.Inside(boundingBox2D);
+                    if(!inside)
+                    {
+                        throw new Exception("Invalid calculations for OrtoDatas");
+                    }
                 }
             }
 
