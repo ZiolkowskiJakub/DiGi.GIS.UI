@@ -9,7 +9,6 @@ using DiGi.GIS.Classes;
 using DiGi.GIS.Constants;
 using DiGi.GIS.Emgu.CV.Classes;
 using DiGi.GIS.UI.Classes;
-using DiGi.GIS.UI.Controls;
 using Microsoft.Win32;
 using System.Collections.Concurrent;
 using System.Drawing;
@@ -385,6 +384,181 @@ namespace DiGi.GIS.UI.Application.Windows
             }
         }
 
+        private static void OrtoDatasTest()
+        {
+            OpenFileDialog openFileDialog = new()
+            {
+                Filter = "GIS Model files (*.gmf)|*.gmf|All files (*.*)|*.*"
+            };
+            bool? result = openFileDialog.ShowDialog();
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string path = openFileDialog.FileName;
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            {
+                return;
+            }
+
+            string? directory_GISModel = System.IO.Path.GetDirectoryName(path);
+            if (!Directory.Exists(directory_GISModel))
+            {
+                return;
+            }
+
+            string? directory_OrtoDatas = GIS.Query.OrtoDatasDirectory_Building2D(directory_GISModel);
+            if (!Directory.Exists(directory_OrtoDatas))
+            {
+                return;
+            }
+
+            using GISModelFile gISModelFile = new(path);
+            gISModelFile.Open();
+
+            GISModel? gISModel = gISModelFile.Value;
+
+            List<Building2D>? building2Ds = gISModel?.GetObjects<Building2D>();
+            if (building2Ds != null && building2Ds.Count > 0)
+            {
+                Building2D building2D = building2Ds[0];
+
+                Core.Convert.ToSystem_FileInfo(building2D, @"C:\Users\jakub\GitHub\DigiProject\DiGi.Test\files\OrtoDatas_BoundingBox2D_Building2D.json");
+
+                OrtoDatas? ortoDatas = GIS.Query.OrtoDatas(building2D, directory_OrtoDatas) ?? throw new Exception("No OrtoDatas");
+
+                Core.Convert.ToSystem_FileInfo((ISerializableObject)ortoDatas, @"C:\Users\jakub\GitHub\DigiProject\DiGi.Test\files\OrtoDatas_BoundingBox2D_OrtoDatas.json");
+
+                BoundingBox2D? boundingBox2D = (building2D?.PolygonalFace2D?.GetBoundingBox()) ?? throw new Exception("Invalid reometry of Building2D");
+
+                foreach (OrtoData ortoData in ortoDatas)
+                {
+                    BitmapImage? bitmapImage = ortoData.BitmapImage();
+
+                    //Core.Classes.Size? size_1 = GIS.Query.Size(ortoData.Bytes);
+
+                    //Core.Classes.Size? size_2 = ortoData.GetSize(Enums.GeometryContext.Global);
+
+                    //Core.Classes.Size? size_3 = ortoData.GetSize(Enums.GeometryContext.Local);
+
+                    BoundingBox2D? boundingBox2D_1 = ortoData.GetBoundingBox(Enums.GeometryContext.Global);
+                    if (boundingBox2D_1 is null)
+                    {
+                        continue;
+                    }
+
+                    //BoundingBox2D? boundingBox2D_2 = ortoData.GetBoundingBox(Enums.GeometryContext.Local);
+
+                    bool inside = boundingBox2D_1.Inside(boundingBox2D);
+                    if (!inside)
+                    {
+                        throw new Exception("Invalid calculations for OrtoDatas");
+                    }
+                }
+            }
+        }
+
+        private static void SaveGISModelToJsonFile()
+        {
+            bool? dialogResult;
+
+            OpenFileDialog openFileDialog = new()
+            {
+                Title = $"Select {FileTypeName.GISModelFile}",
+                Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.GISModelFile, FileExtension.GISModelFile)
+            };
+            dialogResult = openFileDialog.ShowDialog();
+            if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
+            {
+                return;
+            }
+
+            string path_GISModelFile = openFileDialog.FileName;
+
+            SaveFileDialog saveFileDialog = new()
+            {
+                Title = "Save json text file",
+                Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", "Text file", "txt")
+            };
+
+            dialogResult = saveFileDialog.ShowDialog();
+            if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
+            {
+                return;
+            }
+
+            string path_GISModelJson = saveFileDialog.FileName;
+
+            GISModel? gISModel = null;
+            using (GISModelFile gISModelFile = new(path_GISModelFile))
+            {
+                gISModelFile.Open();
+                gISModel = gISModelFile.Value;
+            }
+
+            if (gISModel is null)
+            {
+                return;
+            }
+
+            Core.Convert.ToSystem_FileInfo(gISModel, path_GISModelJson);
+        }
+
+        private static void SaveOrtoDatasToJsonFile()
+        {
+            bool? dialogResult;
+
+            OpenFileDialog openFileDialog = new()
+            {
+                Title = $"Select {FileTypeName.OrtoDatasFile}",
+                Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.OrtoDatasFile, FileExtension.OrtoDatasFile)
+            };
+            dialogResult = openFileDialog.ShowDialog();
+            if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
+            {
+                return;
+            }
+
+            string path_OrtoDatasFile = openFileDialog.FileName;
+
+            SaveFileDialog saveFileDialog = new()
+            {
+                Title = "Save json text file",
+                Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", "Text file", "txt")
+            };
+
+            dialogResult = saveFileDialog.ShowDialog();
+            if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
+            {
+                return;
+            }
+
+            string path_OrtoDataJson = saveFileDialog.FileName;
+
+            OrtoDatas? ortoDatas = null;
+
+            using (OrtoDatasFile ortoDataFiles = new(path_OrtoDatasFile))
+            {
+                ortoDataFiles.Open();
+
+                HashSet<UniqueReference>? uniqueReferences = ortoDataFiles.GetUniqueReferences();
+                if (uniqueReferences is null || uniqueReferences.Count == 0)
+                {
+                    return;
+                }
+
+                ortoDatas = ortoDataFiles.GetValue(uniqueReferences.ElementAt(0));
+            }
+
+            if (ortoDatas is null)
+            {
+                return;
+            }
+
+            Core.Convert.ToSystem_FileInfo((ISerializableObject)ortoDatas, path_OrtoDataJson);
+        }
+
         private void AppendBuildingModels()
         {
             DateTime dateTime = DateTime.Now;
@@ -720,83 +894,6 @@ namespace DiGi.GIS.UI.Application.Windows
             //CheckPoint();
             OrtoDatasTest();
         }
-        
-        private static void OrtoDatasTest()
-        {
-            OpenFileDialog openFileDialog = new()
-            {
-                Filter = "GIS Model files (*.gmf)|*.gmf|All files (*.*)|*.*"
-            };
-            bool? result = openFileDialog.ShowDialog();
-            if (result == null || !result.HasValue || !result.Value)
-            {
-                return;
-            }
-
-            string path = openFileDialog.FileName;
-            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
-            {
-                return;
-            }
-
-            string? directory_GISModel = System.IO.Path.GetDirectoryName(path);
-            if (!Directory.Exists(directory_GISModel))
-            {
-                return;
-            }
-
-            string? directory_OrtoDatas = GIS.Query.OrtoDatasDirectory_Building2D(directory_GISModel);
-            if (!Directory.Exists(directory_OrtoDatas))
-            {
-                return;
-            }
-
-            using GISModelFile gISModelFile = new(path);
-            gISModelFile.Open();
-
-            GISModel? gISModel = gISModelFile.Value;
-
-            List<Building2D>? building2Ds = gISModel?.GetObjects<Building2D>();
-            if (building2Ds != null && building2Ds.Count > 0)
-            {
-                Building2D building2D = building2Ds[0];
-
-                Core.Convert.ToSystem_FileInfo(building2D, @"C:\Users\jakub\GitHub\DigiProject\DiGi.Test\files\OrtoDatas_BoundingBox2D_Building2D.json");
-
-                OrtoDatas? ortoDatas = GIS.Query.OrtoDatas(building2D, directory_OrtoDatas) ?? throw new Exception("No OrtoDatas");
-
-                Core.Convert.ToSystem_FileInfo((ISerializableObject)ortoDatas, @"C:\Users\jakub\GitHub\DigiProject\DiGi.Test\files\OrtoDatas_BoundingBox2D_OrtoDatas.json");
-
-                BoundingBox2D? boundingBox2D = (building2D?.PolygonalFace2D?.GetBoundingBox()) ?? throw new Exception("Invalid reometry of Building2D");
-
-                foreach (OrtoData ortoData in ortoDatas)
-                {
-                    BitmapImage? bitmapImage = ortoData.BitmapImage();
-
-                    //Core.Classes.Size? size_1 = GIS.Query.Size(ortoData.Bytes);
-
-                    //Core.Classes.Size? size_2 = ortoData.GetSize(Enums.GeometryContext.Global);
-
-                    //Core.Classes.Size? size_3 = ortoData.GetSize(Enums.GeometryContext.Local);
-
-                    BoundingBox2D? boundingBox2D_1 = ortoData.GetBoundingBox(Enums.GeometryContext.Global);
-                    if(boundingBox2D_1 is null)
-                    {
-                        continue;
-                    }
-
-
-                    //BoundingBox2D? boundingBox2D_2 = ortoData.GetBoundingBox(Enums.GeometryContext.Local);
-
-                    bool inside = boundingBox2D_1.Inside(boundingBox2D);
-                    if(!inside)
-                    {
-                        throw new Exception("Invalid calculations for OrtoDatas");
-                    }
-                }
-            }
-
-        }
 
         private void Button_ToDiGiGISModelFiles_Click(object sender, RoutedEventArgs e)
         {
@@ -859,7 +956,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             if (clear)
             {
-                await administrativeAreal2DPostgreSQLConverter.Clear();
+                await administrativeAreal2DPostgreSQLConverter.ClearAsync();
             }
 
             foreach (string path_Input in paths_Input)
@@ -946,7 +1043,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             if (clear)
             {
-                await building2DPostgreSQLConverter.Clear();
+                await building2DPostgreSQLConverter.ClearAsync();
             }
 
             foreach (string path_Input in paths_Input)
@@ -994,6 +1091,145 @@ namespace DiGi.GIS.UI.Application.Windows
                 }
 
                 await building2DPostgreSQLConverter.UpdateAsync(building2Ds_PostgreSQL);
+            }
+
+            TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Updating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
+
+        private async void Button_UpdateOrtoDatas_Click(object sender, RoutedEventArgs e)
+        {
+            if (gISPostgreSQLConverterManager is null || !(await gISPostgreSQLConverterManager.TryCreateDatabase<PostgreSQL.Classes.OrtoDatasPostgreSQLConverter>()))
+            {
+                return;
+            }
+
+            PostgreSQL.Classes.OrtoDatasPostgreSQLConverter? ortoDatasPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<PostgreSQL.Classes.OrtoDatasPostgreSQLConverter>();
+            if (ortoDatasPostgreSQLConverter is null)
+            {
+                return;
+            }
+
+            PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter? administrativeAreal2DPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter>();
+            if (administrativeAreal2DPostgreSQLConverter is null)
+            {
+                return;
+            }
+
+            bool clear = true;
+
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Updating...";
+
+            bool? result;
+
+            OpenFolderDialog openFolderDialog = new();
+            result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
+            if (paths_Input == null || paths_Input.Length == 0)
+            {
+                return;
+            }
+
+            if (clear)
+            {
+                await ortoDatasPostgreSQLConverter.ClearAsync();
+            }
+
+            foreach (string path_Input in paths_Input)
+            {
+                string? directory_GISModel = System.IO.Path.GetDirectoryName(path_Input);
+                if (!Directory.Exists(directory_GISModel))
+                {
+                    continue;
+                }
+
+                string? directory_OrtoDatas = GIS.Query.OrtoDatasDirectory_Building2D(directory_GISModel);
+                if (!Directory.Exists(directory_OrtoDatas))
+                {
+                    continue;
+                }
+
+                GISModel? gISModel_Input = null;
+
+                using (GISModelFile gISModelFile = new(path_Input))
+                {
+                    gISModelFile.Open();
+                    gISModel_Input = gISModelFile.Value;
+                }
+
+                if (gISModel_Input == null)
+                {
+                    continue;
+                }
+
+                List<Building2D>? building2Ds_GIS = gISModel_Input.GetObjects<Building2D>();
+                if (building2Ds_GIS is null || building2Ds_GIS.Count == 0)
+                {
+                    continue;
+                }
+
+                //string? code = null;
+                string? code = gISModel_Input.Reference;
+                if (!string.IsNullOrWhiteSpace(code))
+                {
+                    code = code.ToUpper();
+                    int index = code.IndexOf('_');
+                    if (index != -1)
+                    {
+                        code = code[..index];
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(code))
+                {
+                    continue;
+                }
+
+                int? countyId = await administrativeAreal2DPostgreSQLConverter.GetIdByCode(code, PostgreSQL.Enums.AdministrativeArealType.County);
+                if (countyId is null || !countyId.HasValue)
+                {
+                    continue;
+                }
+
+                List<Building2D>? building2Ds_Split;
+
+                SizeSplitter<Building2D> memorySizeSplitter = new(building2Ds_GIS);
+                while ((building2Ds_Split = memorySizeSplitter.Next(200)) is not null)
+                {
+                    IEnumerable<OrtoDatas>? ortoDatas_GIS = GIS.Query.OrtoDatasDictionary(directory_OrtoDatas, building2Ds_Split)?.Values;
+                    if (ortoDatas_GIS is null)
+                    {
+                        continue;
+                    }
+
+                    List<PostgreSQL.Classes.OrtoDatas>? ortoDatas_PostgreSQL = [];
+                    foreach (OrtoDatas ortoDatas_GIS_Temp in ortoDatas_GIS)
+                    {
+                        PostgreSQL.Classes.OrtoDatas? ortoDatas_PostgreSQL_Temp = PostgreSQL.Convert.ToPostgreSQL(ortoDatas_GIS_Temp, countyId);
+                        if (ortoDatas_PostgreSQL_Temp is null)
+                        {
+                            continue;
+                        }
+
+                        ortoDatas_PostgreSQL.Add(ortoDatas_PostgreSQL_Temp);
+                    }
+
+                    await ortoDatasPostgreSQLConverter.UpdateAsync(ortoDatas_PostgreSQL);
+                }
             }
 
             TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
@@ -1560,106 +1796,6 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = string.Format("Done Resaving! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
 
             MessageBox.Show("Finished!");
-        }
-
-        private static void SaveGISModelToJsonFile()
-        {
-            bool? dialogResult;
-
-            OpenFileDialog openFileDialog = new()
-            {
-                Title = $"Select {FileTypeName.GISModelFile}",
-                Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.GISModelFile, FileExtension.GISModelFile)
-            };
-            dialogResult = openFileDialog.ShowDialog();
-            if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
-            {
-                return;
-            }
-
-            string path_GISModelFile = openFileDialog.FileName;
-
-            SaveFileDialog saveFileDialog = new()
-            {
-                Title = "Save json text file",
-                Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", "Text file", "txt")
-            };
-
-            dialogResult = saveFileDialog.ShowDialog();
-            if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
-            {
-                return;
-            }
-
-            string path_GISModelJson = saveFileDialog.FileName;
-
-            GISModel? gISModel = null;
-            using (GISModelFile gISModelFile = new(path_GISModelFile))
-            {
-                gISModelFile.Open();
-                gISModel = gISModelFile.Value;
-            }
-
-            if (gISModel is null)
-            {
-                return;
-            }
-
-            Core.Convert.ToSystem_FileInfo(gISModel, path_GISModelJson);
-        }
-
-        private static void SaveOrtoDatasToJsonFile()
-        {
-            bool? dialogResult;
-
-            OpenFileDialog openFileDialog = new()
-            {
-                Title = $"Select {FileTypeName.OrtoDatasFile}",
-                Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", FileTypeName.OrtoDatasFile, FileExtension.OrtoDatasFile)
-            };
-            dialogResult = openFileDialog.ShowDialog();
-            if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
-            {
-                return;
-            }
-
-            string path_OrtoDatasFile = openFileDialog.FileName;
-
-            SaveFileDialog saveFileDialog = new()
-            {
-                Title = "Save json text file",
-                Filter = string.Format("{0} (*.{1})|*.{1}|All files (*.*)|*.*", "Text file", "txt")
-            };
-
-            dialogResult = saveFileDialog.ShowDialog();
-            if (dialogResult == null || !dialogResult.HasValue || !dialogResult.Value)
-            {
-                return;
-            }
-
-            string path_OrtoDataJson = saveFileDialog.FileName;
-
-            OrtoDatas? ortoDatas = null;
-
-            using (OrtoDatasFile ortoDataFiles = new(path_OrtoDatasFile))
-            {
-                ortoDataFiles.Open();
-
-                HashSet<UniqueReference>? uniqueReferences = ortoDataFiles.GetUniqueReferences();
-                if (uniqueReferences is null || uniqueReferences.Count == 0)
-                {
-                    return;
-                }
-
-                ortoDatas = ortoDataFiles.GetValue(uniqueReferences.ElementAt(0));
-            }
-
-            if (ortoDatas is null)
-            {
-                return;
-            }
-
-            Core.Convert.ToSystem_FileInfo((ISerializableObject)ortoDatas, path_OrtoDataJson);
         }
 
         private void Test_1()
