@@ -1199,7 +1199,7 @@ namespace DiGi.GIS.UI.Application.Windows
                     continue;
                 }
 
-                int? countyId = await administrativeAreal2DPostgreSQLConverter.GetIdByCode(code, PostgreSQL.Enums.AdministrativeArealType.County);
+                int? countyId = await administrativeAreal2DPostgreSQLConverter.GetIdByCodeAsync(code, PostgreSQL.Enums.AdministrativeArealType.County);
                 if (countyId is null || !countyId.HasValue)
                 {
                     continue;
