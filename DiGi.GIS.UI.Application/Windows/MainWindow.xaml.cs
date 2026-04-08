@@ -892,8 +892,69 @@ namespace DiGi.GIS.UI.Application.Windows
             //CheckAdministrativeAreal2D();
             //UpdateUpdateAdministrativeAreal2DsCodes();
             //CheckPoint();
-            OrtoDatasTest();
+            //OrtoDatasTest();
+
+            PostgreSQLTest();
         }
+
+        private async void PostgreSQLTest()
+        {
+            if (gISPostgreSQLConverterManager is null || !(await gISPostgreSQLConverterManager.TryCreateDatabase<PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter>()))
+            {
+                return;
+            }
+
+            PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter? administrativeAreal2DPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter>();
+            if (administrativeAreal2DPostgreSQLConverter is null)
+            {
+                return;
+            }
+
+            List<PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences_All_1 = [];
+
+            List<PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences_Code = await administrativeAreal2DPostgreSQLConverter.GetAdministrativeAreal2DReferencesByCodeAsync("02");
+            if(administrativeAreal2DReferences_Code is null)
+            {
+                return;
+            }
+
+            foreach(PostgreSQL.Classes.AdministrativeAreal2DReference administrativeAreal2DReference_Code in administrativeAreal2DReferences_Code)
+            {
+                List<PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences_Temp = await administrativeAreal2DPostgreSQLConverter.GetAdministrativeAreal2DReferencesByAdministrativeArealTypeAsync(PostgreSQL.Enums.AdministrativeArealType.Municipality, administrativeAreal2DReference_Code.Id);
+                if(administrativeAreal2DReferences_Temp is null)
+                {
+                    continue;
+                }
+
+                administrativeAreal2DReferences_All_1.AddRange(administrativeAreal2DReferences_Temp);
+            }
+
+            List<PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences_All_2 = await administrativeAreal2DPostgreSQLConverter.GetAdministrativeAreal2DReferencesByCodeAsync("02", PostgreSQL.Enums.AdministrativeArealType.Municipality);
+            if(administrativeAreal2DReferences_All_2 is null)
+            {
+                return;
+            }
+
+
+            if(administrativeAreal2DReferences_All_1.Count != administrativeAreal2DReferences_All_2.Count)
+            {
+                throw new Exception();
+            }
+
+            PostgreSQL.Classes.AdministrativeAreal2DReference? administrativeAreal2DReference = await administrativeAreal2DPostgreSQLConverter.GetAdministrativeAreal2DReferenceByCodeAsync("02");
+            if (administrativeAreal2DReference is null)
+            {
+                return;
+            }
+
+            PostgreSQL.Classes.Building2DPostgreSQLConverter? building2DPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<PostgreSQL.Classes.Building2DPostgreSQLConverter>();
+            if (building2DPostgreSQLConverter is null)
+            {
+                return;
+            }
+
+            List<PostgreSQL.Classes.Building2DReference>? building2DReferences = await building2DPostgreSQLConverter.GetBuilding2DReferencesByAdministrativeAreal2DIdsAsync([2]);
+        }   
 
         private void Button_ToDiGiGISModelFiles_Click(object sender, RoutedEventArgs e)
         {
