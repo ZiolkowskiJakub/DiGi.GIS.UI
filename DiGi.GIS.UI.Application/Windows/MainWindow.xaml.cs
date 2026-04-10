@@ -977,7 +977,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private async void Button_UpdateAdministrativeAreal2Ds_Click(object sender, RoutedEventArgs e)
         {
-            bool clear = true;
+            bool clear = false;
 
             DateTime dateTime = DateTime.Now;
 
