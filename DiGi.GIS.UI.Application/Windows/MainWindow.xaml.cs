@@ -913,15 +913,15 @@ namespace DiGi.GIS.UI.Application.Windows
             List<PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences_All_1 = [];
 
             List<PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences_Code = await administrativeAreal2DPostgreSQLConverter.GetAdministrativeAreal2DReferencesByCodeAsync("02");
-            if(administrativeAreal2DReferences_Code is null)
+            if (administrativeAreal2DReferences_Code is null)
             {
                 return;
             }
 
-            foreach(PostgreSQL.Classes.AdministrativeAreal2DReference administrativeAreal2DReference_Code in administrativeAreal2DReferences_Code)
+            foreach (PostgreSQL.Classes.AdministrativeAreal2DReference administrativeAreal2DReference_Code in administrativeAreal2DReferences_Code)
             {
                 List<PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences_Temp = await administrativeAreal2DPostgreSQLConverter.GetAdministrativeAreal2DReferencesByAdministrativeArealTypeAsync(PostgreSQL.Enums.AdministrativeArealType.Municipality, administrativeAreal2DReference_Code.Id);
-                if(administrativeAreal2DReferences_Temp is null)
+                if (administrativeAreal2DReferences_Temp is null)
                 {
                     continue;
                 }
@@ -930,13 +930,12 @@ namespace DiGi.GIS.UI.Application.Windows
             }
 
             List<PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences_All_2 = await administrativeAreal2DPostgreSQLConverter.GetAdministrativeAreal2DReferencesByCodeAsync("02", PostgreSQL.Enums.AdministrativeArealType.Municipality);
-            if(administrativeAreal2DReferences_All_2 is null)
+            if (administrativeAreal2DReferences_All_2 is null)
             {
                 return;
             }
 
-
-            if(administrativeAreal2DReferences_All_1.Count != administrativeAreal2DReferences_All_2.Count)
+            if (administrativeAreal2DReferences_All_1.Count != administrativeAreal2DReferences_All_2.Count)
             {
                 throw new Exception();
             }
@@ -954,7 +953,7 @@ namespace DiGi.GIS.UI.Application.Windows
             }
 
             List<PostgreSQL.Classes.Building2DReference>? building2DReferences = await building2DPostgreSQLConverter.GetBuilding2DReferencesByAdministrativeAreal2DIdsAsync([2]);
-        }   
+        }
 
         private void Button_ToDiGiGISModelFiles_Click(object sender, RoutedEventArgs e)
         {
