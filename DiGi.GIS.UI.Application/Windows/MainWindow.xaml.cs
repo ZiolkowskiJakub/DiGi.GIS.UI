@@ -953,6 +953,25 @@ namespace DiGi.GIS.UI.Application.Windows
             }
 
             List<PostgreSQL.Classes.Building2DReference>? building2DReferences = await building2DPostgreSQLConverter.GetBuilding2DReferencesByAdministrativeAreal2DIdsAsync([2]);
+
+            List<PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences = await administrativeAreal2DPostgreSQLConverter.GetAdministrativeAreal2DReferencesByAdministrativeArealTypeAsync(PostgreSQL.Enums.AdministrativeArealType.Voivodeship, null, true);
+            if (administrativeAreal2DReferences is null)
+            {
+                return;
+            }
+
+            PostgreSQL.Classes.GISPostgreSQLConverterManager? gISPostgreSQLConverterManager_Temp = PostgreSQL.Create.GISPostgreSQLConverterManager();
+            if (gISPostgreSQLConverterManager_Temp is not null)
+            {
+                List<PostgreSQL.Interfaces.IGISPostgreSQLConverter> gISPostgreSQLConverters = gISPostgreSQLConverterManager_Temp.GetPostgreSQLConverters<PostgreSQL.Interfaces.IGISPostgreSQLConverter>();
+                if (gISPostgreSQLConverters is not null)
+                {
+                    foreach (PostgreSQL.Interfaces.IGISPostgreSQLConverter gISPostgreSQLConverter in gISPostgreSQLConverters)
+                    {
+                        //serviceCollection.AddSingleton(gISPostgreSQLConverter);
+                    }
+                }
+            }
         }
 
         private void Button_ToDiGiGISModelFiles_Click(object sender, RoutedEventArgs e)
