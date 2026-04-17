@@ -952,7 +952,9 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
             List<PostgreSQL.Classes.Building2DReference>? building2DReferences = await building2DPostgreSQLConverter.GetBuilding2DReferencesByAdministrativeAreal2DIdsAsync([2]);
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
 
             List<PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences = await administrativeAreal2DPostgreSQLConverter.GetAdministrativeAreal2DReferencesByAdministrativeArealTypeAsync(PostgreSQL.Enums.AdministrativeArealType.Voivodeship, null, true);
             if (administrativeAreal2DReferences is null)
@@ -966,10 +968,12 @@ namespace DiGi.GIS.UI.Application.Windows
                 List<PostgreSQL.Interfaces.IGISPostgreSQLConverter> gISPostgreSQLConverters = gISPostgreSQLConverterManager_Temp.GetPostgreSQLConverters<PostgreSQL.Interfaces.IGISPostgreSQLConverter>();
                 if (gISPostgreSQLConverters is not null)
                 {
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
                     foreach (PostgreSQL.Interfaces.IGISPostgreSQLConverter gISPostgreSQLConverter in gISPostgreSQLConverters)
                     {
                         //serviceCollection.AddSingleton(gISPostgreSQLConverter);
                     }
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
                 }
             }
         }
