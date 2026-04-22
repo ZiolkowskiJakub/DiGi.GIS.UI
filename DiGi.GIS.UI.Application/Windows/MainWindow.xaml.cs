@@ -8,6 +8,7 @@ using DiGi.Geometry.Planar.Classes;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Constants;
 using DiGi.GIS.Emgu.CV.Classes;
+using DiGi.GIS.PostgreSQL;
 using DiGi.GIS.UI.Classes;
 using Microsoft.Win32;
 using System.Collections.Concurrent;
@@ -904,6 +905,19 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
+
+            PostgreSQL.Classes.OrtoDatasPostgreSQLConverter? ortoDatasPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<PostgreSQL.Classes.OrtoDatasPostgreSQLConverter>();
+            if (ortoDatasPostgreSQLConverter is null)
+            {
+                return;
+            }
+
+            //List<double>? estimatedCoverageFactors = await ortoDatasPostgreSQLConverter.GetEstimatedCoverageFactorsAsync([6, 3854, 19719, 10363, 17509, 28262, 42707, 55639, 57694, 65613, 70825, 75132, 80410, 87574, 92383, 100521]);
+            //if(estimatedCoverageFactors is null)
+            //{
+            //    return;
+            //}
+
             PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter? administrativeAreal2DPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter>();
             if (administrativeAreal2DPostgreSQLConverter is null)
             {
@@ -1181,7 +1195,7 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = string.Format("Done Updating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
-        private async void Button_UpdateOrtoDatas_Click(object sender, RoutedEventArgs e)
+        private async void Button_UpdateOrtoDatas_FromFile_Click(object sender, RoutedEventArgs e)
         {
             if (gISPostgreSQLConverterManager is null || !(await gISPostgreSQLConverterManager.TryCreateDatabase<PostgreSQL.Classes.OrtoDatasPostgreSQLConverter>()))
             {
@@ -2419,6 +2433,65 @@ namespace DiGi.GIS.UI.Application.Windows
             TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Writing! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
+
+        private async void Button_RefreshOrtoDatas_Click(object sender, RoutedEventArgs e)
+        {
+            bool result = await PostgreSQL.Modify.RefreshOrtoDatas(gISPostgreSQLConverterManager, new PostgreSQL.Classes.PostgreSQLOrtoDatasRefreshOptions());
+            if(result)
+            {
+                
+            }
+        }
+
+        private async void Button_UpdateOrtoDatas_FromDatabase_Click(object sender, RoutedEventArgs e)
+        {
+            PostgreSQL.Classes.OrtoDatasPostgreSQLConverter? ortoDatasPostgreSQLConverter = gISPostgreSQLConverterManager?.GetPostgreSQLConverter<PostgreSQL.Classes.OrtoDatasPostgreSQLConverter>();
+            if(ortoDatasPostgreSQLConverter is null)
+            {
+                return;
+            }
+
+            PostgreSQL.Classes.Building2DPostgreSQLConverter? building2DPostgreSQLConverter = gISPostgreSQLConverterManager!.GetPostgreSQLConverter<PostgreSQL.Classes.Building2DPostgreSQLConverter>();
+            if (building2DPostgreSQLConverter is null)
+            {
+                return;
+            }
+
+            List<PostgreSQL.Classes.Building2DReference>? building2DReferences = await ortoDatasPostgreSQLConverter.GetNextBuilding2DReferencesAsync(10);
+            if(building2DReferences is not null)
+            {
+                while (building2DReferences.Count > 0)
+                {
+                    int? countyId = building2DReferences[0].CountyId;
+
+                    Core.Query.Filter(building2DReferences, x => x?.CountyId == countyId, out List<PostgreSQL.Classes.Building2DReference>? building2DReference_In, out List<PostgreSQL.Classes.Building2DReference>? building2DReferences_Out);
+                    building2DReferences = building2DReferences_Out ?? [];
+
+                    if(building2DReference_In is not null)
+                    {
+                        List<PostgreSQL.Classes.Building2D>? building2Ds = await building2DPostgreSQLConverter.GetBuilding2DsByBuilding2DReferences(building2DReference_In);
+                        if(building2Ds != null)
+                        {
+                            OrtoDatasBuilding2DOptions ortoDatasBuilding2DOptions = new();
+
+                            List<PostgreSQL.Classes.OrtoDatas> ortoDatas_PostgreSQL = [];
+                            foreach (PostgreSQL.Classes.Building2D building2D in building2Ds)
+                            {
+                                GIS.Classes.OrtoDatas? ortoDatas = await GIS.Create.OrtoDatas(building2D.ToDiGi(), ortoDatasBuilding2DOptions.Years, ortoDatasBuilding2DOptions.Offset, ortoDatasBuilding2DOptions.Width, ortoDatasBuilding2DOptions.Reduce, squared: true);
+                                if (ortoDatas?.ToPostgreSQL(countyId) is not PostgreSQL.Classes.OrtoDatas ortoDatas_PostgreSQL_Temp)
+                                {
+                                    continue;
+                                }
+
+                                ortoDatas_PostgreSQL.Add(ortoDatas_PostgreSQL_Temp);
+                            }
+
+                            HashSet<long>? ids = await ortoDatasPostgreSQLConverter.UpdateAsync(ortoDatas_PostgreSQL);
+                        }
+                    }
+                }
+            }
         }
     }
 }
