@@ -2493,5 +2493,149 @@ namespace DiGi.GIS.UI.Application.Windows
                 }
             }
         }
+
+        private async void Button_UpdateYearBuiltDatas_Click(object sender, RoutedEventArgs e)
+        {
+            if (gISPostgreSQLConverterManager is null || !(await gISPostgreSQLConverterManager.TryCreateDatabase<PostgreSQL.Classes.YearBuiltDataPostgreSQLConverter>()))
+            {
+                return;
+            }
+
+            PostgreSQL.Classes.YearBuiltDataPostgreSQLConverter? yearBuiltDataPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<PostgreSQL.Classes.YearBuiltDataPostgreSQLConverter>();
+            if (yearBuiltDataPostgreSQLConverter is null)
+            {
+                return;
+            }
+
+            PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter? administrativeAreal2DPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter>();
+            if (administrativeAreal2DPostgreSQLConverter is null)
+            {
+                return;
+            }
+
+            //bool clear = true;
+
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Updating...";
+
+            bool? result;
+
+            OpenFolderDialog openFolderDialog = new();
+            result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
+            if (paths_Input == null || paths_Input.Length == 0)
+            {
+                return;
+            }
+
+            //if (clear)
+            //{
+            //    await yearBuiltDataPostgreSQLConverter.ClearAsync();
+            //}
+
+            foreach (string path_Input in paths_Input)
+            {
+                string? directory_GISModel = System.IO.Path.GetDirectoryName(path_Input);
+                if (!Directory.Exists(directory_GISModel))
+                {
+                    continue;
+                }
+
+                GISModel? gISModel_Input = null;
+
+                using (GISModelFile gISModelFile = new(path_Input))
+                {
+                    gISModelFile.Open();
+                    gISModel_Input = gISModelFile.Value;
+
+                    if (gISModel_Input == null)
+                    {
+                        continue;
+                    }
+
+                    List<Building2D>? building2Ds_GIS = gISModel_Input.GetObjects<Building2D>();
+                    if (building2Ds_GIS is null || building2Ds_GIS.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    //string? code = null;
+                    string? code = gISModel_Input.Reference;
+                    if (!string.IsNullOrWhiteSpace(code))
+                    {
+                        code = code.ToUpper();
+                        int index = code.IndexOf('_');
+                        if (index != -1)
+                        {
+                            code = code[..index];
+                        }
+                    }
+
+                    if (string.IsNullOrWhiteSpace(code))
+                    {
+                        continue;
+                    }
+
+                    int? countyId = await administrativeAreal2DPostgreSQLConverter.GetIdByCodeAsync(code, PostgreSQL.Enums.AdministrativeArealType.County);
+                    if (countyId is null || !countyId.HasValue)
+                    {
+                        continue;
+                    }
+
+                    List<Building2D>? building2Ds_Split;
+
+                    SizeSplitter<Building2D> memorySizeSplitter = new(building2Ds_GIS);
+                    while ((building2Ds_Split = memorySizeSplitter.Next(200)) is not null)
+                    {
+                        List<string> references = [];
+                        foreach (Building2D building2D in building2Ds_Split)
+                        {
+                            if (building2D?.Reference is string reference && !string.IsNullOrWhiteSpace(reference))
+                            {
+                                references.Add(reference);
+                            }
+                        }
+
+                        Dictionary<string, YearBuiltData>? dictionary = GIS.Query.YearBuiltDataDictionary<YearBuiltData>(gISModelFile, references);
+                        if (dictionary is null || dictionary.Count == 0)
+                        {
+                            continue;
+                        }
+
+                        List<PostgreSQL.Classes.YearBuiltData> yearBuiltDatas_PostgreSQL = [];
+                        foreach(YearBuiltData yearBuiltData in dictionary.Values)
+                        {
+                            PostgreSQL.Classes.YearBuiltData? yearBuiltData_PostgreSQL = yearBuiltData.ToPostgreSQL(countyId);
+                            if(yearBuiltData_PostgreSQL is not null)
+                            {
+                                yearBuiltDatas_PostgreSQL.Add(yearBuiltData_PostgreSQL);
+                            }
+
+                        }
+
+                        await yearBuiltDataPostgreSQLConverter.UpdateAsync(yearBuiltDatas_PostgreSQL);
+
+                    }
+                }
+
+
+            }
+
+            TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
+
+            TextBlock_Progress.Text = string.Format("Done Updating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
     }
 }
