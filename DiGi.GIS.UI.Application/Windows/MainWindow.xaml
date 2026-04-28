@@ -60,6 +60,7 @@
                 <Button x:Name="Button_UpdateOrtoDatas_FromFile" Content="Update OrtoDatas From File" HorizontalAlignment="Center" Margin="0,5,0,0" VerticalAlignment="Top" Width="190" Click="Button_UpdateOrtoDatas_FromFile_Click" />
                 <Button x:Name="Button_UpdateOrtoDatas_FromDatabase" Content="Update OrtoDatas From Database" HorizontalAlignment="Center" Margin="0,5,0,0" VerticalAlignment="Top" Width="190" Click="Button_UpdateOrtoDatas_FromDatabase_Click" />
                 <Button x:Name="Button_UpdateYearBuiltDatas" Content="Update YearBuiltDatas From Database" HorizontalAlignment="Center" Margin="0,5,0,0" VerticalAlignment="Top" Width="190" Click="Button_UpdateYearBuiltDatas_Click" />
+                <Button x:Name="Button_OccupancyDatas_FromFile" Content="Update OccupancyDatas From File" HorizontalAlignment="Center" Margin="0,5,0,0" VerticalAlignment="Top" Width="190" Click="Button_OccupancyDatas_FromFile_Click" />
             </StackPanel>
         </Grid>
         <StatusBarItem DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="3,3,3,3">

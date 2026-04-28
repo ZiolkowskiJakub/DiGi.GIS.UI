@@ -905,7 +905,6 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-
             PostgreSQL.Classes.OrtoDatasPostgreSQLConverter? ortoDatasPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<PostgreSQL.Classes.OrtoDatasPostgreSQLConverter>();
             if (ortoDatasPostgreSQLConverter is null)
             {
@@ -2438,16 +2437,15 @@ namespace DiGi.GIS.UI.Application.Windows
         private async void Button_RefreshOrtoDatas_Click(object sender, RoutedEventArgs e)
         {
             bool result = await PostgreSQL.Modify.RefreshOrtoDatas(gISPostgreSQLConverterManager, new PostgreSQL.Classes.PostgreSQLOrtoDatasRefreshOptions());
-            if(result)
+            if (result)
             {
-                
             }
         }
 
         private async void Button_UpdateOrtoDatas_FromDatabase_Click(object sender, RoutedEventArgs e)
         {
             PostgreSQL.Classes.OrtoDatasPostgreSQLConverter? ortoDatasPostgreSQLConverter = gISPostgreSQLConverterManager?.GetPostgreSQLConverter<PostgreSQL.Classes.OrtoDatasPostgreSQLConverter>();
-            if(ortoDatasPostgreSQLConverter is null)
+            if (ortoDatasPostgreSQLConverter is null)
             {
                 return;
             }
@@ -2459,7 +2457,7 @@ namespace DiGi.GIS.UI.Application.Windows
             }
 
             List<PostgreSQL.Classes.Building2DReference>? building2DReferences = await ortoDatasPostgreSQLConverter.GetNextBuilding2DReferencesAsync(10);
-            if(building2DReferences is not null)
+            if (building2DReferences is not null)
             {
                 while (building2DReferences.Count > 0)
                 {
@@ -2468,17 +2466,17 @@ namespace DiGi.GIS.UI.Application.Windows
                     Core.Query.Filter(building2DReferences, x => x?.CountyId == countyId, out List<PostgreSQL.Classes.Building2DReference>? building2DReference_In, out List<PostgreSQL.Classes.Building2DReference>? building2DReferences_Out);
                     building2DReferences = building2DReferences_Out ?? [];
 
-                    if(building2DReference_In is not null)
+                    if (building2DReference_In is not null)
                     {
                         List<PostgreSQL.Classes.Building2D>? building2Ds = await building2DPostgreSQLConverter.GetBuilding2DsByBuilding2DReferences(building2DReference_In);
-                        if(building2Ds != null)
+                        if (building2Ds != null)
                         {
                             OrtoDatasBuilding2DOptions ortoDatasBuilding2DOptions = new();
 
                             List<PostgreSQL.Classes.OrtoDatas> ortoDatas_PostgreSQL = [];
                             foreach (PostgreSQL.Classes.Building2D building2D in building2Ds)
                             {
-                                GIS.Classes.OrtoDatas? ortoDatas = await GIS.Create.OrtoDatas(building2D.ToDiGi(), ortoDatasBuilding2DOptions.Years, ortoDatasBuilding2DOptions.Offset, ortoDatasBuilding2DOptions.Width, ortoDatasBuilding2DOptions.Reduce, squared: true);
+                                OrtoDatas? ortoDatas = await GIS.Create.OrtoDatas(building2D.ToDiGi(), ortoDatasBuilding2DOptions.Years, ortoDatasBuilding2DOptions.Offset, ortoDatasBuilding2DOptions.Width, ortoDatasBuilding2DOptions.Reduce, squared: true);
                                 if (ortoDatas?.ToPostgreSQL(countyId) is not PostgreSQL.Classes.OrtoDatas ortoDatas_PostgreSQL_Temp)
                                 {
                                     continue;
@@ -2615,22 +2613,173 @@ namespace DiGi.GIS.UI.Application.Windows
                         }
 
                         List<PostgreSQL.Classes.YearBuiltData> yearBuiltDatas_PostgreSQL = [];
-                        foreach(YearBuiltData yearBuiltData in dictionary.Values)
+                        foreach (YearBuiltData yearBuiltData in dictionary.Values)
                         {
                             PostgreSQL.Classes.YearBuiltData? yearBuiltData_PostgreSQL = yearBuiltData.ToPostgreSQL(countyId);
-                            if(yearBuiltData_PostgreSQL is not null)
+                            if (yearBuiltData_PostgreSQL is not null)
                             {
                                 yearBuiltDatas_PostgreSQL.Add(yearBuiltData_PostgreSQL);
                             }
-
                         }
 
                         await yearBuiltDataPostgreSQLConverter.UpdateAsync(yearBuiltDatas_PostgreSQL);
-
                     }
                 }
+            }
 
+            TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
 
+            TextBlock_Progress.Text = string.Format("Done Updating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+        }
+
+        private async void Button_OccupancyDatas_FromFile_Click(object sender, RoutedEventArgs e)
+        {
+            if (gISPostgreSQLConverterManager is null || !(await gISPostgreSQLConverterManager.TryCreateDatabase<PostgreSQL.Classes.OrtoDatasPostgreSQLConverter>()))
+            {
+                return;
+            }
+
+            PostgreSQL.Classes.Building2DOccupancyDataPostgreSQLConverter? building2DOccupancyPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<PostgreSQL.Classes.Building2DOccupancyDataPostgreSQLConverter>();
+            if (building2DOccupancyPostgreSQLConverter is null)
+            {
+                return;
+            }
+
+            PostgreSQL.Classes.AdministrativeAreal2DOccupancyDataPostgreSQLConverter? administrativeAreal2DOccupancyDataPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<PostgreSQL.Classes.AdministrativeAreal2DOccupancyDataPostgreSQLConverter>();
+            if (administrativeAreal2DOccupancyDataPostgreSQLConverter is null)
+            {
+                return;
+            }
+
+            PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter? administrativeAreal2DPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter>();
+            if (administrativeAreal2DPostgreSQLConverter is null)
+            {
+                return;
+            }
+
+            //bool clear = true;
+
+            DateTime dateTime = DateTime.Now;
+
+            TextBlock_Progress.Text = "Updating...";
+
+            bool? result;
+
+            OpenFolderDialog openFolderDialog = new();
+            result = openFolderDialog.ShowDialog(this);
+            if (result == null || !result.HasValue || !result.Value)
+            {
+                return;
+            }
+
+            string directory = openFolderDialog.FolderName;
+            if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+            {
+                return;
+            }
+
+            string[] paths_Input = Directory.GetFiles(directory, "*." + FileExtension.GISModelFile, SearchOption.AllDirectories);
+            if (paths_Input == null || paths_Input.Length == 0)
+            {
+                return;
+            }
+
+            //if (clear)
+            //{
+            //    await yearBuiltDataPostgreSQLConverter.ClearAsync();
+            //}
+
+            foreach (string path_Input in paths_Input)
+            {
+                string? directory_GISModel = System.IO.Path.GetDirectoryName(path_Input);
+                if (!Directory.Exists(directory_GISModel))
+                {
+                    continue;
+                }
+
+                GISModel? gISModel_Input = null;
+
+                using (GISModelFile gISModelFile = new(path_Input))
+                {
+                    gISModelFile.Open();
+                    gISModel_Input = gISModelFile.Value;
+
+                    if (gISModel_Input == null)
+                    {
+                        continue;
+                    }
+
+                    //string? code = null;
+                    string? code = gISModel_Input.Reference;
+                    if (!string.IsNullOrWhiteSpace(code))
+                    {
+                        code = code.ToUpper();
+                        int index = code.IndexOf('_');
+                        if (index != -1)
+                        {
+                            code = code[..index];
+                        }
+                    }
+
+                    if (string.IsNullOrWhiteSpace(code))
+                    {
+                        continue;
+                    }
+
+                    int? countyId = await administrativeAreal2DPostgreSQLConverter.GetIdByCodeAsync(code, PostgreSQL.Enums.AdministrativeArealType.County);
+                    if (countyId is null || !countyId.HasValue)
+                    {
+                        continue;
+                    }
+
+                    List<Building2D>? building2Ds_GIS = gISModel_Input.GetObjects<Building2D>();
+                    if (building2Ds_GIS is not null && building2Ds_GIS.Count != 0)
+                    {
+                        List<PostgreSQL.Classes.Building2DOccupancyData> building2DOccupancyDatas = [];
+                        foreach (Building2D building2D_GIS in building2Ds_GIS)
+                        {
+                            OccupancyCalculationResult? occupancyCalculationResult = gISModel_Input.GetRelatedObject<OccupancyCalculationResult>(building2D_GIS);
+                            if (occupancyCalculationResult is null)
+                            {
+                                continue;
+                            }
+
+                            PostgreSQL.Classes.Building2DOccupancyData? building2DOccupancyData = (new OccupancyData(building2D_GIS.Reference, occupancyCalculationResult.OccupancyArea, occupancyCalculationResult.Occupancy)).ToPostgreSQL(countyId);
+                            if (building2DOccupancyData is null)
+                            {
+                                continue;
+                            }
+
+                            building2DOccupancyDatas.Add(building2DOccupancyData);
+                        }
+
+                        await building2DOccupancyPostgreSQLConverter.UpdateAsync(building2DOccupancyDatas);
+                    }
+
+                    List<AdministrativeAreal2D>? administrativeAreal2Ds_GIS = gISModel_Input.GetObjects<AdministrativeAreal2D>();
+                    if (administrativeAreal2Ds_GIS is not null && administrativeAreal2Ds_GIS.Count != 0)
+                    {
+                        List<PostgreSQL.Classes.AdministrativeAreal2DOccupancyData> administrativeAreal2DOccupancyDatas = [];
+                        foreach (AdministrativeAreal2D administrativeAreal2D in administrativeAreal2Ds_GIS)
+                        {
+                            OccupancyCalculationResult? occupancyCalculationResult = gISModel_Input.GetRelatedObject<OccupancyCalculationResult>(administrativeAreal2D);
+                            if (occupancyCalculationResult is null)
+                            {
+                                continue;
+                            }
+
+                            PostgreSQL.Classes.AdministrativeAreal2DOccupancyData? administrativeAreal2DOccupancyData = (new OccupancyData(administrativeAreal2D.Reference, occupancyCalculationResult.OccupancyArea, occupancyCalculationResult.Occupancy)).ToPostgreSQL();
+                            if (administrativeAreal2DOccupancyData is null)
+                            {
+                                continue;
+                            }
+
+                            administrativeAreal2DOccupancyDatas.Add(administrativeAreal2DOccupancyData);
+                        }
+
+                        await administrativeAreal2DOccupancyDataPostgreSQLConverter.UpdateAsync(administrativeAreal2DOccupancyDatas);
+                    }
+                }
             }
 
             TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
