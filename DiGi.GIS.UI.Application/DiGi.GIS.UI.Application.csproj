@@ -47,6 +47,9 @@
     <Reference Include="DiGi.Analytical.Building">
       <HintPath>..\..\DiGi.Analytical\bin\DiGi.Analytical.Building.dll</HintPath>
     </Reference>
+    <Reference Include="DiGi.Analytical.Building.HVAC">
+      <HintPath>..\..\DiGi.Analytical\bin\DiGi.Analytical.Building.HVAC.dll</HintPath>
+    </Reference>
     <Reference Include="DiGi.BDL">
       <HintPath>..\..\DiGi.BDL\bin\DiGi.BDL.dll</HintPath>
     </Reference>

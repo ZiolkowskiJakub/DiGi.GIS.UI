@@ -897,7 +897,15 @@ namespace DiGi.GIS.UI.Application.Windows
             //CheckPoint();
             //OrtoDatasTest();
 
-            SearchTest();
+            //SearchTest();
+
+            HeatTransferCoefficientTest();
+        }
+
+        private void HeatTransferCoefficientTest()
+        {
+            DiGi.Analytical.Building.HVAC.Classes.RegulatedHeatTransferCoefficientsManager regulatedHeatTransferCoefficientsManager  = DiGi.Analytical.Building.HVAC.Create.RegulatedHeatTransferCoefficientsManager();
+            DiGi.Analytical.Building.HVAC.Interfaces.IRegulatedHeatTransferCoefficients? regulatedHeatTransferCoefficients = regulatedHeatTransferCoefficientsManager.GetRegulatedHeatTransferCoefficients(new DateTime(2008, 1, 1));
         }
 
 
