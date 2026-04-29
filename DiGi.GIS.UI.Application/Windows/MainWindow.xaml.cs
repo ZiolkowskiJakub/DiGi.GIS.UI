@@ -15,6 +15,8 @@ using System.Collections.Concurrent;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -895,7 +897,40 @@ namespace DiGi.GIS.UI.Application.Windows
             //CheckPoint();
             //OrtoDatasTest();
 
-            PostgreSQLTest();
+            SearchTest();
+        }
+
+
+        private async void SearchTest()
+        {
+            HttpClient httpClient = new HttpClient();
+
+            string text = "warszawa";
+
+            try
+            {
+                string url = "https://api.digiproject.uk/gis/administrativeareal2d/administrativeareal2Dreferencepathsbyname";
+
+                HttpResponseMessage httpResponseMessage = await httpClient.PostAsJsonAsync(url, text);
+
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    string json = await httpResponseMessage.Content.ReadAsStringAsync();
+
+                    if (string.IsNullOrEmpty(json))
+                    {
+                        return;
+                    }
+
+                    List<ISerializableObject>? serializableObjects = Core.Convert.ToDiGi<ISerializableObject>(json);
+                }
+
+            }
+            catch (Exception exception)
+            {
+                // Log details using your logging framework
+                return;
+            }
         }
 
         private async void PostgreSQLTest()
