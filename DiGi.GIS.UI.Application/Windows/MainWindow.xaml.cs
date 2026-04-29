@@ -926,7 +926,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 }
 
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 // Log details using your logging framework
                 return;
