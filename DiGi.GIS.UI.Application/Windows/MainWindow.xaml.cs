@@ -1,5 +1,6 @@
 ﻿using DiGi.BDL.Classes;
 using DiGi.BDL.Enums;
+using DiGi.Core;
 using DiGi.Core.Classes;
 using DiGi.Core.Interfaces;
 using DiGi.EPW.Classes;
@@ -899,13 +900,45 @@ namespace DiGi.GIS.UI.Application.Windows
 
             //SearchTest();
 
-            HeatTransferCoefficientTest();
+            YearBuiltTest();
+
+            //HeatTransferCoefficientTest();
         }
 
         private void HeatTransferCoefficientTest()
         {
             DiGi.Analytical.Building.HVAC.Classes.RegulatedHeatTransferCoefficientsManager regulatedHeatTransferCoefficientsManager  = DiGi.Analytical.Building.HVAC.Create.RegulatedHeatTransferCoefficientsManager();
             DiGi.Analytical.Building.HVAC.Interfaces.IRegulatedHeatTransferCoefficients? regulatedHeatTransferCoefficients = regulatedHeatTransferCoefficientsManager.GetRegulatedHeatTransferCoefficients(new DateTime(2008, 1, 1));
+        }
+
+        private async void YearBuiltTest()
+        {
+            PostgreSQL.Classes.YearBuiltDataPostgreSQLConverter? yearBuiltDataPostgreSQLConverter = gISPostgreSQLConverterManager?.GetPostgreSQLConverter<PostgreSQL.Classes.YearBuiltDataPostgreSQLConverter>();
+            if (yearBuiltDataPostgreSQLConverter is null)
+            {
+                return;
+            }
+            PostgreSQL.Classes.Building2DPostgreSQLConverter? building2DPostgreSQLConverter = gISPostgreSQLConverterManager?.GetPostgreSQLConverter<PostgreSQL.Classes.Building2DPostgreSQLConverter>();
+            if (building2DPostgreSQLConverter is null)
+            {
+                return;
+            }
+
+            PostgreSQL.Classes.Building2DReference? building2DReference = await building2DPostgreSQLConverter.GetBuilding2DReferenceByReferenceAsync("272D6AAF-9D86-9B0E-E053-CC2BA8C0B5EA", 5);
+            if(building2DReference is null)
+            {
+                return;
+            }
+
+            PostgreSQL.Classes.YearBuiltData? yearBuiltData_PostgreSQL = await yearBuiltDataPostgreSQLConverter.GetItemByReferenceAsync("272D6AAF-9D86-9B0E-E053-CC2BA8C0B5EA", 5);
+            if (yearBuiltData_PostgreSQL is null)
+            {
+                return;
+            }
+
+            Interfaces.IYearBuiltData? yearBuiltData = yearBuiltData_PostgreSQL.ToDiGi();
+
+            string @string = yearBuiltData.ToSystem_String();
         }
 
 
