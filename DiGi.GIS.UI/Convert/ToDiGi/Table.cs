@@ -6,6 +6,7 @@ using DiGi.Geometry.Planar.Classes;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Emgu.CV.Classes;
 using DiGi.GIS.Enums;
+using Emgu.CV.Flann;
 using System.IO;
 
 namespace DiGi.GIS.UI
@@ -199,19 +200,19 @@ namespace DiGi.GIS.UI
                         }
 
                         Row row = new(-1);
-                        row.SetValue(index_Reference, reference);
-                        row.SetValue(index_BuildingGeneralFunction, buildingGeneralFunction?.ToString());
-                        row.SetValue(index_BuildingPhase, buidlingPhase?.ToString());
-                        row.SetValue(index_Storeys, storeys.ToString());
-                        row.SetValue(index_Area, area == null || !area.HasValue ? null : Core.Query.Round(area.Value, Core.Constants.Tolerance.MacroDistance).ToString());
-                        row.SetValue(index_Location_X, location == null ? null : Core.Query.Round(location.X, Core.Constants.Tolerance.MacroDistance).ToString());
-                        row.SetValue(index_Location_Y, location == null ? null : Core.Query.Round(location.Y, Core.Constants.Tolerance.MacroDistance).ToString());
-                        row.SetValue(index_VoivodeshipName, voivodeshipName);
-                        row.SetValue(index_CountyName, countyName);
-                        row.SetValue(index_MunicipalityName, municipalityName);
-                        row.SetValue(index_SubdivisionName, subdivisionName);
-                        row.SetValue(index_SubdivisionCalculatedOccupancy, subdivisionCalculatedOccupancy);
-                        row.SetValue(index_SubdivisionCalculatedOccupancyArea, subdivisionCalculatedOccupancyArea);
+                        row[index_Reference] = reference;
+                        row[index_BuildingGeneralFunction] =  buildingGeneralFunction?.ToString();
+                        row[index_BuildingPhase] = buidlingPhase?.ToString();
+                        row[index_Storeys] = storeys.ToString();
+                        row[index_Area] = area == null || !area.HasValue ? null : Core.Query.Round(area.Value, Core.Constants.Tolerance.MacroDistance).ToString();
+                        row[index_Location_X] = location == null ? null : Core.Query.Round(location.X, Core.Constants.Tolerance.MacroDistance).ToString();
+                        row[index_Location_Y] = location == null ? null : Core.Query.Round(location.Y, Core.Constants.Tolerance.MacroDistance).ToString();
+                        row[index_VoivodeshipName] = voivodeshipName;
+                        row[index_CountyName] = countyName;
+                        row[index_MunicipalityName] = municipalityName;
+                        row[index_SubdivisionName] = subdivisionName;
+                        row[index_SubdivisionCalculatedOccupancy] = subdivisionCalculatedOccupancy;
+                        row[index_SubdivisionCalculatedOccupancyArea] = subdivisionCalculatedOccupancyArea;
 
                         if (!dictionary_Rows.TryGetValue(reference, out List<Row>? rows) || rows == null)
                         {
@@ -369,7 +370,7 @@ namespace DiGi.GIS.UI
                                                                 }
 
                                                                 int index_Year = updateColumn.Invoke(string.Format("{0} {1}", name, year));
-                                                                row.SetValue(index_Year, value);
+                                                                row[index_Year] = value;
                                                             }
                                                         }
                                                     }
@@ -414,7 +415,7 @@ namespace DiGi.GIS.UI
                             if (rows.Count == 0)
                             {
                                 row = new Row(-1);
-                                row.SetValue(index_Year, i);
+                                row[index_Year] = i;
                                 rows.Add(row);
                             }
                             else
@@ -427,7 +428,7 @@ namespace DiGi.GIS.UI
                                     {
                                         int count_Template = rows[0].Indexes.Count;
                                         row = new Row(row_Template);
-                                        row.SetValue(index_Year, i);
+                                        row[index_Year] = i;
 
                                         int count = row.Indexes.Count;
                                         if (count_Template != count)
@@ -474,18 +475,18 @@ namespace DiGi.GIS.UI
 
                                     OrtoImageComparison ortoImageComparison = keyValuePair_OrtoImageComparison.Value;
 
-                                    row?.SetValue(index_AverageColorSimilarity, double.IsNaN(ortoImageComparison.AverageColorSimilarity) ? 0 : ortoImageComparison.AverageColorSimilarity);
-                                    row?.SetValue(index_ColorDistributionShift, double.IsNaN(ortoImageComparison.ColorDistributionShift) ? 0 : ortoImageComparison.ColorDistributionShift);
-                                    row?.SetValue(index_GrayHistogramsFactor, double.IsNaN(ortoImageComparison.GrayHistogramsFactor) ? 0 : ortoImageComparison.GrayHistogramsFactor);
-                                    row?.SetValue(index_HammingDistance, ortoImageComparison.HammingDistance);
-                                    row?.SetValue(index_HistogramCorrelation, double.IsNaN(ortoImageComparison.HistogramCorrelation) ? 0 : ortoImageComparison.HistogramCorrelation);
-                                    row?.SetValue(index_ShapeComparisonFactor, double.IsNaN(ortoImageComparison.ShapeComparisonFactor) ? 0 : ortoImageComparison.ShapeComparisonFactor);
-                                    row?.SetValue(index_StructuralSimilarityIndex_AbsoluteDifference, double.IsNaN(ortoImageComparison.StructuralSimilarityIndex_AbsoluteDifference) ? 0 : ortoImageComparison.StructuralSimilarityIndex_AbsoluteDifference);
-                                    row?.SetValue(index_StructuralSimilarityIndex_MatchTemplate, double.IsNaN(ortoImageComparison.StructuralSimilarityIndex_MatchTemplate) ? 0 : ortoImageComparison.StructuralSimilarityIndex_MatchTemplate);
-                                    row?.SetValue(index_MeanLaplacianFactor, double.IsNaN(ortoImageComparison.MeanLaplacianFactor) ? 0 : ortoImageComparison.MeanLaplacianFactor);
-                                    row?.SetValue(index_StandardDeviationLaplacianFactor, double.IsNaN(ortoImageComparison.StandardDeviationLaplacianFactor) ? 0 : ortoImageComparison.StandardDeviationLaplacianFactor);
-                                    row?.SetValue(index_OpticalFlowAverageMagnitude, double.IsNaN(ortoImageComparison.OpticalFlowAverageMagnitude) ? 0 : ortoImageComparison.OpticalFlowAverageMagnitude);
-                                    row?.SetValue(index_ORBFeatureMatchingFactor, double.IsNaN(ortoImageComparison.ORBFeatureMatchingFactor) ? 0 : ortoImageComparison.ORBFeatureMatchingFactor);
+                                    row?[index_AverageColorSimilarity] = double.IsNaN(ortoImageComparison.AverageColorSimilarity) ? 0 : ortoImageComparison.AverageColorSimilarity;
+                                    row?[index_ColorDistributionShift] = double.IsNaN(ortoImageComparison.ColorDistributionShift) ? 0 : ortoImageComparison.ColorDistributionShift;
+                                    row?[index_GrayHistogramsFactor] = double.IsNaN(ortoImageComparison.GrayHistogramsFactor) ? 0 : ortoImageComparison.GrayHistogramsFactor;
+                                    row?[index_HammingDistance] = ortoImageComparison.HammingDistance;
+                                    row?[index_HistogramCorrelation] = double.IsNaN(ortoImageComparison.HistogramCorrelation) ? 0 : ortoImageComparison.HistogramCorrelation;
+                                    row?[index_ShapeComparisonFactor] = double.IsNaN(ortoImageComparison.ShapeComparisonFactor) ? 0 : ortoImageComparison.ShapeComparisonFactor;
+                                    row?[index_StructuralSimilarityIndex_AbsoluteDifference] = double.IsNaN(ortoImageComparison.StructuralSimilarityIndex_AbsoluteDifference) ? 0 : ortoImageComparison.StructuralSimilarityIndex_AbsoluteDifference;
+                                    row?[index_StructuralSimilarityIndex_MatchTemplate] = double.IsNaN(ortoImageComparison.StructuralSimilarityIndex_MatchTemplate) ? 0 : ortoImageComparison.StructuralSimilarityIndex_MatchTemplate;
+                                    row?[index_MeanLaplacianFactor] = double.IsNaN(ortoImageComparison.MeanLaplacianFactor) ? 0 : ortoImageComparison.MeanLaplacianFactor;
+                                    row?[index_StandardDeviationLaplacianFactor] = double.IsNaN(ortoImageComparison.StandardDeviationLaplacianFactor) ? 0 : ortoImageComparison.StandardDeviationLaplacianFactor;
+                                    row?[index_OpticalFlowAverageMagnitude] = double.IsNaN(ortoImageComparison.OpticalFlowAverageMagnitude) ? 0 : ortoImageComparison.OpticalFlowAverageMagnitude;
+                                    row?[index_ORBFeatureMatchingFactor] = double.IsNaN(ortoImageComparison.ORBFeatureMatchingFactor) ? 0 : ortoImageComparison.ORBFeatureMatchingFactor;
                                 }
                             }
                         }
@@ -505,7 +506,7 @@ namespace DiGi.GIS.UI
                     if (rows.Count == 1 || !result.TryGetColumn(columnName_Year, out Column? column) || column == null)
                     {
                         int index_YearBuilt = updateColumn.Invoke("Year Built");
-                        rows[0].SetValue(index_YearBuilt, keyValuePair.Value);
+                        rows[0][index_YearBuilt] = keyValuePair.Value;
                     }
                     else
                     {
@@ -515,7 +516,7 @@ namespace DiGi.GIS.UI
                         {
                             if (row.TryGetValue(column.Index, out int year))
                             {
-                                row.SetValue(index_Built, keyValuePair.Value <= year);
+                                row[index_Built] = keyValuePair.Value <= year;
                             }
                         }
                     }
@@ -790,24 +791,24 @@ namespace DiGi.GIS.UI
                         }
 
                         Row row = new(-1);
-                        row.SetValue(index_Reference, reference);
-                        row.SetValue(index_BuildingGeneralFunction, buildingGeneralFunction == null || !buildingGeneralFunction.HasValue ? -1 : ((int)buildingGeneralFunction.Value).ToString());
-                        row.SetValue(index_BuildingPhase, buidlingPhase == null || !buidlingPhase.HasValue ? -1 : ((int)buidlingPhase.Value).ToString());
-                        row.SetValue(index_Storeys, storeys.ToString());
-                        row.SetValue(index_Area, area);
-                        row.SetValue(index_Location_X, location?.X);
-                        row.SetValue(index_Location_Y, location?.Y);
-                        row.SetValue(index_Voivodeship, voivodeship);
-                        row.SetValue(index_County, county);
-                        row.SetValue(index_Municipality, municipality);
-                        row.SetValue(index_Subdivision, subdivision);
-                        row.SetValue(index_SubdivisionCalculatedOccupancy, subdivisionCalculatedOccupancy);
-                        row.SetValue(index_SubdivisionCalculatedOccupancyArea, subdivisionCalculatedOccupancyArea);
+                        row[index_Reference] = reference;
+                        row[index_BuildingGeneralFunction] = buildingGeneralFunction == null || !buildingGeneralFunction.HasValue ? -1 : ((int)buildingGeneralFunction.Value).ToString();
+                        row[index_BuildingPhase] = buidlingPhase == null || !buidlingPhase.HasValue ? -1 : ((int)buidlingPhase.Value).ToString();
+                        row[index_Storeys] = storeys.ToString();
+                        row[index_Area] = area;
+                        row[index_Location_X] = location?.X;
+                        row[index_Location_Y] = location?.Y;
+                        row[index_Voivodeship] = voivodeship;
+                        row[index_County] = county;
+                        row[index_Municipality] = municipality;
+                        row[index_Subdivision] = subdivision;
+                        row[index_SubdivisionCalculatedOccupancy] = subdivisionCalculatedOccupancy;
+                        row[index_SubdivisionCalculatedOccupancyArea] = subdivisionCalculatedOccupancyArea;
 
-                        row.SetValue(index_BoundingBox_X, boundingBox_X);
-                        row.SetValue(index_BoundingBox_Y, boundingBox_Y);
-                        row.SetValue(index_BoundingBox_Width, boundingBox_Width);
-                        row.SetValue(index_BoundingBox_Height, boundingBox_Height);
+                        row[index_BoundingBox_X] = boundingBox_X;
+                        row[index_BoundingBox_Y] = boundingBox_Y;
+                        row[index_BoundingBox_Width] = boundingBox_Width;
+                        row[index_BoundingBox_Height] = boundingBox_Height;
 
                         dictionary_Row[reference] = row;
                     }
@@ -952,7 +953,7 @@ namespace DiGi.GIS.UI
                                                             }
 
                                                             int index_Year = updateColumn.Invoke(string.Format("{0} {1}", name, year), typeof(double));
-                                                            row.SetValue(index_Year, value == null || !value.HasValue ? null : value.Value);
+                                                            row[index_Year] = value == null || !value.HasValue ? null : value.Value;
                                                         }
                                                     }
                                                 }
@@ -991,19 +992,19 @@ namespace DiGi.GIS.UI
                             int index = -1;
 
                             index = updateColumn.Invoke(string.Format("Prediction Confidence {0}", i), typeof(double));
-                            row.SetValue(index, yearBuiltPrediction.Confidence);
+                            row[index] = yearBuiltPrediction.Confidence;
 
                             index = updateColumn.Invoke(string.Format("Prediction BoundingBox X {0}", i), typeof(double));
-                            row.SetValue(index, yearBuiltPrediction.BoundingBox?.GetCentroid()?.X);
+                            row[index] = yearBuiltPrediction.BoundingBox?.GetCentroid()?.X;
 
                             index = updateColumn.Invoke(string.Format("Prediction BoundingBox Y {0}", i), typeof(double));
-                            row.SetValue(index, yearBuiltPrediction.BoundingBox?.GetCentroid()?.Y);
+                            row[index] = yearBuiltPrediction.BoundingBox?.GetCentroid()?.Y;
 
                             index = updateColumn.Invoke(string.Format("Prediction BoundingBox Width {0}", i), typeof(double));
-                            row.SetValue(index, yearBuiltPrediction.BoundingBox?.Width);
+                            row[index] = yearBuiltPrediction.BoundingBox?.Width;
 
                             index = updateColumn.Invoke(string.Format("Prediction BoundingBox Height {0}", i), typeof(double));
-                            row.SetValue(index, yearBuiltPrediction.BoundingBox?.Height);
+                            row[index] = yearBuiltPrediction.BoundingBox?.Height;
                         }
                     }
                 }
@@ -1020,7 +1021,7 @@ namespace DiGi.GIS.UI
                         continue;
                     }
 
-                    row.SetValue(index_YearBuilt, keyValuePair.Value);
+                    row[index_YearBuilt] = keyValuePair.Value;
                 }
             }
 
@@ -1046,21 +1047,21 @@ namespace DiGi.GIS.UI
                         {
                             if (!row.TryGetValue(column.Index, out string? value) || value == null)
                             {
-                                row.SetValue(column.Index, "null");
+                                row[column.Index] = "null";
                             }
                         }
                         else if (column.Type == typeof(double))
                         {
                             if (!row.TryGetValue(column.Index, out double value))
                             {
-                                row.SetValue(column.Index, 0.0);
+                                row[column.Index] = 0.0;
                             }
                         }
                         else if (column.Type == typeof(int))
                         {
                             if (!row.TryGetValue(column.Index, out int value))
                             {
-                                row.SetValue(column.Index, -1);
+                                row[column.Index] = -1;
                             }
                         }
                     }
