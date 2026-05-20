@@ -6,7 +6,6 @@ using DiGi.Geometry.Planar.Classes;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Emgu.CV.Classes;
 using DiGi.GIS.Enums;
-using Emgu.CV.Flann;
 using System.IO;
 
 namespace DiGi.GIS.UI
@@ -462,7 +461,7 @@ namespace DiGi.GIS.UI
 
                                     int index_AverageColorSimilarity = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Average Color Similarity"));
                                     int index_ColorDistributionShift = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Color Distribution Shift"));
-                                    int index_GrayHistogramsFactor = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Gray Histograms Factor"));
+                                    int index_GrayHistogramFactor = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Gray Histograms Factor"));
                                     int index_HammingDistance = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Hamming Distance"));
                                     int index_HistogramCorrelation = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Histogram Correlation"));
                                     int index_ShapeComparisonFactor = updateColumn.Invoke(string.Format("{0} {1}", prefix, "Shape Comparison Factor"));
@@ -477,7 +476,7 @@ namespace DiGi.GIS.UI
 
                                     row?[index_AverageColorSimilarity] = double.IsNaN(ortoImageComparison.AverageColorSimilarity) ? 0 : ortoImageComparison.AverageColorSimilarity;
                                     row?[index_ColorDistributionShift] = double.IsNaN(ortoImageComparison.ColorDistributionShift) ? 0 : ortoImageComparison.ColorDistributionShift;
-                                    row?[index_GrayHistogramsFactor] = double.IsNaN(ortoImageComparison.GrayHistogramsFactor) ? 0 : ortoImageComparison.GrayHistogramsFactor;
+                                    row?[index_GrayHistogramFactor] = double.IsNaN(ortoImageComparison.GrayHistogramFactor) ? 0 : ortoImageComparison.GrayHistogramFactor;
                                     row?[index_HammingDistance] = ortoImageComparison.HammingDistance;
                                     row?[index_HistogramCorrelation] = double.IsNaN(ortoImageComparison.HistogramCorrelation) ? 0 : ortoImageComparison.HistogramCorrelation;
                                     row?[index_ShapeComparisonFactor] = double.IsNaN(ortoImageComparison.ShapeComparisonFactor) ? 0 : ortoImageComparison.ShapeComparisonFactor;
