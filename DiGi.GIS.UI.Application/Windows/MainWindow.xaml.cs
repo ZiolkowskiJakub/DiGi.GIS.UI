@@ -10,7 +10,9 @@ using DiGi.GIS.Classes;
 using DiGi.GIS.Constants;
 using DiGi.GIS.Emgu.CV.Classes;
 using DiGi.GIS.PostgreSQL;
+using DiGi.GIS.PostgreSQL.Enums;
 using DiGi.GIS.UI.Classes;
+using DiGi.WebAPI.Classes;
 using Microsoft.Win32;
 using System.Collections.Concurrent;
 using System.Drawing;
@@ -900,9 +902,11 @@ namespace DiGi.GIS.UI.Application.Windows
 
             //SearchTest();
 
-            YearBuiltTest();
+            //YearBuiltTest();
 
             //HeatTransferCoefficientTest();
+
+            OccupancyCheck();
         }
 
         private static void HeatTransferCoefficientTest()
@@ -927,6 +931,7 @@ namespace DiGi.GIS.UI.Application.Windows
             {
                 return;
             }
+
             PostgreSQL.Classes.Building2DPostgreSQLConverter? building2DPostgreSQLConverter = gISPostgreSQLConverterManager?.GetPostgreSQLConverter<PostgreSQL.Classes.Building2DPostgreSQLConverter>();
             if (building2DPostgreSQLConverter is null)
             {
@@ -953,6 +958,86 @@ namespace DiGi.GIS.UI.Application.Windows
             {
 
             }
+        }
+
+        private async Task OccupancyCheck()
+        {
+            List<PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences = [];
+
+            using HttpClient httpClient = new();
+
+            UrlBuilder urlBuilder = new ("https://api.digiproject.uk/gis/administrativeareal2d/administrativeareal2Dreferencesbyadministrativearealtype");
+            urlBuilder = urlBuilder.AddParameter("administrativearealtype", AdministrativeArealType.Subdivison.ToString());
+
+            try
+            {
+                HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(urlBuilder.ToString());
+
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    string json = await httpResponseMessage.Content.ReadAsStringAsync();
+
+                    if (!string.IsNullOrEmpty(json))
+                    {
+                        administrativeAreal2DReferences = Core.Convert.ToDiGi<PostgreSQL.Classes.AdministrativeAreal2DReference>(json);
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                // Log details using your logging framework
+            }
+
+            if(administrativeAreal2DReferences is null || administrativeAreal2DReferences.Count == 0)
+            {
+                return;
+            }
+
+            List<AdministrativeSubdivision> administrativeSubdivisions = [];
+
+            foreach(PostgreSQL.Classes.AdministrativeAreal2DReference administrativeAreal2DReference in administrativeAreal2DReferences)
+            {
+                urlBuilder = new("https://api.digiproject.uk/gis/administrativeareal2d/itembyid");
+                urlBuilder = urlBuilder.AddParameter("id", administrativeAreal2DReference.Id);
+
+                try
+                {
+                    HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(urlBuilder.ToString());
+
+                    if (httpResponseMessage.IsSuccessStatusCode)
+                    {
+                        string json = await httpResponseMessage.Content.ReadAsStringAsync();
+
+                        if (!string.IsNullOrEmpty(json))
+                        {
+                            List<AdministrativeSubdivision>? administrativeSubdivisions_Temp = Core.Convert.ToDiGi<AdministrativeSubdivision>(json);
+                            if(administrativeSubdivisions_Temp is not null)
+                            {
+                                administrativeSubdivisions.AddRange(administrativeSubdivisions_Temp);
+                            }
+                        }
+                    }
+                }
+                catch (Exception exception)
+                {
+                    // Log details using your logging framework
+                }
+            }
+
+            long occupancy = 0;
+
+            foreach(AdministrativeSubdivision administrativeSubdivision in administrativeSubdivisions)
+            {
+                if(!administrativeSubdivision.Occupancy.HasValue || administrativeSubdivision.Occupancy.Value == 0)
+                {
+                    continue;
+                }
+
+                occupancy += administrativeSubdivision.Occupancy.Value;
+            }
+
+            MessageBox.Show(string.Format("Occupancy: {0}", occupancy));
+
         }
 
 
