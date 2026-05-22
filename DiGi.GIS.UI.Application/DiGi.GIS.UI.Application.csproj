@@ -28,6 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\DiGi.GIS.Analytical\DiGi.GIS.Analytical\DiGi.GIS.Analytical.csproj" />
     <ProjectReference Include="..\..\DiGi.GIS.Emgu.CV\DiGi.GIS.Emgu.CV\DiGi.GIS.Emgu.CV.csproj" />
+    <ProjectReference Include="..\..\DiGi.GIS.PostgreSQL\DiGi.GIS.PostgreSQL\DiGi.GIS.PostgreSQL.csproj" />
     <ProjectReference Include="..\..\DiGi.GIS\DiGi.GIS\DiGi.GIS.csproj" />
     <ProjectReference Include="..\DiGi.GIS.UI\DiGi.GIS.UI.csproj" />
   </ItemGroup>

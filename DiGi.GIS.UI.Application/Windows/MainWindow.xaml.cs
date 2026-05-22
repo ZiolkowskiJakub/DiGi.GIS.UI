@@ -906,7 +906,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
             //HeatTransferCoefficientTest();
 
-            OccupancyCheck();
+            await OccupancyCheck();
         }
 
         private static void HeatTransferCoefficientTest()
@@ -960,7 +960,7 @@ namespace DiGi.GIS.UI.Application.Windows
             }
         }
 
-        private async Task OccupancyCheck()
+        private static async Task OccupancyCheck()
         {
             List<PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences = [];
 
@@ -983,7 +983,7 @@ namespace DiGi.GIS.UI.Application.Windows
                     }
                 }
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 // Log details using your logging framework
             }
@@ -1018,7 +1018,7 @@ namespace DiGi.GIS.UI.Application.Windows
                         }
                     }
                 }
-                catch (Exception exception)
+                catch (Exception)
                 {
                     // Log details using your logging framework
                 }
