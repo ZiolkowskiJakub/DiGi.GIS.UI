@@ -3,6 +3,7 @@ using DiGi.BDL.Enums;
 using DiGi.Core;
 using DiGi.Core.Classes;
 using DiGi.Core.Interfaces;
+using DiGi.Core.IO.Table.Classes;
 using DiGi.EPW.Classes;
 using DiGi.Geometry.Planar;
 using DiGi.Geometry.Planar.Classes;
@@ -906,8 +907,25 @@ namespace DiGi.GIS.UI.Application.Windows
 
             //HeatTransferCoefficientTest();
 
-            await OccupancyCheck();
+            await BuidldingDataCheck();
         }
+
+        private async Task BuidldingDataCheck()
+        {
+            PostgreSQL.Classes.BuildingDataPostgreSQLConverter? buildingDataPostgreSQLConverter = gISPostgreSQLConverterManager?.GetPostgreSQLConverter<PostgreSQL.Classes.BuildingDataPostgreSQLConverter>();
+            if (buildingDataPostgreSQLConverter is null)
+            {
+                return;
+            }
+
+            string reference = "000313ED-0801-4328-BE9E-E345CE6296C6";
+            int countyId = 5;
+
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
+            Table? table = await buildingDataPostgreSQLConverter.PullAsync([reference], countyId);
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
+        }
+
 
         private static void HeatTransferCoefficientTest()
         {
