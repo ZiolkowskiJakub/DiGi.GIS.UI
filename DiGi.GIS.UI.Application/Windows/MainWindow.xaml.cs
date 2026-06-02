@@ -918,12 +918,19 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
-            string reference = "000313ED-0801-4328-BE9E-E345CE6296C6";
-            int countyId = 5;
+            Table? table;
 
-#pragma warning disable IDE0059 // Unnecessary assignment of a value
-            Table? table = await buildingDataPostgreSQLConverter.PullAsync([reference], countyId);
-#pragma warning restore IDE0059 // Unnecessary assignment of a value
+            table = await buildingDataPostgreSQLConverter.PullAsync(["000313ED-0801-4328-BE9E-E345CE6296C6", "000A9C1D-3369-4F30-8C3B-C37B5208BF9C"], 5);
+            if(table is null)
+            {
+                return;
+            }
+
+            table = await buildingDataPostgreSQLConverter.PullAsync(["000313ED-0801-4328-BE9E-E345CE6296C6", "000A9C1D-3369-4F30-8C3B-C37B5208BF9C"], 5, ["building_general_function", "storeys"]);
+            if (table is null)
+            {
+                return;
+            }
         }
 
 
