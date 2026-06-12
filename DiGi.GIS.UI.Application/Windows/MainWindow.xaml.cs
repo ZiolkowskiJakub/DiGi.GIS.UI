@@ -22,6 +22,7 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -904,13 +905,13 @@ namespace DiGi.GIS.UI.Application.Windows
             //CheckPoint();
             //OrtoDatasTest();
 
-            //SearchTest();
+            SearchTest_Post_Parameter();
 
             //YearBuiltTest();
 
             //HeatTransferCoefficientTest();
 
-            await BuidldingDataCheck();
+            //await BuidldingDataCheck();
         }
 
         private async Task BuidldingDataCheck()
@@ -1069,35 +1070,108 @@ namespace DiGi.GIS.UI.Application.Windows
         }
 
 
-        private static async void SearchTest()
+        private async void SearchTest()
+        {
+            if (gISPostgreSQLConverterManager is null)
+            {
+                return;
+            }
+
+            PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter? administrativeAreal2DPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter>();
+            if (administrativeAreal2DPostgreSQLConverter is null)
+            {
+                return;
+            }
+
+            List<string> texts = ["łomianki"];
+
+            foreach (string text in texts)
+            {
+                List<PostgreSQL.Classes.AdministrativeAreal2DReferencePath>? administrativeAreal2DReferencePaths = await administrativeAreal2DPostgreSQLConverter.GetAdministrativeAreal2DReferencePathsByNameAsync(text);
+                if (administrativeAreal2DReferencePaths is null)
+                {
+                    continue;
+                }
+            }
+        }
+
+        private static async void SearchTest_Post()
         {
             HttpClient httpClient = new ();
 
-            string text = "warszawa";
+            string url = "https://api.digiproject.uk/gis/administrativeareal2d/administrativeareal2Dreferencepathsbyname";
+
+            List<string> texts = ["łomianki", "warszawa"];
+
+
+            foreach(string text in texts)
+            {
+                try
+                {
+                    HttpResponseMessage httpResponseMessage = await httpClient.PostAsJsonAsync(url, text);
+
+                    if (httpResponseMessage.IsSuccessStatusCode)
+                    {
+                        string json = await httpResponseMessage.Content.ReadAsStringAsync();
+
+                        if (string.IsNullOrEmpty(json))
+                        {
+                            return;
+                        }
+
+                        List<ISerializableObject>? serializableObjects = Core.Convert.ToDiGi<ISerializableObject>(json);
+                    }
+
+                }
+                catch (Exception)
+                {
+                    // Log details using your logging framework
+                    return;
+                }
+            }
+        }
+
+        private static async void SearchTest_Post_Parameter()
+        {
+            // Inicjalizacja klienta HTTP
+            using HttpClient client = new ();
+
+            // Zmień na swój lokalny port (np. https://localhost:5001) lub adres produkcyjny
+            client.BaseAddress = new Uri("https://api.digiproject.uk");
+
+            // Tworzymy obiekt z parametrem, w pełni zgodny ze schematem z Twojego Swaggera
+            var requestBody = new JsonObject
+            {
+                ["Text"] = "Łomianki Dolne"
+            };
+
+            string endpoint = "/gis/administrativeareal2d/administrativeareal2dreferencepathsbynameparameter";
 
             try
             {
-                string url = "https://api.digiproject.uk/gis/administrativeareal2d/administrativeareal2Dreferencepathsbyname";
+                Console.WriteLine($"Wysyłanie zapytania POST do {endpoint}...");
 
-                HttpResponseMessage httpResponseMessage = await httpClient.PostAsJsonAsync(url, text);
+                HttpResponseMessage response = await client.PostAsJsonAsync(endpoint, requestBody);
 
-                if (httpResponseMessage.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode)
                 {
-                    string json = await httpResponseMessage.Content.ReadAsStringAsync();
-
-                    if (string.IsNullOrEmpty(json))
-                    {
-                        return;
-                    }
+                    string json = await response.Content.ReadAsStringAsync();
 
                     List<ISerializableObject>? serializableObjects = Core.Convert.ToDiGi<ISerializableObject>(json);
-                }
 
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    string problemDetails = await response.Content.ReadAsStringAsync();
+                }
+                else
+                {
+
+                }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Log details using your logging framework
-                return;
+                Console.WriteLine($"\nWystąpił błąd podczas łączenia: {ex.Message}");
             }
         }
 
