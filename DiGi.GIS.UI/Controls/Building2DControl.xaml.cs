@@ -10,6 +10,9 @@ namespace DiGi.GIS.UI.Controls
     {
         private Building2D? building2D;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Building2DControl"/> class.
+        /// </summary>
         public Building2DControl()
         {
             InitializeComponent();
@@ -47,6 +50,9 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the <see cref="Building2D"/> entity associated with this control.
+        /// </summary>
         public Building2D? Building2D
         {
             get

@@ -6,6 +6,11 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Calculates the typologies based on the provided owner window.
+        /// </summary>
+        /// <param name="owner">The owner window used for any modal dialogs during the calculation process.</param>
+        /// <returns><c>true</c> if the typologies were successfully calculated; otherwise, <c>false</c>.</returns>
         public static bool CalculateTypologies(Window? owner)
         {
             if (Create.Typologies(owner, out string? directory) is not List<Typology.Classes.Typology> typologies)

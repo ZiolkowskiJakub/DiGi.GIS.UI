@@ -5,6 +5,12 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Asynchronously attempts to download a file from the specified URL and save it to the provided local path.
+        /// </summary>
+        /// <param name="url">The URL of the resource to download.</param>
+        /// <param name="path">The destination file path where the downloaded content will be saved.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result is <see langword="true"/> if the download was successful; otherwise, <see langword="false"/>.</returns>
         public static async Task<bool> TryDownload(string url, string path)
         {
             if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(path))

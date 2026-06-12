@@ -8,6 +8,12 @@ namespace DiGi.GIS.UI
 {
     public static partial class Create
     {
+        /// <summary>
+        /// Prompts the user to select a folder containing GIS model files and retrieves the associated typologies.
+        /// </summary>
+        /// <param name="owner">The owner window for the folder selection dialog.</param>
+        /// <param name="directory">When this method returns, contains the path of the selected directory, or <see langword="null"/> if no directory was selected.</param>
+        /// <returns>A list of <see cref="Typology.Classes.Typology"/> objects found in the selected folder, or <see langword="null"/> if the operation was cancelled or failed.</returns>
         public static List<Typology.Classes.Typology>? Typologies(this Window? owner, out string? directory)
         {
             directory = null;

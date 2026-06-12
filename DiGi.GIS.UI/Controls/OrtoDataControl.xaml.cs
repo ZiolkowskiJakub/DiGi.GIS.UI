@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
@@ -12,11 +12,17 @@ namespace DiGi.GIS.UI.Controls
         private short year;
         private short? predictedYear;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OrtoDataControl"/> class.
+        /// </summary>
         public OrtoDataControl()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the control is currently active.
+        /// </summary>
         public bool Active
         {
             get
@@ -30,6 +36,9 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the year associated with the orthophoto data.
+        /// </summary>
         public short Year
         {
             get
@@ -44,6 +53,7 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
+        /// <summary> Gets or sets the predicted year of the orthophoto data. </summary>
         public short? PredictedYear
         {
             get
@@ -57,6 +67,9 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the bitmap image associated with the orthophoto data.
+        /// </summary>
         public BitmapImage? BitmapImage
         {
             get

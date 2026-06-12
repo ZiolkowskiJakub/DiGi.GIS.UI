@@ -12,6 +12,13 @@ namespace DiGi.GIS.UI
 {
     public static partial class Convert
     {
+        /// <summary>
+        /// Converts a <see cref="GISModelFile"/> to a <see cref="Table"/>.
+        /// </summary>
+        /// <param name="gISModelFile">The GIS model file to convert.</param>
+        /// <param name="references">An optional collection of references used during the conversion process.</param>
+        /// <param name="comparisonTableConversionOptions">Optional options for the conversion of comparison tables.</param>
+        /// <returns>A <see cref="Table"/> instance if the conversion is successful; otherwise, <c>null</c>.</returns>
         public static Table? ToDiGi_Table(this GISModelFile? gISModelFile, IEnumerable<string>? references = null, ComparisonTableConversionOptions? comparisonTableConversionOptions = null)
         {
             if (gISModelFile == null)
@@ -538,6 +545,13 @@ namespace DiGi.GIS.UI
             return result;
         }
 
+        /// <summary>
+        /// Converts a <see cref="GISModelFile"/> to a <see cref="Table"/>.
+        /// </summary>
+        /// <param name="gISModelFile">The GIS model file to convert.</param>
+        /// <param name="references">An optional collection of references used during the conversion process.</param>
+        /// <param name="predictionTableConversionOptions">Optional options for configuring the conversion of prediction tables.</param>
+        /// <returns>A <see cref="Table"/> instance if the conversion is successful; otherwise, <c>null</c>.</returns>
         public static Table? ToDiGi_Table(this GISModelFile? gISModelFile, IEnumerable<string>? references = null, PredictionTableConversionOptions? predictionTableConversionOptions = null)
         {
             if (gISModelFile == null)

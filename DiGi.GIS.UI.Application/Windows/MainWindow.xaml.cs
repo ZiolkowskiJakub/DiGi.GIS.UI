@@ -36,6 +36,9 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private readonly PostgreSQL.Classes.GISPostgreSQLConverterManager? gISPostgreSQLConverterManager = PostgreSQL.Create.GISPostgreSQLConverterManager();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MainWindow"/> class and sets up the interaction logic for MainWindow.xaml.
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();

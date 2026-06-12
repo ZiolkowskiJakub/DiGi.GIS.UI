@@ -8,6 +8,11 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Resaves orthodata files from a directory selected by the user via a folder dialog.
+        /// </summary>
+        /// <param name="owner">The optional owner window used to display the folder selection dialog.</param>
+        /// <param name="updateScale">A value indicating whether the scale should be updated during the resaving process.</param>
         public static void ResaveOrtoDatasFiles(Window? owner, bool updateScale)
         {
             OpenFolderDialog openFolderDialog = new();

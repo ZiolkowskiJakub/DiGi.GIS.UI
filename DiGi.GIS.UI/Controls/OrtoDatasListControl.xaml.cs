@@ -9,6 +9,9 @@ namespace DiGi.GIS.UI.Controls
     /// </summary>
     public partial class OrtoDatasListControl : UserControl
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OrtoDatasListControl"/> class.
+        /// </summary>
         public OrtoDatasListControl()
         {
             InitializeComponent();
@@ -18,6 +21,9 @@ namespace DiGi.GIS.UI.Controls
 
         public event OrtoDataSelectionChangedEventHandler? OrtoDataSelectionChanged;
 
+        /// <summary>
+        /// Gets or sets the list of orthophoto data available in the control.
+        /// </summary>
         public List<OrtoDatas>? OrtoDatasList
         {
             get
@@ -31,6 +37,10 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
+        /// <summary>
+        /// Gets the currently selected orthophoto data from the list control.
+        /// </summary>
+        /// <value>The <see cref="OrtoDatas"/> object that is currently selected, or <c>null</c> if no item is selected.</value>
         public OrtoDatas? SelectedOrtoDatas
         {
             get

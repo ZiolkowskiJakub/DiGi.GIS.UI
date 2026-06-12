@@ -10,6 +10,9 @@ namespace DiGi.GIS.UI.Windows
     {
         private readonly GISModelFileManager gISModelFileManager = new();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GISWindow"/> class.
+        /// </summary>
         public GISWindow()
         {
             InitializeComponent();

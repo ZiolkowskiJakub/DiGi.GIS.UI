@@ -10,6 +10,14 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Calculates comparisons for orthodata based on a user-selected folder and specified options.
+        /// </summary>
+        /// <param name="owner">The owner window used to display the folder selection dialog.</param>
+        /// <param name="ortoDatasComparisonOptions">The options used to configure the orthodata comparison process.</param>
+        /// <param name="references">An optional collection of reference strings to be used in the comparison.</param>
+        /// <param name="count">An optional integer specifying a count limit for the calculation.</param>
+        /// <returns>A <see cref="HashSet{T}"/> containing the results of the orthodata comparisons, or <c>null</c> if the operation was cancelled by the user.</returns>
         public static HashSet<string>? CalculateOrtoDatasComparisons(Window owner, OrtoDatasComparisonOptions? ortoDatasComparisonOptions, IEnumerable<string>? references = null, int? count = null)
         {
             OpenFolderDialog openFolderDialog = new();
@@ -28,6 +36,14 @@ namespace DiGi.GIS.UI
             return CalculateOrtoDatasComparisons(directory, ortoDatasComparisonOptions, references, count);
         }
 
+        /// <summary>
+        /// Calculates comparisons for orthodata located in the specified directory using the provided options and reference data.
+        /// </summary>
+        /// <param name="directory">The path to the directory containing the orthodata to be compared.</param>
+        /// <param name="ortoDatasComparisonOptions">The options used to configure the orthodata comparison process.</param>
+        /// <param name="references">An optional collection of reference strings to use during the comparison.</param>
+        /// <param name="count">An optional integer specifying the number of processors or a limit for the operation.</param>
+        /// <returns>A <see cref="HashSet{T}"/> containing the results of the orthodata comparisons, or <c>null</c> if the directory is invalid or does not exist.</returns>
         public static HashSet<string>? CalculateOrtoDatasComparisons(string? directory, OrtoDatasComparisonOptions? ortoDatasComparisonOptions, IEnumerable<string>? references = null, int? count = null)
         {
             if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))

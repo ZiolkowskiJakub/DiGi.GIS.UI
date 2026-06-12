@@ -9,6 +9,12 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Calculates and retrieves a set of GIS model files from a directory selected by the user via a folder dialog.
+        /// </summary>
+        /// <param name="owner">The owner window for the folder selection dialog.</param>
+        /// <param name="determinateWorker">An optional worker used to report determinate progress during the calculation process.</param>
+        /// <returns>A <see cref="HashSet{T}"/> containing the paths of the identified GIS model files, or <c>null</c> if the user cancels the dialog or no folder is selected.</returns>
         public static HashSet<string>? CalculateGISModelFiles(Window? owner, IDeterminateWorker? determinateWorker = null)
         {
             OpenFolderDialog openFolderDialog = new();

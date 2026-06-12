@@ -7,6 +7,11 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Prompts the user to select a ZIP file containing 3D models using an open file dialog.
+        /// </summary>
+        /// <param name="owner">The owner window that will host the file dialog.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="HashSet{T}"/> of strings if a file was selected; otherwise, <see langword="null"/>.</returns>
         public static async Task<HashSet<string>?> Download3DModels(this Window? owner)
         {
             OpenFileDialog openFileDialog = new()

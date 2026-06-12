@@ -9,6 +9,10 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Appends a prediction table by prompting the user to select the directory containing GIS model files.
+        /// </summary>
+        /// <param name="owner">The owner window that serves as the parent for the folder selection dialog.</param>
         public static void AppendPredictionTable(Window owner)
         {
             bool? result;

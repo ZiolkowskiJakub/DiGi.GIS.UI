@@ -13,6 +13,11 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Appends a 2D building VoTT model by prompting the user to select the directory containing the GIS model files.
+        /// </summary>
+        /// <param name="owner">The owner window for the folder selection dialog.</param>
+        /// <param name="voTTConversionOptions">Optional conversion options to be applied during the process.</param>
         public static void AppendVoTTModel_Building2D(Window? owner, VoTTConversionOptions? voTTConversionOptions = null)
         {
             bool? result;
@@ -184,6 +189,11 @@ namespace DiGi.GIS.UI
             }
         }
 
+        /// <summary>
+        /// Appends the VoTT model for OrtoRange by prompting the user to select the GIS model files directory.
+        /// </summary>
+        /// <param name="owner">The owner window used to host the folder selection dialog.</param>
+        /// <param name="voTTConversionOptions">Optional conversion options to be applied during the process.</param>
         public static void AppendVoTTModel_OrtoRange(Window? owner, VoTTConversionOptions? voTTConversionOptions = null)
         {
             bool? result;

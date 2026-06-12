@@ -8,6 +8,11 @@ namespace DiGi.GIS.UI
 {
     public static partial class Create
     {
+        /// <summary>
+        /// Prompts the user to select a folder containing GIS model files and loads the building models from the specified directory.
+        /// </summary>
+        /// <param name="owner">The owner window used to display the folder selection dialog.</param>
+        /// <returns>A dictionary mapping identifiers to lists of <see cref="BuildingModel"/> objects if a folder was selected; otherwise, <c>null</c>.</returns>
         public static Dictionary<string, List<BuildingModel>>? BuildingModels(this Window? owner)
         {
             OpenFolderDialog openFolderDialog;

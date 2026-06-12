@@ -13,11 +13,20 @@ namespace DiGi.GIS.UI.Controls
 
         private GISModelFile? gISModelFile;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="YearBuiltsControl"/> class.
+        /// </summary>
         public YearBuiltsControl()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Gets the currently selected <see cref="Building2D"/> entity from the control's list.
+        /// </summary>
+        /// <value>
+        /// The <see cref="Building2D"/> associated with the selected item, or <c>null</c> if no valid building is selected.
+        /// </value>
         public Building2D? Building2D
         {
             get
@@ -31,6 +40,9 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the <see cref="GISModelFile"/> associated with this control, which stores GIS model data with external reference support.
+        /// </summary>
         public GISModelFile? GISModelFile
         {
             get

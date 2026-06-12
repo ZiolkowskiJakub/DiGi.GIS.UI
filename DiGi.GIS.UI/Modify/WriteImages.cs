@@ -13,6 +13,13 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Writes images for the specified 2D building using source orthodata files and saves them to the designated output directory.
+        /// </summary>
+        /// <param name="building2D">The <see cref="Building2D"/> instance for which images are to be generated.</param>
+        /// <param name="directory_OrtoDatasFiles">The path to the directory containing the orthodata source files.</param>
+        /// <param name="directory_Output">The path to the directory where the output images will be written.</param>
+        /// <returns><c>true</c> if the images were successfully written; otherwise, <c>false</c>.</returns>
         public static bool WriteImages(this Building2D? building2D, string? directory_OrtoDatasFiles, string? directory_Output)
         {
             if (directory_OrtoDatasFiles == null || building2D == null || string.IsNullOrWhiteSpace(directory_Output))
@@ -101,6 +108,13 @@ namespace DiGi.GIS.UI
             return result;
         }
 
+        /// <summary>
+        /// Prompts the user to select a GIS model file and writes images based on the specified parameters.
+        /// </summary>
+        /// <param name="owner">The owner window for the file dialog.</param>
+        /// <param name="drawGeometry">Indicates whether geometry should be drawn in the output images.</param>
+        /// <param name="range">An optional range of indices to process for image writing.</param>
+        /// <returns><c>true</c> if the images were successfully written; otherwise, <c>false</c>.</returns>
         public static bool WriteImages(Window? owner, bool drawGeometry = false, Core.Classes.Range<int>? range = null)
         {
             bool? dialogResult;

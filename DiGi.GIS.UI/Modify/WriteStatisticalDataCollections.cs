@@ -7,6 +7,10 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Asynchronously prompts the user to save statistical unit data using a file save dialog.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous operation. The task result contains <see langword="true"/> if the file was successfully saved; otherwise, <see langword="false"/>.</returns>
         public static async Task<bool> WriteStatisticalUnit()
         {
             SaveFileDialog saveFileDialog = new()

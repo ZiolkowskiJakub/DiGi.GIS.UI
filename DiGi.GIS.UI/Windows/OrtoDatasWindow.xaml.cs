@@ -9,6 +9,9 @@ namespace DiGi.GIS.UI.Windows
     /// </summary>
     public partial class OrtoDatasWindow : Window
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OrtoDatasWindow"/> class.
+        /// </summary>
         public OrtoDatasWindow()
         {
             InitializeComponent();

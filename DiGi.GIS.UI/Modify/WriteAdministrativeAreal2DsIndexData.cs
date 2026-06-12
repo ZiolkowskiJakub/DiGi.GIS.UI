@@ -8,6 +8,12 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Writes administrative areal 2D index data to a directory selected by the user via a folder dialog.
+        /// </summary>
+        /// <param name="owner">The owner window of the folder selection dialog.</param>
+        /// <param name="path">The initial path or target path for writing the index data.</param>
+        /// <returns><c>true</c> if the operation was completed successfully; otherwise, <c>false</c>.</returns>
         public static bool WriteAdministrativeAreal2DsIndexData(Window? owner, string? path)
         {
             OpenFolderDialog openFolderDialog = new();

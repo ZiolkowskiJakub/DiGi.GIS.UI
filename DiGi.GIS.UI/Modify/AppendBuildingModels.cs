@@ -6,6 +6,11 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Appends building models associated with the specified window owner.
+        /// </summary>
+        /// <param name="owner">The window that owns the operation.</param>
+        /// <returns>A <see cref="HashSet{T}"/> containing the identifiers of the appended building models, or <c>null</c> if no models were found or created.</returns>
         public static HashSet<string>? AppendBuildingModels(this Window? owner)
         {
             Dictionary<string, List<BuildingModel>>? dictionary = Create.BuildingModels(owner);

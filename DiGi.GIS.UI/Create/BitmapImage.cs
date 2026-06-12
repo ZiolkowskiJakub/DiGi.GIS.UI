@@ -1,4 +1,4 @@
-﻿using DiGi.Core;
+using DiGi.Core;
 using DiGi.Geometry.Planar;
 using DiGi.Geometry.Planar.Classes;
 using DiGi.GIS.Classes;
@@ -10,6 +10,11 @@ namespace DiGi.GIS.UI
 {
     public static partial class Create
     {
+        /// <summary>
+        /// Creates a <see cref="System.Windows.Media.Imaging.BitmapImage"/> from the specified orthophoto data.
+        /// </summary>
+        /// <param name="ortoData">The orthophoto data to convert into a bitmap image.</param>
+        /// <returns>A <see cref="System.Windows.Media.Imaging.BitmapImage"/> if <paramref name="ortoData"/> is not null; otherwise, <c>null</c>.</returns>
         public static BitmapImage? BitmapImage(this OrtoData? ortoData)
         {
             if (ortoData == null)
@@ -20,6 +25,13 @@ namespace DiGi.GIS.UI
             return DiGi.UI.WPF.Create.BitmapImage(ortoData?.Bytes);
         }
 
+        /// <summary>
+        /// Creates a <see cref="System.Windows.Media.Imaging.BitmapImage"/> for the specified 2D building based on the provided directory and year.
+        /// </summary>
+        /// <param name="building2D">The 2D building entity to create the image for.</param>
+        /// <param name="directory">The directory path where the ortho data is located.</param>
+        /// <param name="year">The specific year of the imagery to retrieve.</param>
+        /// <returns>A <see cref="System.Windows.Media.Imaging.BitmapImage"/> if the image could be created; otherwise, <c>null</c>.</returns>
         public static BitmapImage? BitmapImage(this Building2D? building2D, string? directory, int year)
         {
             if (directory == null || building2D == null || year <= 0)
@@ -100,6 +112,14 @@ namespace DiGi.GIS.UI
             return result;
         }
 
+        /// <summary>
+        /// Creates a bitmap image representation of the specified 2D building based on the provided dimensions and offset.
+        /// </summary>
+        /// <param name="building2D">The 2D building entity to convert into a bitmap image.</param>
+        /// <param name="width">The width of the resulting bitmap image.</param>
+        /// <param name="height">The height of the resulting bitmap image.</param>
+        /// <param name="offset">The offset used when fitting the building's polygonal face to the bounding box.</param>
+        /// <returns>A <see cref="System.Windows.Media.Imaging.BitmapImage"/> representing the building, or <c>null</c> if the <paramref name="building2D"/> is null or if invalid dimensions are provided.</returns>
         public static BitmapImage? BitmapImage(this Building2D? building2D, int width, int height, double offset = 0.1)
         {
             if (building2D == null || width == -1 || height == -1)

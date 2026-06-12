@@ -8,6 +8,10 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Prompts the user to select a directory using a folder dialog to calculate GIS model files.
+        /// </summary>
+        /// <param name="owner">The owner window for the folder selection dialog.</param>
         public static void CalculateGISModelFiles(Window? owner)
         {
             OpenFolderDialog openFolderDialog = new();

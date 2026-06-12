@@ -5,6 +5,12 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Appends the data from a bounding box result file to the specified building 2D year built predictions file.
+        /// </summary>
+        /// <param name="building2DYearBuiltPredictionsFile">The <see cref="Building2DYearBuiltPredictionsFile"/> instance to which the results will be appended.</param>
+        /// <param name="boundingBoxResultFile">The <see cref="BoundingBoxResultFile"/> containing the bounding box results to append.</param>
+        /// <returns><c>true</c> if the data was successfully appended; otherwise, <c>false</c>.</returns>
         public static bool Append(this Building2DYearBuiltPredictionsFile building2DYearBuiltPredictionsFile, BoundingBoxResultFile boundingBoxResultFile)
         {
             if (boundingBoxResultFile == null || building2DYearBuiltPredictionsFile == null)

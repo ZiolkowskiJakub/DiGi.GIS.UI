@@ -8,6 +8,11 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Prompts the user to select a tab-separated values (TSV) file containing machine learning output for year built predictions and appends the data.
+        /// </summary>
+        /// <param name="owner">The window that owns the file selection dialog.</param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
         public static bool AppendPredictionYearBuilts(Window owner)
         {
             bool? result;

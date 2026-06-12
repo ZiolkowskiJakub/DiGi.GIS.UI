@@ -8,6 +8,12 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Calculates the orthophoto ranges by prompting the user to select a directory and applying the specified range options.
+        /// </summary>
+        /// <param name="owner">The owner window for the folder selection dialog.</param>
+        /// <param name="ortoRangeOptions">The options specifying the range of the orthophoto, including width and height dimensions.</param>
+        /// <returns><c>true</c> if a directory was selected and the ranges were successfully calculated; otherwise, <c>false</c>.</returns>
         public static bool CalculateOrtoRanges(Window? owner, OrtoRangeOptions? ortoRangeOptions)
         {
             OpenFolderDialog openFolderDialog = new();

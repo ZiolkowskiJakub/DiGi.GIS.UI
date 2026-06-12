@@ -1,4 +1,4 @@
-﻿using DiGi.Core;
+using DiGi.Core;
 using DiGi.GIS.Classes;
 using DiGi.GIS.UI.Delegates;
 using System.Windows.Controls;
@@ -17,11 +17,19 @@ namespace DiGi.GIS.UI.Controls
 
         private OrtoDatas? ortoDatas;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OrtoDatasControl"/> class.
+        /// </summary>
         public OrtoDatasControl()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OrtoDatasControl"/> class with the specified orthophoto data and optional year.
+        /// </summary>
+        /// <param name="ortoDatas">The orthophoto data to be associated with the control.</param>
+        /// <param name="year">The optional year associated with the orthophoto data.</param>
         public OrtoDatasControl(OrtoDatas? ortoDatas, short? year = null)
         {
             InitializeComponent();
@@ -32,6 +40,9 @@ namespace DiGi.GIS.UI.Controls
 
         public event OrtoDataSelectionChangedEventHandler? OrtoDataSelectionChanged;
 
+        /// <summary>
+        /// Gets or sets the dimensions of the image.
+        /// </summary>
         public Core.Classes.Size? ImageSize
         {
             get
@@ -66,6 +77,9 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the margin value for the control.
+        /// </summary>
         public new int Margin
         {
             get
@@ -94,6 +108,9 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the orthophoto data associated with this control.
+        /// </summary>
         public OrtoDatas? OrtoDatas
         {
             get
@@ -107,6 +124,9 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the year associated with the orthophoto data.
+        /// </summary>
         public short? Year
         {
             get
@@ -120,6 +140,7 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
+        /// <summary> Gets the list of years associated with the orthodata. </summary>
         public List<short>? Years
         {
             get
@@ -144,6 +165,12 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
+        /// <summary>
+        /// Updates the ortho data using the specified bitmap image and year.
+        /// </summary>
+        /// <param name="bitmapImage">The <see cref="BitmapImage"/> to update, or <c>null</c>.</param>
+        /// <param name="year">The year associated with the ortho data.</param>
+        /// <returns><c>true</c> if the update was successful; otherwise, <c>false</c>.</returns>
         public bool Update(BitmapImage? bitmapImage, short year)
         {
             return Update(bitmapImage, year, null);

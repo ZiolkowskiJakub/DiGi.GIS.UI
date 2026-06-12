@@ -9,6 +9,10 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Appends a comparison table by prompting the user to select a directory containing GIS model files.
+        /// </summary>
+        /// <param name="owner">The parent window that owns the folder selection dialog.</param>
         public static void AppendComparisonTable(Window? owner)
         {
             bool? result;

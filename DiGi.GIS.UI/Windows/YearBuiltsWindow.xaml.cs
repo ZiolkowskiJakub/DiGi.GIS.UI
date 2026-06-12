@@ -1,4 +1,4 @@
-﻿using DiGi.GIS.Classes;
+using DiGi.GIS.Classes;
 using System.Windows;
 
 namespace DiGi.GIS.UI.Windows
@@ -8,11 +8,15 @@ namespace DiGi.GIS.UI.Windows
     /// </summary>
     public partial class YearBuiltsWindow : Window
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="YearBuiltsWindow"/> class.
+        /// </summary>
         public YearBuiltsWindow()
         {
             InitializeComponent();
         }
 
+        /// <summary> Gets or sets the GIS model file associated with the Year Builts window. </summary>
         public GISModelFile? GISModelFile
         {
             get

@@ -5,6 +5,12 @@ namespace DiGi.GIS.UI
 {
     public static partial class Create
     {
+        /// <summary>
+        /// Creates a list of Orto data controls for the specified GIS model file and 2D building entity.
+        /// </summary>
+        /// <param name="gISModelFile">The GIS model file that stores the GIS model data.</param>
+        /// <param name="building2D">The 2D building entity associated with the controls.</param>
+        /// <returns>A list of <see cref="OrtoDataControl"/> instances if both parameters are non-null; otherwise, <c>null</c>.</returns>
         public static List<OrtoDataControl>? OrtoDataControls(this GISModelFile? gISModelFile, Building2D? building2D)
         {
             if (gISModelFile is null || building2D == null)
@@ -15,6 +21,13 @@ namespace DiGi.GIS.UI
             return OrtoDataControls(gISModelFile.Value, gISModelFile.Path, building2D);
         }
 
+        /// <summary>
+        /// Creates or retrieves a list of orthodata controls associated with the specified GIS model and 2D building entity based on the provided file path.
+        /// </summary>
+        /// <param name="gISModel">The GIS model that manages unique objects such as Building2D and AdministrativeAreal2D.</param>
+        /// <param name="path_GISModel">The file path to the GIS model source.</param>
+        /// <param name="building2D">The 2D building entity for which orthodata controls are being generated.</param>
+        /// <returns>A list of <see cref="OrtoDataControl"/> objects if all parameters are valid and the directory exists; otherwise, <c>null</c>.</returns>
         public static List<OrtoDataControl>? OrtoDataControls(this GISModel? gISModel, string? path_GISModel, Building2D? building2D)
         {
             if (gISModel is null || building2D == null || path_GISModel == null || string.IsNullOrWhiteSpace(path_GISModel))

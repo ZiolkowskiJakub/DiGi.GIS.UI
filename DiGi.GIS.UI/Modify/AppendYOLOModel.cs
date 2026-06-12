@@ -11,6 +11,12 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Appends a 2D building YOLO model to the current context using the specified conversion options.
+        /// </summary>
+        /// <param name="owner">The owner window used for displaying modal dialogs.</param>
+        /// <param name="yOLOConversionOptions">The options for YOLO conversion. If null, a new instance of <see cref="YOLOConversionOptions"/> will be initialized.</param>
+        /// <returns><c>true</c> if the model was successfully appended; otherwise, <c>false</c>.</returns>
         public static bool AppendYOLOModel_Building2D(Window? owner, YOLOConversionOptions? yOLOConversionOptions = null)
         {
             yOLOConversionOptions ??= new YOLOConversionOptions();
@@ -193,6 +199,12 @@ namespace DiGi.GIS.UI
             return true;
         }
 
+        /// <summary>
+        /// Appends a YOLO model for OrtoRange data, prompting the user to select the GIS model files directory if it is not specified or does not exist.
+        /// </summary>
+        /// <param name="owner">The owner window used for displaying dialogs.</param>
+        /// <param name="yOLOConversionOptions">The options for YOLO conversion; if null, a new instance will be created.</param>
+        /// <returns><c>true</c> if the model was successfully appended; otherwise, <c>false</c>.</returns>
         public static bool AppendYOLOModel_OrtoRange(Window? owner, YOLOConversionOptions? yOLOConversionOptions = null)
         {
             yOLOConversionOptions ??= new YOLOConversionOptions();

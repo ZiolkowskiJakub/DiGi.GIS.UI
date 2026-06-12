@@ -5,6 +5,14 @@ namespace DiGi.GIS.UI
 {
     public static partial class Create
     {
+        /// <summary>
+        /// Creates an <see cref="ItemPath"/> based on the provided typology and typology path.
+        /// </summary>
+        /// <param name="typology">The typology instance to search within.</param>
+        /// <param name="typologyPath">The hierarchical path used to locate the item within the typology.</param>
+        /// <param name="name">When this method returns, contains the name of the item found at the specified path; otherwise, <c>null</c>.</param>
+        /// <param name="func">An optional function used to resolve a string value from the typology object.</param>
+        /// <returns>An <see cref="ItemPath"/> if the item is successfully located; otherwise, <c>null</c>.</returns>
         public static ItemPath? ItemPath(this Typology.Classes.Typology? typology, TypologyPath? typologyPath, out string? name, Func<Typology.Classes.Typology?, string>? func = null)
         {
             name = null;

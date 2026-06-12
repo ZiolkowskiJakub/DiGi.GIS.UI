@@ -8,6 +8,12 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Calculates administrative areal 2D statistical units by prompting the user to select a source file via a dialog.
+        /// </summary>
+        /// <param name="owner">The owner window used for the file selection dialog.</param>
+        /// <param name="overrideExisting">Indicates whether existing files should be overwritten if they already exist.</param>
+        /// <param name="fileNameSufix">An optional suffix to append to the generated output file name.</param>
         public static void CalculateAdministrativeAreal2DStatisticalUnits(Window? owner, bool overrideExisting = true, string? fileNameSufix = null)
         {
             bool? result;

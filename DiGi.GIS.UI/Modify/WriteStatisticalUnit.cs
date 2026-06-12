@@ -7,6 +7,12 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Asynchronously writes the specified statistical data collections to a file selected via an open file dialog.
+        /// </summary>
+        /// <param name="variables">The collection of variables to be written to the file.</param>
+        /// <param name="years">The range of years for which the statistical data should be recorded.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains <see langword="true"/> if the data was successfully written; otherwise, <see langword="false"/>.</returns>
         public static async Task<bool> WriteStatisticalDataCollections(IEnumerable<Variable>? variables, Core.Classes.Range<int>? years)
         {
             bool? dialogResult;

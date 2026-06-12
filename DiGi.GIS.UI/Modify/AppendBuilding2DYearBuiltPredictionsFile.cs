@@ -8,6 +8,11 @@ namespace DiGi.GIS.UI
 {
     public static partial class Modify
     {
+        /// <summary>
+        /// Prompts the user to select a directory containing building 2D year built prediction files and appends them to the current dataset.
+        /// </summary>
+        /// <param name="owner">The <see cref="Window"/> that owns the folder selection dialog.</param>
+        /// <returns><c>true</c> if the operation was completed successfully; otherwise, <c>false</c>.</returns>
         public static bool AppendBuilding2DYearBuiltPredictionsFile(this Window owner)
         {
             bool? dialogResult;

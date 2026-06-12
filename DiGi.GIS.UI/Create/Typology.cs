@@ -7,6 +7,14 @@ namespace DiGi.GIS.UI
 {
     public static partial class Create
     {
+        /// <summary>
+        /// Creates a residential typology (type 1) based on the provided GIS model and configuration parameters.
+        /// </summary>
+        /// <param name="gISModel">The GIS model containing the objects used to generate the typology.</param>
+        /// <param name="description">An optional description for the created typology.</param>
+        /// <param name="thinnesRatio">The thinness ratio to be applied during creation. Defaults to 0.90.</param>
+        /// <param name="offset">The offset value to be applied. Defaults to 1.</param>
+        /// <returns>A <see cref="Typology.Classes.Typology"/> object if successful; otherwise, <c>null</c> if the provided GIS model is null.</returns>
         public static Typology.Classes.Typology? Typology_Residential_1(GISModel? gISModel, string? description, double thinnesRatio = 0.90, double offset = 1)
         {
             if (gISModel is null)
@@ -267,6 +275,14 @@ namespace DiGi.GIS.UI
             return result;
         }
 
+        /// <summary>
+        /// Creates a residential typology of type 2 based on the provided GIS model and specified parameters.
+        /// </summary>
+        /// <param name="gISModel">The GIS model containing the objects used to generate the typology.</param>
+        /// <param name="description">An optional description for the resulting typology object.</param>
+        /// <param name="thinnesRatio">The ratio used to calculate thinness. Defaults to 0.90.</param>
+        /// <param name="offset">The offset value applied during creation. Defaults to 1.</param>
+        /// <returns>A <see cref="Typology.Classes.Typology"/> instance if the operation is successful; otherwise, <c>null</c>.</returns>
         public static Typology.Classes.Typology? Typology_Residential_2(GISModel? gISModel, string? description, double thinnesRatio = 0.90, double offset = 1)
         {
             if (gISModel is null)
@@ -563,6 +579,13 @@ namespace DiGi.GIS.UI
             return result;
         }
 
+        /// <summary>
+        /// Creates a residential typology of type 3 based on the specified GIS model and parameters.
+        /// </summary>
+        /// <param name="gISModel">The GIS model containing the objects used to generate the typology.</param>
+        /// <param name="description">An optional description for the created typology object.</param>
+        /// <param name="thinnesRatio">The ratio used to determine the thinness of the residential elements. Defaults to 0.90.</param>
+        /// <returns>A <see cref="Typology.Classes.Typology"/> instance if successful; otherwise, <c>null</c> if the <paramref name="gISModel"/> is null.</returns>
         public static Typology.Classes.Typology? Typology_Residential_3(GISModel? gISModel, string? description, double thinnesRatio = 0.90)
         {
             if (gISModel is null)
@@ -868,6 +891,14 @@ namespace DiGi.GIS.UI
             return result;
         }
 
+        /// <summary>
+        /// Creates a residential typology of type 4 based on the provided GIS model and configuration parameters.
+        /// </summary>
+        /// <param name="gISModel">The GIS model containing the spatial data used to generate the typology.</param>
+        /// <param name="description">An optional description for the resulting typology object.</param>
+        /// <param name="thinnesRatio">The ratio used to control the thinness of the generated elements. Defaults to 0.90.</param>
+        /// <param name="offset">The offset value applied during the creation process. Defaults to 1.</param>
+        /// <returns>A <see cref="Typology.Classes.Typology"/> instance if the operation is successful; otherwise, <c>null</c> if the <paramref name="gISModel"/> is null.</returns>
         public static Typology.Classes.Typology? Typology_Residential_4(GISModel? gISModel, string? description, double thinnesRatio = 0.90, double offset = 1)
         {
             if (gISModel is null)
@@ -1135,6 +1166,13 @@ namespace DiGi.GIS.UI
             return result;
         }
 
+        /// <summary>
+        /// Creates a residential typology of type 5 based on the provided GIS model and specifications.
+        /// </summary>
+        /// <param name="gISModel">The GIS model used to retrieve building objects for the typology creation.</param>
+        /// <param name="description">An optional description to associate with the created typology object.</param>
+        /// <param name="thinnesRatio">The ratio used to determine the thinness of the residential typology elements. Defaults to 0.90.</param>
+        /// <returns>A <see cref="Typology.Classes.Typology"/> instance if successfully created; otherwise, <c>null</c>.</returns>
         public static Typology.Classes.Typology? Typology_Residential_5(GISModel? gISModel, string? description, double thinnesRatio = 0.90)
         {
             if (gISModel is null)
@@ -1447,6 +1485,14 @@ namespace DiGi.GIS.UI
             return result;
         }
 
+        /// <summary>
+        /// Creates a non-residential typology instance based on the provided GIS model and configuration parameters.
+        /// </summary>
+        /// <param name="gISModel">The GIS model used to retrieve building data for the typology creation.</param>
+        /// <param name="description">An optional description to assign to the created typology object.</param>
+        /// <param name="thinnesRatio">The ratio used to determine the thinness of the generated geometry. Defaults to 0.90.</param>
+        /// <param name="offset">The offset value applied during the creation process. Defaults to 1.</param>
+        /// <returns>A <see cref="Typology.Classes.Typology"/> object if successful; otherwise, <c>null</c> if the provided GIS model is null.</returns>
         public static Typology.Classes.Typology? Typology_NonResidential_1(GISModel? gISModel, string? description, double thinnesRatio = 0.90, double offset = 1)
         {
             if (gISModel is null)
@@ -1604,6 +1650,13 @@ namespace DiGi.GIS.UI
             return result;
         }
 
+        /// <summary>
+        /// Creates a non-residential typology based on the provided GIS model and specified parameters.
+        /// </summary>
+        /// <param name="gISModel">The GIS model containing the building data to be processed.</param>
+        /// <param name="description">An optional description for the resulting typology object.</param>
+        /// <param name="thinnesRatio">The ratio used to evaluate thinness, with a default value of 0.90.</param>
+        /// <returns>A <see cref="Typology.Classes.Typology"/> instance if the model is valid and objects are found; otherwise, <c>null</c>.</returns>
         public static Typology.Classes.Typology? Typology_NonResidential_2(GISModel? gISModel, string? description, double thinnesRatio = 0.90)
         {
             if (gISModel is null)
@@ -1804,6 +1857,13 @@ namespace DiGi.GIS.UI
             return result;
         }
 
+        /// <summary>
+        /// Creates a non-residential typology object of type 3 based on the provided GIS model, description, and thinness ratio.
+        /// </summary>
+        /// <param name="gISModel">The GIS model containing the spatial data used to generate the typology.</param>
+        /// <param name="description">An optional description to associate with the created typology object.</param>
+        /// <param name="thinnesRatio">The thinness ratio used as a parameter for the typology calculation. Defaults to 0.90.</param>
+        /// <returns>A <see cref="Typology.Classes.Typology"/> instance if successful; otherwise, <c>null</c> if the GIS model is null or no valid data is found.</returns>
         public static Typology.Classes.Typology? Typology_NonResidential_3(GISModel? gISModel, string? description, double thinnesRatio = 0.90)
         {
             if (gISModel is null)
@@ -2011,6 +2071,14 @@ namespace DiGi.GIS.UI
             return result;
         }
 
+        /// <summary>
+        /// Creates a residential typology based on year-built data from the specified GIS model file.
+        /// </summary>
+        /// <param name="gISModelFile">The GIS model file containing the source data.</param>
+        /// <param name="description">An optional description for the resulting typology.</param>
+        /// <param name="thinnesRatio">The ratio used to determine thickness during processing. Defaults to 0.90.</param>
+        /// <param name="offset">The offset value applied during the process. Defaults to 1.</param>
+        /// <returns>A <see cref="Typology.Classes.Typology"/> object if successfully created; otherwise, <c>null</c>.</returns>
         public static Typology.Classes.Typology? Typology_Residential_YearBuiltData_1(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.90, double offset = 1)
         {
             if (gISModelFile?.Value is not GISModel gISModel)
@@ -2321,6 +2389,14 @@ namespace DiGi.GIS.UI
             return result;
         }
 
+        /// <summary>
+        /// Creates a residential typology based on year-built data from the specified GIS model file.
+        /// </summary>
+        /// <param name="gISModelFile">The GIS model file containing the source data.</param>
+        /// <param name="description">A description to be associated with the generated typology.</param>
+        /// <param name="thinnesRatio">The ratio used for thickness calculations. Defaults to 0.90.</param>
+        /// <param name="offset">The offset value applied during processing. Defaults to 1.</param>
+        /// <returns>A <see cref="Typology.Classes.Typology"/> instance if the model file is valid and data is processed; otherwise, <c>null</c>.</returns>
         public static Typology.Classes.Typology? Typology_Residential_YearBuiltData_2(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.90, double offset = 1)
         {
             if (gISModelFile?.Value is not GISModel gISModel)
@@ -2667,6 +2743,13 @@ namespace DiGi.GIS.UI
             return result;
         }
 
+        /// <summary>
+        /// Creates a residential typology based on year built data from the specified GIS model file.
+        /// </summary>
+        /// <param name="gISModelFile">The GIS model file containing the source data.</param>
+        /// <param name="description">An optional description for the resulting typology.</param>
+        /// <param name="thinnesRatio">The ratio used to calculate thickness or thinning of elements. Defaults to 0.90.</param>
+        /// <returns>A <see cref="Typology.Classes.Typology"/> instance if a valid GIS model is provided and processed; otherwise, <c>null</c>.</returns>
         public static Typology.Classes.Typology? Typology_Residential_YearBuiltData_3(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.90)
         {
             if (gISModelFile?.Value is not GISModel gISModel)
@@ -3022,6 +3105,14 @@ namespace DiGi.GIS.UI
             return result;
         }
 
+        /// <summary>
+        /// Creates a residential typology based on year-built data from the specified GIS model file.
+        /// </summary>
+        /// <param name="gISModelFile">The GIS model file containing the source data.</param>
+        /// <param name="description">An optional description for the resulting typology.</param>
+        /// <param name="thinnesRatio">The ratio used to determine thinning of the geometry. Defaults to 0.90.</param>
+        /// <param name="offset">The offset value applied during processing. Defaults to 1.</param>
+        /// <returns>A <see cref="Typology.Classes.Typology"/> object if a valid GIS model is provided; otherwise, <c>null</c>.</returns>
         public static Typology.Classes.Typology? Typology_Residential_YearBuiltData_4(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.90, double offset = 1)
         {
             if (gISModelFile?.Value is not GISModel gISModel)
@@ -3339,6 +3430,13 @@ namespace DiGi.GIS.UI
             return result;
         }
 
+        /// <summary>
+        /// Creates a residential typology based on year-built data from the specified GIS model file.
+        /// </summary>
+        /// <param name="gISModelFile">The GIS model file containing the source data.</param>
+        /// <param name="description">An optional description for the resulting typology.</param>
+        /// <param name="thinnesRatio">The ratio used to calculate thickness or geometric properties, with a default value of 0.90.</param>
+        /// <returns>A <see cref="Typology.Classes.Typology"/> object if the model file is valid and contains data; otherwise, <c>null</c>.</returns>
         public static Typology.Classes.Typology? Typology_Residential_YearBuiltData_5(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.90)
         {
             if (gISModelFile?.Value is not GISModel gISModel)
@@ -3701,6 +3799,14 @@ namespace DiGi.GIS.UI
             return result;
         }
 
+        /// <summary>
+        /// Creates a typology for non-residential buildings based on year built data from the specified GIS model file.
+        /// </summary>
+        /// <param name="gISModelFile">The GIS model file containing the source data.</param>
+        /// <param name="description">A description to associate with the generated typology.</param>
+        /// <param name="thinnesRatio">The ratio used for thickness calculations. Defaults to 0.90.</param>
+        /// <param name="offset">The offset value applied during processing. Defaults to 1.</param>
+        /// <returns>A <see cref="Typology.Classes.Typology"/> object if the GIS model is valid and processed; otherwise, <c>null</c>.</returns>
         public static Typology.Classes.Typology? Typology_NonResidential_YearBuiltData_1(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.90, double offset = 1)
         {
             if (gISModelFile?.Value is not GISModel gISModel)
@@ -3908,6 +4014,13 @@ namespace DiGi.GIS.UI
             return result;
         }
 
+        /// <summary>
+        /// Creates a non-residential typology based on year built data from the specified GIS model file.
+        /// </summary>
+        /// <param name="gISModelFile">The GIS model file containing the source data.</param>
+        /// <param name="description">A description to be associated with the resulting typology.</param>
+        /// <param name="thinnesRatio">The thinness ratio used for processing building geometry. Defaults to 0.90.</param>
+        /// <returns>A <see cref="Typology.Classes.Typology"/> object if the model file is valid and contains data; otherwise, <c>null</c>.</returns>
         public static Typology.Classes.Typology? Typology_NonResidential_YearBuiltData_2(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.90)
         {
             if (gISModelFile?.Value is not GISModel gISModel)
@@ -4158,6 +4271,13 @@ namespace DiGi.GIS.UI
             return result;
         }
 
+        /// <summary>
+        /// Creates a non-residential typology based on year built data (version 3).
+        /// </summary>
+        /// <param name="gISModelFile">The GIS model file containing the source data.</param>
+        /// <param name="description">A description for the resulting typology.</param>
+        /// <param name="thinnesRatio">The thinness ratio used during processing. Defaults to 0.90.</param>
+        /// <returns>A <see cref="Typology.Classes.Typology"/> object if successful; otherwise, <c>null</c>.</returns>
         public static Typology.Classes.Typology? Typology_NonResidential_YearBuiltData_3(GISModelFile? gISModelFile, string? description, double thinnesRatio = 0.90)
         {
             if (gISModelFile?.Value is not GISModel gISModel)

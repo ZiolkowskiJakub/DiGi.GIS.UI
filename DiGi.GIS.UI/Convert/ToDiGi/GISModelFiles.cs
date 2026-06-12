@@ -7,6 +7,10 @@ namespace DiGi.GIS.UI
 {
     public static partial class Convert
     {
+        /// <summary>
+        /// Opens a file dialog to select and process DiGi GIS model files from a ZIP archive.
+        /// </summary>
+        /// <param name="owner">The owner window that will host the open file dialog.</param>
         public static void ToDiGi_GISModelFiles(Window owner)
         {
             bool? result;
