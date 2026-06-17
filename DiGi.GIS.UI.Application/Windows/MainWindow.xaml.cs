@@ -905,13 +905,13 @@ namespace DiGi.GIS.UI.Application.Windows
             //CheckPoint();
             //OrtoDatasTest();
 
-            SearchTest_Post_Parameter();
+            //SearchTest_Post_Parameter();
 
             //YearBuiltTest();
 
             //HeatTransferCoefficientTest();
 
-            //await BuidldingDataCheck();
+            await BuidldingDataCheck();
         }
 
         private async Task BuidldingDataCheck()
@@ -923,6 +923,9 @@ namespace DiGi.GIS.UI.Application.Windows
             }
 
             Table? table;
+            string? json;
+
+            DiGi.PostgreSQL.Table.Classes.Table? table_PostgreSQL;
 
             table = await buildingDataPostgreSQLConverter.PullAsync(["000313ED-0801-4328-BE9E-E345CE6296C6", "000A9C1D-3369-4F30-8C3B-C37B5208BF9C"], 5);
             if(table is null)
@@ -930,8 +933,28 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
+            json = Core.IO.Table.Convert.ToSystem_String<Table, Column, Row>(table);
+            if(json is null)
+            {
+                return;
+            }
+
+            table_PostgreSQL = JsonSerializer.Deserialize<DiGi.PostgreSQL.Table.Classes.Table>(json);
+
             table = await buildingDataPostgreSQLConverter.PullAsync(["000313ED-0801-4328-BE9E-E345CE6296C6", "000A9C1D-3369-4F30-8C3B-C37B5208BF9C"], 5, ["building_general_function", "storeys"]);
             if (table is null)
+            {
+                return;
+            }
+
+            json = Core.IO.Table.Convert.ToSystem_String<Table, Column, Row>(table);
+            if (json is null)
+            {
+                return;
+            }
+
+            table_PostgreSQL = JsonSerializer.Deserialize<DiGi.PostgreSQL.Table.Classes.Table>(json);
+            if (table_PostgreSQL is null)
             {
                 return;
             }
