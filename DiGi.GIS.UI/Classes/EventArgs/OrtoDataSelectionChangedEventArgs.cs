@@ -33,7 +33,7 @@ namespace DiGi.UI.WPF.Core.Classes
             }
         }
 
-        /// <summary> Gets the orthophoto data associated with the selection change event. </summary>
+        /// <summary> Gets the orthophoto data associated with the selection change event. </summary>
         public OrtoDatas? OrtoDatas
         {
             get

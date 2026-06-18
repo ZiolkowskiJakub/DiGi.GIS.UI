@@ -140,7 +140,7 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
-        /// <summary> Gets the list of years associated with the orthodata. </summary>
+        /// <summary> Gets the list of years associated with the orthodata. </summary>
         public List<short>? Years
         {
             get

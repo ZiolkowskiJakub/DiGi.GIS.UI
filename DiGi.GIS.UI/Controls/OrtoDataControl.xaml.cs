@@ -53,7 +53,7 @@ namespace DiGi.GIS.UI.Controls
             }
         }
 
-        /// <summary> Gets or sets the predicted year of the orthophoto data. </summary>
+        /// <summary> Gets or sets the predicted year of the orthophoto data. </summary>
         public short? PredictedYear
         {
             get

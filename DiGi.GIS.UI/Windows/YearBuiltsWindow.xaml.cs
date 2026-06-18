@@ -16,7 +16,7 @@ namespace DiGi.GIS.UI.Windows
             InitializeComponent();
         }
 
-        /// <summary> Gets or sets the GIS model file associated with the Year Builts window. </summary>
+        /// <summary> Gets or sets the GIS model file associated with the Year Builts window. </summary>
         public GISModelFile? GISModelFile
         {
             get
