@@ -292,10 +292,12 @@ namespace DiGi.GIS.UI.Controls
                 }
             }
 
-            if (ortoDataControl_Active != null)
+            if (ortoDataControl_Active == null)
             {
-                ortoDataControl_Active.Active = true;
+                return;
             }
+
+            ortoDataControl_Active.Active = true;
         }
 
         private bool Update(OrtoData? ortoData)

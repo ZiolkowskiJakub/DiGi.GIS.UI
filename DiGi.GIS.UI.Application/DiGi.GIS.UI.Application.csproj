@@ -54,6 +54,9 @@
     <Reference Include="DiGi.BDL">
       <HintPath>..\..\DiGi.BDL\bin\DiGi.BDL.dll</HintPath>
     </Reference>
+    <Reference Include="DiGi.CityGML">
+      <HintPath>..\..\DiGi.CityGML\bin\DiGi.CityGML.dll</HintPath>
+    </Reference>
     <Reference Include="DiGi.Core">
       <HintPath>..\..\DiGi.Core\bin\DiGi.Core.dll</HintPath>
     </Reference>

@@ -1,4 +1,4 @@
-﻿namespace DiGi.GIS.UI
+namespace DiGi.GIS.UI
 {
     public static partial class Query
     {
@@ -10,7 +10,7 @@
         {
             Dictionary<YOLO.Enums.Category, double> result = [];
 
-            foreach (YOLO.Enums.Category category in Enum.GetValues(typeof(YOLO.Enums.Category)))
+            foreach (YOLO.Enums.Category category in Enum.GetValues<YOLO.Enums.Category>())
             {
                 result[category] = 1;
             }

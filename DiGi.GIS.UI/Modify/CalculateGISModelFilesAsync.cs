@@ -1,4 +1,4 @@
-﻿using DiGi.Core.Interfaces;
+using DiGi.Core.Interfaces;
 using DiGi.GIS.Classes;
 using DiGi.GIS.Constants;
 using Microsoft.Win32;
@@ -38,10 +38,7 @@ namespace DiGi.GIS.UI
 
             paths_Input.RemoveAll(x => string.IsNullOrWhiteSpace(x));
 
-            if (determinateWorker != null)
-            {
-                determinateWorker.Maximum = paths_Input.Count;
-            }
+            determinateWorker?.Maximum = paths_Input.Count;
 
             paths_Input.Sort((x, y) => new FileInfo(y).Length.CompareTo(new FileInfo(x).Length));
 

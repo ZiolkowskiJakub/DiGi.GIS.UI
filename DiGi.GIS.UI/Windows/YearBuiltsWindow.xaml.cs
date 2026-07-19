@@ -26,10 +26,7 @@ namespace DiGi.GIS.UI.Windows
 
             set
             {
-                if (YearBuiltsControl_Main != null)
-                {
-                    YearBuiltsControl_Main.GISModelFile = value;
-                }
+                YearBuiltsControl_Main?.GISModelFile = value;
             }
         }
 
