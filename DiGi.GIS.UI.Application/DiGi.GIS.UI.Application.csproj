@@ -20,9 +20,18 @@
 
   <ItemGroup>
     <PackageReference Include="Emgu.CV" Version="4.12.0.5764" />
+    <!-- MathNet.Numerics is a NuGet dependency of DiGi.Math, reached through the DiGi.Geometry HintPath below.
+         Matrix.GetInversed (transform inversion, polynomial fitting) throws FileNotFoundException without it. -->
+    <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
+    <!-- Microsoft.OpenApi is a NuGet dependency of DiGi.WebAPI (referenced via HintPath), whose Swashbuckle
+         assemblies are copied next to it, so it must be re-added here to reach the application output. -->
+    <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
     <PackageReference Include="NetTopologySuite" Version="2.6.0" />
     <PackageReference Include="OsmSharp" Version="6.2.0" />
     <PackageReference Include="OsmSharp.Geo" Version="6.2.0" />
+    <!-- QuikGraph is a NuGet dependency of DiGi.Geometry (referenced via HintPath), so it must be re-added
+         here to reach the application output. -->
+    <PackageReference Include="QuikGraph" Version="2.5.0" />
   </ItemGroup>
 
   <ItemGroup>
