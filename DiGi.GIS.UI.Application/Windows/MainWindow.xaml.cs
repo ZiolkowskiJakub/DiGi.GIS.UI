@@ -1442,6 +1442,11 @@ namespace DiGi.GIS.UI.Application.Windows
                 await building2DPostgreSQLConverter.ClearAsync();
             }
 
+            // Rows the converter cannot file under a county part never reach the database. They used to
+            // vanish without a count, so a run over a whole directory could report Done having stored a
+            // fraction of it.
+            int count_Rejected = 0;
+
             foreach (string path_Input in paths_Input)
             {
                 GISModel? gISModel_Input = null;
@@ -1486,12 +1491,13 @@ namespace DiGi.GIS.UI.Application.Windows
                     building2Ds_PostgreSQL.Add(building2D_PostgreSQL);
                 }
 
-                await building2DPostgreSQLConverter.UpdateAsync(building2Ds_PostgreSQL);
+                PostgreSQL.Classes.PostgreSQLUpdateResult? postgreSQLUpdateResult = await building2DPostgreSQLConverter.UpdateAsync(building2Ds_PostgreSQL);
+                count_Rejected += postgreSQLUpdateResult?.Rejections.Count ?? building2Ds_PostgreSQL.Count;
             }
 
             TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
 
-            TextBlock_Progress.Text = string.Format("Done Updating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+            TextBlock_Progress.Text = string.Format("Done Updating! [{0}]{1}", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds), count_Rejected == 0 ? string.Empty : string.Format(" Rejected: {0}", count_Rejected));
         }
 
         private async void Button_UpdateOrtoDatas_FromFile_Click(object sender, RoutedEventArgs e)
@@ -1544,6 +1550,11 @@ namespace DiGi.GIS.UI.Application.Windows
             {
                 await ortoDatasPostgreSQLConverter.ClearAsync();
             }
+
+            // Rows the converter cannot file under a county part never reach the database. They used to
+            // vanish without a count, so a run over a whole directory could report Done having stored a
+            // fraction of it.
+            int count_Rejected = 0;
 
             foreach (string path_Input in paths_Input)
             {
@@ -1624,13 +1635,14 @@ namespace DiGi.GIS.UI.Application.Windows
                         ortoDatas_PostgreSQL.Add(ortoDatas_PostgreSQL_Temp);
                     }
 
-                    await ortoDatasPostgreSQLConverter.UpdateAsync(ortoDatas_PostgreSQL);
+                    PostgreSQL.Classes.PostgreSQLUpdateResult? postgreSQLUpdateResult = await ortoDatasPostgreSQLConverter.UpdateAsync(ortoDatas_PostgreSQL);
+                    count_Rejected += postgreSQLUpdateResult?.Rejections.Count ?? ortoDatas_PostgreSQL.Count;
                 }
             }
 
             TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
 
-            TextBlock_Progress.Text = string.Format("Done Updating! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+            TextBlock_Progress.Text = string.Format("Done Updating! [{0}]{1}", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds), count_Rejected == 0 ? string.Empty : string.Format(" Rejected: {0}", count_Rejected));
         }
 
         private void Button_WriteStatisticalDataCollections_Click(object sender, RoutedEventArgs e)
@@ -2756,6 +2768,10 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
+            // Rows the converter cannot file under a county part never reach the database. This handler used
+            // to discard the result outright, so the loop could walk every county storing nothing at all.
+            int count_Rejected = 0;
+
             List<PostgreSQL.Classes.Building2DReference>? building2DReferences = await ortoDatasPostgreSQLConverter.GetNextBuilding2DReferencesAsync(10);
             if (building2DReferences is not null)
             {
@@ -2785,10 +2801,16 @@ namespace DiGi.GIS.UI.Application.Windows
                                 ortoDatas_PostgreSQL.Add(ortoDatas_PostgreSQL_Temp);
                             }
 
-                            HashSet<long>? ids = await ortoDatasPostgreSQLConverter.UpdateAsync(ortoDatas_PostgreSQL);
+                            PostgreSQL.Classes.PostgreSQLUpdateResult? postgreSQLUpdateResult = await ortoDatasPostgreSQLConverter.UpdateAsync(ortoDatas_PostgreSQL);
+                            count_Rejected += postgreSQLUpdateResult?.Rejections.Count ?? ortoDatas_PostgreSQL.Count;
                         }
                     }
                 }
+            }
+
+            if (count_Rejected != 0)
+            {
+                MessageBox.Show(string.Format("Finished, but {0} OrtoDatas were rejected before the database.", count_Rejected));
             }
         }
 
