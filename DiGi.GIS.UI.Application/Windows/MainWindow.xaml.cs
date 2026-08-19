@@ -1019,7 +1019,7 @@ namespace DiGi.GIS.UI.Application.Windows
             using HttpClient httpClient = new();
 
             UrlBuilder urlBuilder = new ("https://api.digiproject.uk/gis/administrativeareal2d/administrativeareal2Dreferencesbyadministrativearealtype");
-            urlBuilder = urlBuilder.AddParameter("administrativearealtype", AdministrativeArealType.Subdivison.ToString());
+            urlBuilder = urlBuilder.AddParameter("administrativearealtype", AdministrativeArealType.Subdivision.ToString());
 
             try
             {
