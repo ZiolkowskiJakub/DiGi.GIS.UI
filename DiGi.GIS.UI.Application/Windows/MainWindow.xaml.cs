@@ -1,4 +1,4 @@
-﻿using DiGi.BDL.Classes;
+using DiGi.BDL.Classes;
 using DiGi.BDL.Enums;
 using DiGi.Core;
 using DiGi.Core.Classes;
@@ -1242,7 +1242,7 @@ namespace DiGi.GIS.UI.Application.Windows
                 administrativeAreal2DReferences_All_1.AddRange(administrativeAreal2DReferences_Temp);
             }
 
-            List<PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences_All_2 = await administrativeAreal2DPostgreSQLConverter.GetAdministrativeAreal2DReferencesByCodeAsync("02", PostgreSQL.Enums.AdministrativeArealType.Municipality);
+            List<PostgreSQL.Classes.AdministrativeAreal2DReference>? administrativeAreal2DReferences_All_2 = await administrativeAreal2DPostgreSQLConverter.GetAdministrativeAreal2DReferencesByParentCodeAsync("02", PostgreSQL.Enums.AdministrativeArealType.Municipality);
             if (administrativeAreal2DReferences_All_2 is null)
             {
                 return;
