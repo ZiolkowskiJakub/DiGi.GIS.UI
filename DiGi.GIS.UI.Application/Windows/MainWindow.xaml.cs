@@ -2784,7 +2784,7 @@ namespace DiGi.GIS.UI.Application.Windows
 
                     if (building2DReference_In is not null)
                     {
-                        List<PostgreSQL.Classes.Building2D>? building2Ds = await building2DPostgreSQLConverter.GetBuilding2DsByBuilding2DReferences(building2DReference_In);
+                        List<PostgreSQL.Classes.Building2D>? building2Ds = await building2DPostgreSQLConverter.GetBuilding2DsByBuilding2DReferencesAsync(building2DReference_In);
                         if (building2Ds != null)
                         {
                             OrtoDatasBuilding2DOptions ortoDatasBuilding2DOptions = new();
