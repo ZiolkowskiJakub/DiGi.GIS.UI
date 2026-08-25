@@ -2748,10 +2748,24 @@ namespace DiGi.GIS.UI.Application.Windows
 
         private async void Button_RefreshOrtoDatas_Click(object sender, RoutedEventArgs e)
         {
-            bool result = await PostgreSQL.Modify.RefreshOrtoDatas(gISPostgreSQLConverterManager, new PostgreSQL.Classes.PostgreSQLOrtoDatasRefreshOptions());
-            if (result)
+            // A run steps over any county it cannot reach rather than ending, so the tallies are the only
+            // account of what it did. Discarding them left a run that reached no county at all looking
+            // exactly like one that queued the whole country.
+            PostgreSQL.Classes.PostgreSQLOrtoDatasRefreshResult? postgreSQLOrtoDatasRefreshResult = await PostgreSQL.Modify.RefreshOrtoDatasAsync(gISPostgreSQLConverterManager, new PostgreSQL.Classes.PostgreSQLOrtoDatasRefreshOptions());
+            if (postgreSQLOrtoDatasRefreshResult is null)
             {
+                TextBlock_Progress.Text = "Refresh OrtoDatas could not be started - see the log";
+                return;
             }
+
+            TextBlock_Progress.Text = string.Format(
+                "Refresh OrtoDatas{0}: {1} queued of {2} read, {3} subdivision ids written, {4} of {5} counties stepped over",
+                postgreSQLOrtoDatasRefreshResult.Cancelled ? " cancelled" : " done",
+                postgreSQLOrtoDatasRefreshResult.EnqueuedCount,
+                postgreSQLOrtoDatasRefreshResult.ReadCount,
+                postgreSQLOrtoDatasRefreshResult.SubdivisionIdCount,
+                postgreSQLOrtoDatasRefreshResult.FailedCountyCount,
+                postgreSQLOrtoDatasRefreshResult.CountyCount);
         }
 
         private async void Button_UpdateOrtoDatas_FromDatabase_Click(object sender, RoutedEventArgs e)
