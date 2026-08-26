@@ -2817,6 +2817,20 @@ namespace DiGi.GIS.UI.Application.Windows
 
                             PostgreSQL.Classes.PostgreSQLUpdateResult? postgreSQLUpdateResult = await ortoDatasPostgreSQLConverter.UpdateAsync(ortoDatas_PostgreSQL);
                             count_Rejected += postgreSQLUpdateResult?.Rejections.Count ?? ortoDatas_PostgreSQL.Count;
+
+                            List<long> ids = [];
+                            foreach (PostgreSQL.Classes.Building2DReference building2DReference in building2DReference_In)
+                            {
+                                if (building2DReference is not null && building2DReference.Id > 0)
+                                {
+                                    ids.Add(building2DReference.Id);
+                                }
+                            }
+
+                            if (ids.Count > 0)
+                            {
+                                await ortoDatasPostgreSQLConverter.AcknowledgeBuilding2DReferencesAsync(ids);
+                            }
                         }
                     }
                 }
