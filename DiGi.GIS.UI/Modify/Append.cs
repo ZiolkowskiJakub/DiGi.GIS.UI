@@ -1,5 +1,6 @@
-﻿using DiGi.GIS.Classes;
+using DiGi.GIS.Classes;
 using DiGi.YOLO.Classes;
+using System.Collections.Generic;
 
 namespace DiGi.GIS.UI
 {
@@ -18,46 +19,18 @@ namespace DiGi.GIS.UI
                 return false;
             }
 
-            Dictionary<string, List<YearBuiltPrediction>> dictionary = [];
-            foreach (BoundingBoxResult boundingBoxResult in boundingBoxResultFile)
+            List<Building2DYearBuiltPredictions>? building2DYearBuiltPredictions = GIS.YOLO.Create.Building2DYearBuiltPredictions(boundingBoxResultFile);
+            if (building2DYearBuiltPredictions == null || building2DYearBuiltPredictions.Count == 0)
             {
-                string? name = boundingBoxResult?.Name;
-                if (name is null)
-                {
-                    continue;
-                }
-
-                string[] values = name.Split("_");
-                if (values == null || values.Length < 2)
-                {
-                    continue;
-                }
-
-                if (!ushort.TryParse(values[1].Trim(), out ushort year))
-                {
-                    continue;
-                }
-
-                string reference = values[0].Trim();
-
-                if (!dictionary.TryGetValue(reference, out List<YearBuiltPrediction>? yearBuiltPredictions) || yearBuiltPredictions == null)
-                {
-                    yearBuiltPredictions = [];
-                    dictionary[reference] = yearBuiltPredictions;
-                }
-
-                YearBuiltPrediction YearBuiltPrediction = new(year, new Geometry.Planar.Classes.BoundingBox2D(boundingBoxResult!.X, boundingBoxResult.Y, boundingBoxResult.Width, boundingBoxResult.Height), boundingBoxResult.Confidence);
-                yearBuiltPredictions.Add(YearBuiltPrediction);
+                return false;
             }
 
-            bool result = false;
-            foreach (KeyValuePair<string, List<YearBuiltPrediction>> keyValuePair in dictionary)
+            foreach (Building2DYearBuiltPredictions item in building2DYearBuiltPredictions)
             {
-                building2DYearBuiltPredictionsFile.AddValue(new Building2DYearBuiltPredictions(keyValuePair.Key, keyValuePair.Value));
-                result = true;
+                building2DYearBuiltPredictionsFile.AddValue(item);
             }
 
-            return result;
+            return true;
         }
     }
 }

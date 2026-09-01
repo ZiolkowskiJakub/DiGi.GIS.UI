@@ -1,4 +1,4 @@
-﻿using DiGi.Core.Classes;
+using DiGi.Core.Classes;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
@@ -19,7 +19,7 @@ namespace DiGi.GIS.UI.Classes
         /// Gets or sets the weights associated with each category used during the conversion process.
         /// </summary>
         [JsonInclude, JsonPropertyName("Weights")]
-        public Dictionary<YOLO.Enums.Category, double> Weights { get; set; } = Query.Weights();
+        public Dictionary<DiGi.YOLO.Enums.Category, double> Weights { get; set; } = Query.Weights();
 
         /// <summary>
         /// Gets or sets a value indicating whether existing data should be cleared before starting the conversion process.
@@ -88,7 +88,7 @@ namespace DiGi.GIS.UI.Classes
         /// </summary>
         /// <param name="category">The YOLO category to retrieve the weight for.</param>
         /// <returns>The weight assigned to the specified category, or 1 if not found.</returns>
-        public double this[YOLO.Enums.Category category]
+        public double this[DiGi.YOLO.Enums.Category category]
         {
             get
             {

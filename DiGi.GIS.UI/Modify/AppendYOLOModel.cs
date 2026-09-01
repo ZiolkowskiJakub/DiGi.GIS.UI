@@ -1,4 +1,4 @@
-﻿using DiGi.Geometry.Planar.Classes;
+using DiGi.Geometry.Planar.Classes;
 using DiGi.GIS.Classes;
 using DiGi.GIS.UI.Classes;
 using DiGi.YOLO.Classes;
@@ -9,6 +9,8 @@ using System.Windows.Media.Imaging;
 
 namespace DiGi.GIS.UI
 {
+    using YOLO = DiGi.YOLO;
+
     public static partial class Modify
     {
         /// <summary>
