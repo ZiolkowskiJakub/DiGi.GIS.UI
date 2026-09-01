@@ -1575,34 +1575,85 @@ An optional range of indices to process for image writing\.
 [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
 `true` if the images were successfully written; otherwise, `false`\.
 
-<a name='DiGi.GIS.UI.Modify.WriteImages(thisDiGi.GIS.Classes.Building2D,string,string)'></a>
+<a name='DiGi.GIS.UI.Modify.WriteImages(thisDiGi.GIS.Classes.Building2D,string,string,bool)'></a>
 
-## Modify\.WriteImages\(this Building2D, string, string\) Method
+## Modify\.WriteImages\(this Building2D, string, string, bool\) Method
 
 Writes images for the specified 2D building using source orthodata files and saves them to the designated output directory\.
 
 ```csharp
-public static bool WriteImages(this DiGi.GIS.Classes.Building2D? building2D, string? directory_OrtoDatasFiles, string? directory_Output);
+public static bool WriteImages(this DiGi.GIS.Classes.Building2D? building2D, string? directory_OrtoDatasFiles, string? directory_Output, bool drawGeometry=true);
 ```
 #### Parameters
 
-<a name='DiGi.GIS.UI.Modify.WriteImages(thisDiGi.GIS.Classes.Building2D,string,string).building2D'></a>
+<a name='DiGi.GIS.UI.Modify.WriteImages(thisDiGi.GIS.Classes.Building2D,string,string,bool).building2D'></a>
 
 `building2D` [DiGi\.GIS\.Classes\.Building2D](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.classes.building2d 'DiGi\.GIS\.Classes\.Building2D')
 
 The [DiGi\.GIS\.Classes\.Building2D](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.classes.building2d 'DiGi\.GIS\.Classes\.Building2D') instance for which images are to be generated\.
 
-<a name='DiGi.GIS.UI.Modify.WriteImages(thisDiGi.GIS.Classes.Building2D,string,string).directory_OrtoDatasFiles'></a>
+<a name='DiGi.GIS.UI.Modify.WriteImages(thisDiGi.GIS.Classes.Building2D,string,string,bool).directory_OrtoDatasFiles'></a>
 
 `directory_OrtoDatasFiles` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
 
 The path to the directory containing the orthodata source files\.
 
-<a name='DiGi.GIS.UI.Modify.WriteImages(thisDiGi.GIS.Classes.Building2D,string,string).directory_Output'></a>
+<a name='DiGi.GIS.UI.Modify.WriteImages(thisDiGi.GIS.Classes.Building2D,string,string,bool).directory_Output'></a>
 
 `directory_Output` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
 
 The path to the directory where the output images will be written\.
+
+<a name='DiGi.GIS.UI.Modify.WriteImages(thisDiGi.GIS.Classes.Building2D,string,string,bool).drawGeometry'></a>
+
+`drawGeometry` [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')
+
+Indicates whether geometry should be drawn in the output images\. Defaults to [true](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/bool 'https://docs\.microsoft\.com/en\-us/dotnet/csharp/language\-reference/builtin\-types/bool')\.
+
+#### Returns
+[System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  
+`true` if the images were successfully written; otherwise, `false`\.
+
+<a name='DiGi.GIS.UI.Modify.WriteImages(thisDiGi.GIS.Classes.OrtoDatas,string,bool,System.Collections.Generic.List_DiGi.Geometry.Planar.Classes.Point2D_,System.Collections.Generic.List_DiGi.Geometry.Planar.Classes.Point2D_)'></a>
+
+## Modify\.WriteImages\(this OrtoDatas, string, bool, List\<Point2D\>, List\<Point2D\>\) Method
+
+Writes images for the specified orthodata collection and saves them to the designated output directory\.
+
+```csharp
+public static bool WriteImages(this DiGi.GIS.Classes.OrtoDatas? ortoDatas, string? directory_Output, bool drawGeometry=false, System.Collections.Generic.List<DiGi.Geometry.Planar.Classes.Point2D>? point2Ds=null, System.Collections.Generic.List<DiGi.Geometry.Planar.Classes.Point2D>? point2Ds_Offset=null);
+```
+#### Parameters
+
+<a name='DiGi.GIS.UI.Modify.WriteImages(thisDiGi.GIS.Classes.OrtoDatas,string,bool,System.Collections.Generic.List_DiGi.Geometry.Planar.Classes.Point2D_,System.Collections.Generic.List_DiGi.Geometry.Planar.Classes.Point2D_).ortoDatas'></a>
+
+`ortoDatas` [DiGi\.GIS\.Classes\.OrtoDatas](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.classes.ortodatas 'DiGi\.GIS\.Classes\.OrtoDatas')
+
+The [DiGi\.GIS\.Classes\.OrtoDatas](https://learn.microsoft.com/en-us/dotnet/api/digi.gis.classes.ortodatas 'DiGi\.GIS\.Classes\.OrtoDatas') instance containing image payloads to export\.
+
+<a name='DiGi.GIS.UI.Modify.WriteImages(thisDiGi.GIS.Classes.OrtoDatas,string,bool,System.Collections.Generic.List_DiGi.Geometry.Planar.Classes.Point2D_,System.Collections.Generic.List_DiGi.Geometry.Planar.Classes.Point2D_).directory_Output'></a>
+
+`directory_Output` [System\.String](https://learn.microsoft.com/en-us/dotnet/api/system.string 'System\.String')
+
+The path to the directory where the output images will be written\.
+
+<a name='DiGi.GIS.UI.Modify.WriteImages(thisDiGi.GIS.Classes.OrtoDatas,string,bool,System.Collections.Generic.List_DiGi.Geometry.Planar.Classes.Point2D_,System.Collections.Generic.List_DiGi.Geometry.Planar.Classes.Point2D_).drawGeometry'></a>
+
+`drawGeometry` [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')
+
+Indicates whether geometry should be drawn in the output images\. Defaults to [false](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/bool 'https://docs\.microsoft\.com/en\-us/dotnet/csharp/language\-reference/builtin\-types/bool')\.
+
+<a name='DiGi.GIS.UI.Modify.WriteImages(thisDiGi.GIS.Classes.OrtoDatas,string,bool,System.Collections.Generic.List_DiGi.Geometry.Planar.Classes.Point2D_,System.Collections.Generic.List_DiGi.Geometry.Planar.Classes.Point2D_).point2Ds'></a>
+
+`point2Ds` [System\.Collections\.Generic\.List&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')[DiGi\.Geometry\.Planar\.Classes\.Point2D](https://learn.microsoft.com/en-us/dotnet/api/digi.geometry.planar.classes.point2d 'DiGi\.Geometry\.Planar\.Classes\.Point2D')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')
+
+Optional collection of points defining the primary polygon edge\.
+
+<a name='DiGi.GIS.UI.Modify.WriteImages(thisDiGi.GIS.Classes.OrtoDatas,string,bool,System.Collections.Generic.List_DiGi.Geometry.Planar.Classes.Point2D_,System.Collections.Generic.List_DiGi.Geometry.Planar.Classes.Point2D_).point2Ds_Offset'></a>
+
+`point2Ds_Offset` [System\.Collections\.Generic\.List&lt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')[DiGi\.Geometry\.Planar\.Classes\.Point2D](https://learn.microsoft.com/en-us/dotnet/api/digi.geometry.planar.classes.point2d 'DiGi\.Geometry\.Planar\.Classes\.Point2D')[&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1 'System\.Collections\.Generic\.List\`1')
+
+Optional collection of points defining the offset polygon edge\.
 
 #### Returns
 [System\.Boolean](https://learn.microsoft.com/en-us/dotnet/api/system.boolean 'System\.Boolean')  

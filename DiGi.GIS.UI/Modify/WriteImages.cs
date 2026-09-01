@@ -1,4 +1,4 @@
-﻿using DiGi.Core;
+using DiGi.Core;
 using DiGi.Geometry.Planar;
 using DiGi.Geometry.Planar.Classes;
 using DiGi.GIS.Classes;
@@ -19,8 +19,9 @@ namespace DiGi.GIS.UI
         /// <param name="building2D">The <see cref="Building2D"/> instance for which images are to be generated.</param>
         /// <param name="directory_OrtoDatasFiles">The path to the directory containing the orthodata source files.</param>
         /// <param name="directory_Output">The path to the directory where the output images will be written.</param>
+        /// <param name="drawGeometry">Indicates whether geometry should be drawn in the output images. Defaults to <see langword="true"/>.</param>
         /// <returns><c>true</c> if the images were successfully written; otherwise, <c>false</c>.</returns>
-        public static bool WriteImages(this Building2D? building2D, string? directory_OrtoDatasFiles, string? directory_Output)
+        public static bool WriteImages(this Building2D? building2D, string? directory_OrtoDatasFiles, string? directory_Output, bool drawGeometry = true)
         {
             if (directory_OrtoDatasFiles == null || building2D == null || string.IsNullOrWhiteSpace(directory_Output))
             {
@@ -41,14 +42,38 @@ namespace DiGi.GIS.UI
             Polygon2D? polygon2D = building2D?.PolygonalFace2D?.ExternalEdge as Polygon2D;
 
             List<Point2D>? point2Ds = polygon2D?.GetPoints();
-            if (point2Ds == null)
+            if (drawGeometry && point2Ds == null)
             {
                 return false;
             }
 
-            Polygon2D? polygon2D_Offset = polygon2D.Offset(0.5)?.FirstOrDefault();
+            Polygon2D? polygon2D_Offset = polygon2D?.Offset(0.5)?.FirstOrDefault();
 
             List<Point2D>? point2Ds_Offset = polygon2D_Offset?.GetPoints();
+
+            return ortoDatas.WriteImages(directory_Output, drawGeometry, point2Ds, point2Ds_Offset);
+        }
+
+        /// <summary>
+        /// Writes images for the specified orthodata collection and saves them to the designated output directory.
+        /// </summary>
+        /// <param name="ortoDatas">The <see cref="OrtoDatas"/> instance containing image payloads to export.</param>
+        /// <param name="directory_Output">The path to the directory where the output images will be written.</param>
+        /// <param name="drawGeometry">Indicates whether geometry should be drawn in the output images. Defaults to <see langword="false"/>.</param>
+        /// <param name="point2Ds">Optional collection of points defining the primary polygon edge.</param>
+        /// <param name="point2Ds_Offset">Optional collection of points defining the offset polygon edge.</param>
+        /// <returns><c>true</c> if the images were successfully written; otherwise, <c>false</c>.</returns>
+        public static bool WriteImages(this OrtoDatas? ortoDatas, string? directory_Output, bool drawGeometry = false, List<Point2D>? point2Ds = null, List<Point2D>? point2Ds_Offset = null)
+        {
+            if (ortoDatas == null || string.IsNullOrWhiteSpace(directory_Output))
+            {
+                return false;
+            }
+
+            if (!Directory.Exists(directory_Output))
+            {
+                Directory.CreateDirectory(directory_Output);
+            }
 
             bool result = false;
 
@@ -63,30 +88,31 @@ namespace DiGi.GIS.UI
                 string fileName = string.Format("{0}_{1}.{2}", ortoDatas.Reference, ortoData!.DateTime.Year.ToString(), "jpeg");
 
                 using Image image = Image.FromStream(new MemoryStream(bytes));
-                List<Point2D> point2Ds_Temp = [];
-                for (int j = 0; j < point2Ds.Count; j++)
+                if (drawGeometry && point2Ds != null)
                 {
-                    if (ortoData.ToOrto(point2Ds[j]) is Point2D point2D)
+                    List<Point2D> point2Ds_Temp = [];
+                    for (int j = 0; j < point2Ds.Count; j++)
                     {
-                        point2Ds_Temp.Add(point2D);
-                    }
-                }
-
-                List<Point2D>? point2Ds_Offset_Temp = null;
-                if (point2Ds_Offset != null)
-                {
-                    point2Ds_Offset_Temp = [];
-                    for (int j = 0; j < point2Ds_Offset.Count; j++)
-                    {
-                        if (ortoData.ToOrto(point2Ds_Offset[j]) is Point2D point2D)
+                        if (ortoData.ToOrto(point2Ds[j]) is Point2D point2D_Item)
                         {
-                            point2Ds_Offset_Temp.Add(point2D);
+                            point2Ds_Temp.Add(point2D_Item);
                         }
                     }
-                }
 
-                using (Graphics graphics = Graphics.FromImage(image))
-                {
+                    List<Point2D>? point2Ds_Offset_Temp = null;
+                    if (point2Ds_Offset != null)
+                    {
+                        point2Ds_Offset_Temp = [];
+                        for (int j = 0; j < point2Ds_Offset.Count; j++)
+                        {
+                            if (ortoData.ToOrto(point2Ds_Offset[j]) is Point2D point2D_Item)
+                            {
+                                point2Ds_Offset_Temp.Add(point2D_Item);
+                            }
+                        }
+                    }
+
+                    using Graphics graphics = Graphics.FromImage(image);
                     Polygon2D polygon2D_OrtoData = new(point2Ds_Temp);
 
                     Geometry.Drawing.Modify.Draw(graphics, polygon2D_OrtoData, new Pen(Color.Black.ToDiGi(), 3), false);
@@ -186,66 +212,17 @@ namespace DiGi.GIS.UI
                 Polygon2D? polygon2D = building2D?.PolygonalFace2D?.ExternalEdge as Polygon2D;
 
                 List<Point2D>? point2Ds = polygon2D?.GetPoints();
-                if (point2Ds == null)
+                if (drawGeometry && point2Ds == null)
                 {
-                    return false;
+                    continue;
                 }
 
-                Polygon2D? polygon2D_Offset = polygon2D.Offset(0.5)?.FirstOrDefault();
+                Polygon2D? polygon2D_Offset = polygon2D?.Offset(0.5)?.FirstOrDefault();
 
                 List<Point2D>? point2Ds_Offset = polygon2D_Offset?.GetPoints();
 
-                foreach (OrtoData ortoData in ortoDatas)
+                if (ortoDatas.WriteImages(directory_Output, drawGeometry, point2Ds, point2Ds_Offset))
                 {
-                    byte[]? bytes = ortoData?.Bytes;
-                    if (bytes == null)
-                    {
-                        continue;
-                    }
-
-                    string fileName = string.Format("{0}_{1}.{2}", ortoDatas.Reference, ortoData!.DateTime.Year.ToString(), "jpeg");
-
-                    using Image image = Image.FromStream(new MemoryStream(bytes));
-                    if (drawGeometry)
-                    {
-                        List<Point2D> point2Ds_Temp = [];
-                        for (int j = 0; j < point2Ds.Count; j++)
-                        {
-                            if (ortoData.ToOrto(point2Ds[j]) is Point2D point2D)
-                            {
-                                point2Ds_Temp.Add(point2D);
-                            }
-                        }
-
-                        List<Point2D>? point2Ds_Offset_Temp = null;
-                        if (point2Ds_Offset != null)
-                        {
-                            point2Ds_Offset_Temp = [];
-                            for (int j = 0; j < point2Ds_Offset.Count; j++)
-                            {
-                                if (ortoData.ToOrto(point2Ds_Offset[j]) is Point2D point2D)
-                                {
-                                    point2Ds_Offset_Temp.Add(point2D);
-                                }
-                            }
-                        }
-
-                        using Graphics graphics = Graphics.FromImage(image);
-                        Polygon2D polygon2D_OrtoData = new(point2Ds_Temp);
-
-                        Geometry.Drawing.Modify.Draw(graphics, polygon2D_OrtoData, new Pen(Color.Black.ToDiGi(), 3), false);
-                        Geometry.Drawing.Modify.Draw(graphics, polygon2D_OrtoData.GetBoundingBox(), new Pen(Color.Gray.ToDiGi(), 1), false);
-
-                        if (point2Ds_Offset_Temp != null)
-                        {
-                            Polygon2D polygon2D_OrtoData_Offset = new(point2Ds_Offset_Temp);
-
-                            Geometry.Drawing.Modify.Draw(graphics, polygon2D_OrtoData_Offset, new Pen(Color.Red.ToDiGi(), 3), false);
-                            Geometry.Drawing.Modify.Draw(graphics, polygon2D_OrtoData_Offset.GetBoundingBox(), new Pen(Color.Gray.ToDiGi(), 1), false);
-                        }
-                    }
-
-                    image.Save(Path.Combine(directory_Output, fileName), ImageFormat.Jpeg);
                     result = true;
                 }
             }
