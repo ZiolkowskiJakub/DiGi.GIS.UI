@@ -15,6 +15,7 @@ using DiGi.GIS.PostgreSQL.Enums;
 using DiGi.GIS.UI.Classes;
 using DiGi.WebAPI.Classes;
 using Microsoft.Win32;
+using System;
 using System.Collections.Concurrent;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -583,6 +584,8 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = string.Format("Done Appending Building Models! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
+        // TODO [YearBuiltPipelineFileSource]: Superseded by the automated Year Built Prediction pipeline (ZiolkowskiJakub/DiGi.YOLO#1). Do not remove without: 1. A successful prediction parity run on deployed PostgreSQL data (#1 §Verification), 2. Full database coverage established, 3. An explicit decision and developer opt-in.
+        [Obsolete("Superseded by WebAPI write endpoints in the automated Year Built Prediction pipeline. TODO [YearBuiltPipelineFileSource]")]
         private void AppendPredictionYearBuilts()
         {
             DateTime dateTime = DateTime.Now;
@@ -596,6 +599,8 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = string.Format("Done Appending Prediction Year Builts! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
+        // TODO [YearBuiltPipelineFileSource]: Superseded by the automated Year Built Prediction pipeline (ZiolkowskiJakub/DiGi.YOLO#1). Do not remove without: 1. A successful prediction parity run on deployed PostgreSQL data (#1 §Verification), 2. Full database coverage established, 3. An explicit decision and developer opt-in.
+        [Obsolete("Superseded by direct building_data column projections in the automated Year Built Prediction pipeline. TODO [YearBuiltPipelineFileSource]")]
         private void AppendTable()
         {
             DateTime dateTime = DateTime.Now;
@@ -657,8 +662,10 @@ namespace DiGi.GIS.UI.Application.Windows
             AppendBuildingModels();
         }
 
+        // TODO [YearBuiltPipelineFileSource]: Manual prediction UI button. Superseded by background task and console runner.
         private void Button_AppendPredictions_Click(object sender, RoutedEventArgs e)
         {
+#pragma warning disable CS0618
             DateTime dateTime = DateTime.Now;
 
             TextBlock_Progress.Text = "Appending Predictions...";
@@ -668,16 +675,23 @@ namespace DiGi.GIS.UI.Application.Windows
             TimeSpan timeSpan = new((DateTime.Now - dateTime).Ticks);
 
             TextBlock_Progress.Text = string.Format("Done Appending Predictions! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
+#pragma warning restore CS0618
         }
 
+        // TODO [YearBuiltPipelineFileSource]: Manual prediction UI button. Superseded by background task and console runner.
         private void Button_AppendPredictionYearBuilts_Click(object sender, RoutedEventArgs e)
         {
+#pragma warning disable CS0618
             AppendPredictionYearBuilts();
+#pragma warning restore CS0618
         }
 
+        // TODO [YearBuiltPipelineFileSource]: Manual prediction UI button. Superseded by background task and console runner.
         private void Button_AppendTable_Click(object sender, RoutedEventArgs e)
         {
+#pragma warning disable CS0618
             AppendTable();
+#pragma warning restore CS0618
         }
 
         private void Button_AppendVoTTModel_Click(object sender, RoutedEventArgs e)
@@ -783,9 +797,12 @@ namespace DiGi.GIS.UI.Application.Windows
             MessageBox.Show(result ? "The same objects" : "Objects are different");
         }
 
+        // TODO [YearBuiltPipelineFileSource]: Manual prediction UI button. Superseded by background task and console runner.
         private void Button_ConvertOrtoDatasToFiles_Click(object sender, RoutedEventArgs e)
         {
+#pragma warning disable CS0618
             Convert_ToFiles();
+#pragma warning restore CS0618
         }
 
         private void Button_OrtoDatas_Click(object sender, RoutedEventArgs e)
@@ -1877,6 +1894,8 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = string.Format("Done Checking! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s:{4}ms", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, timeSpan.Milliseconds));
         }
 
+        // TODO [YearBuiltPipelineFileSource]: Superseded by the automated Year Built Prediction pipeline (ZiolkowskiJakub/DiGi.YOLO#1). Do not remove without: 1. A successful prediction parity run on deployed PostgreSQL data (#1 §Verification), 2. Full database coverage established, 3. An explicit decision and developer opt-in.
+        [Obsolete("Superseded by the automated Year Built Prediction pipeline. TODO [YearBuiltPipelineFileSource]")]
         private void Convert_ToFiles(int count = 10)
         {
             OpenFolderDialog openFolderDialog;

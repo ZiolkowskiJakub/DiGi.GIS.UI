@@ -953,7 +953,7 @@ Inheritance [System\.Object](https://learn.microsoft.com/en-us/dotnet/api/system
 
 ## Modify\.Append\(this Building2DYearBuiltPredictionsFile, BoundingBoxResultFile\) Method
 
-Appends the data from a bounding box result file to the specified building 2D year built predictions file\.
+\[TEMPORARY\] Appends the data from a bounding box result file to the specified building 2D year built predictions file\.
 
 ```csharp
 public static bool Append(this DiGi.GIS.Classes.Building2DYearBuiltPredictionsFile building2DYearBuiltPredictionsFile, DiGi.YOLO.Classes.BoundingBoxResultFile boundingBoxResultFile);
@@ -980,7 +980,7 @@ The [DiGi\.YOLO\.Classes\.BoundingBoxResultFile](https://learn.microsoft.com/en-
 
 ## Modify\.AppendBuilding2DYearBuiltPredictionsFile\(this Window\) Method
 
-Prompts the user to select a directory containing building 2D year built prediction files and appends them to the current dataset\.
+\[TEMPORARY\] Prompts the user to select a directory containing building 2D year built prediction files and appends them to the current dataset\.
 
 ```csharp
 public static bool AppendBuilding2DYearBuiltPredictionsFile(this System.Windows.Window owner);
@@ -1039,7 +1039,7 @@ The parent window that owns the folder selection dialog\.
 
 ## Modify\.AppendPredictionTable\(Window\) Method
 
-Appends a prediction table by prompting the user to select the directory containing GIS model files\.
+\[TEMPORARY\] Appends a prediction table by prompting the user to select the directory containing GIS model files\.
 
 ```csharp
 public static void AppendPredictionTable(System.Windows.Window owner);
@@ -1056,7 +1056,7 @@ The owner window that serves as the parent for the folder selection dialog\.
 
 ## Modify\.AppendPredictionYearBuilts\(Window\) Method
 
-Prompts the user to select a tab\-separated values \(TSV\) file containing machine learning output for year built predictions and appends the data\.
+\[TEMPORARY\] Prompts the user to select a tab\-separated values \(TSV\) file containing machine learning output for year built predictions and appends the data\.
 
 ```csharp
 public static bool AppendPredictionYearBuilts(System.Windows.Window owner);

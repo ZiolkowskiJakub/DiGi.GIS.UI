@@ -1,6 +1,8 @@
+// TODO [YearBuiltPipelineFileSource]: Superseded by the automated Year Built Prediction pipeline (ZiolkowskiJakub/DiGi.YOLO#1). Do not remove without: 1. A successful prediction parity run on deployed PostgreSQL data (#1 §Verification), 2. Full database coverage established, 3. An explicit decision and developer opt-in.
 using DiGi.GIS.Classes;
 using DiGi.GIS.Constants;
 using Microsoft.Win32;
+using System;
 using System.IO;
 using System.Windows;
 
@@ -11,10 +13,12 @@ namespace DiGi.GIS.UI
     public static partial class Modify
     {
         /// <summary>
-        /// Prompts the user to select a directory containing building 2D year built prediction files and appends them to the current dataset.
+        /// [TEMPORARY] Prompts the user to select a directory containing building 2D year built prediction files and appends them to the current dataset.
         /// </summary>
         /// <param name="owner">The <see cref="Window"/> that owns the folder selection dialog.</param>
         /// <returns><c>true</c> if the operation was completed successfully; otherwise, <c>false</c>.</returns>
+        // TODO [YearBuiltPipelineFileSource]: Superseded by building_data column updaters in the automated Year Built Prediction pipeline.
+        [Obsolete("Superseded by building_data column updaters in the automated Year Built Prediction pipeline. TODO [YearBuiltPipelineFileSource]")]
         public static bool AppendBuilding2DYearBuiltPredictionsFile(this Window owner)
         {
             bool? dialogResult;

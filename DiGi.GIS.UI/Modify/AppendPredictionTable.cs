@@ -1,7 +1,9 @@
-﻿using DiGi.Core.Classes;
+// TODO [YearBuiltPipelineFileSource]: Superseded by the automated Year Built Prediction pipeline (ZiolkowskiJakub/DiGi.YOLO#1). Do not remove without: 1. A successful prediction parity run on deployed PostgreSQL data (#1 §Verification), 2. Full database coverage established, 3. An explicit decision and developer opt-in.
+using DiGi.Core.Classes;
 using DiGi.Core.IO.Table.Classes;
 using DiGi.GIS.Classes;
 using Microsoft.Win32;
+using System;
 using System.IO;
 using System.Windows;
 
@@ -10,9 +12,11 @@ namespace DiGi.GIS.UI
     public static partial class Modify
     {
         /// <summary>
-        /// Appends a prediction table by prompting the user to select the directory containing GIS model files.
+        /// [TEMPORARY] Appends a prediction table by prompting the user to select the directory containing GIS model files.
         /// </summary>
         /// <param name="owner">The owner window that serves as the parent for the folder selection dialog.</param>
+        // TODO [YearBuiltPipelineFileSource]: Superseded by direct building_data column projections in the automated Year Built Prediction pipeline.
+        [Obsolete("Superseded by direct building_data column projections in the automated Year Built Prediction pipeline. TODO [YearBuiltPipelineFileSource]")]
         public static void AppendPredictionTable(Window owner)
         {
             bool? result;
