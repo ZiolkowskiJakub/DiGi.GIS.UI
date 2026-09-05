@@ -1536,6 +1536,14 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
+            // The county part an item belongs to is a question about building_2d, so the converter that
+            // answers it is needed alongside the one that lists the parts.
+            PostgreSQL.Classes.Building2DPostgreSQLConverter? building2DPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<PostgreSQL.Classes.Building2DPostgreSQLConverter>();
+            if (building2DPostgreSQLConverter is null)
+            {
+                return;
+            }
+
             bool clear = true;
 
             DateTime dateTime = DateTime.Now;
@@ -1623,8 +1631,12 @@ namespace DiGi.GIS.UI.Application.Windows
                     continue;
                 }
 
-                int? countyId = await administrativeAreal2DPostgreSQLConverter.GetIdByCodeAsync(code, PostgreSQL.Enums.AdministrativeArealType.County);
-                if (countyId is null || !countyId.HasValue)
+                // Every polygon part of the code, not the lowest of them. A county whose territory is
+                // disconnected is stored as one row per part and a building is filed under exactly one of
+                // them, which need not be the lowest - for code 3020 the lowest part holds no building at
+                // all. Which part each item belongs to is read from its own building_2d row below.
+                HashSet<int>? countyIds = await administrativeAreal2DPostgreSQLConverter.GetIdsByCodeAsync(code, PostgreSQL.Enums.AdministrativeArealType.County);
+                if (countyIds is null || countyIds.Count == 0)
                 {
                     continue;
                 }
@@ -1640,9 +1652,21 @@ namespace DiGi.GIS.UI.Application.Windows
                         continue;
                     }
 
+                    // The part each item belongs to comes from the building_2d row already holding its
+                    // reference - one batched lookup for the whole split rather than one part for the code.
+                    Dictionary<string, int> countyIds_ByReference = await PostgreSQL.Query.CountyIdsByReferencesAsync(building2DPostgreSQLConverter, ortoDatas_GIS.Select(x => x?.Reference), countyIds);
+
                     List<PostgreSQL.Classes.OrtoDatas>? ortoDatas_PostgreSQL = [];
                     foreach (OrtoDatas ortoDatas_GIS_Temp in ortoDatas_GIS)
                     {
+                        // No part holds this building, so nothing says where the item belongs. Filing it
+                        // under a guess is what leaves a sibling part reading back as missing.
+                        if (ortoDatas_GIS_Temp?.Reference is not string reference_Temp || !countyIds_ByReference.TryGetValue(reference_Temp, out int countyId))
+                        {
+                            count_Rejected++;
+                            continue;
+                        }
+
                         PostgreSQL.Classes.OrtoDatas? ortoDatas_PostgreSQL_Temp = PostgreSQL.Convert.ToPostgreSQL(ortoDatas_GIS_Temp, countyId);
                         if (ortoDatas_PostgreSQL_Temp is null)
                         {
@@ -2880,6 +2904,14 @@ namespace DiGi.GIS.UI.Application.Windows
                 return;
             }
 
+            // The county part an item belongs to is a question about building_2d, so the converter that
+            // answers it is needed alongside the one that lists the parts.
+            PostgreSQL.Classes.Building2DPostgreSQLConverter? building2DPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<PostgreSQL.Classes.Building2DPostgreSQLConverter>();
+            if (building2DPostgreSQLConverter is null)
+            {
+                return;
+            }
+
             //bool clear = true;
 
             DateTime dateTime = DateTime.Now;
@@ -2955,8 +2987,12 @@ namespace DiGi.GIS.UI.Application.Windows
                     continue;
                 }
 
-                int? countyId = await administrativeAreal2DPostgreSQLConverter.GetIdByCodeAsync(code, PostgreSQL.Enums.AdministrativeArealType.County);
-                if (countyId is null || !countyId.HasValue)
+                // Every polygon part of the code, not the lowest of them. A county whose territory is
+                // disconnected is stored as one row per part and a building is filed under exactly one of
+                // them, which need not be the lowest - for code 3020 the lowest part holds no building at
+                // all. Which part each item belongs to is read from its own building_2d row below.
+                HashSet<int>? countyIds = await administrativeAreal2DPostgreSQLConverter.GetIdsByCodeAsync(code, PostgreSQL.Enums.AdministrativeArealType.County);
+                if (countyIds is null || countyIds.Count == 0)
                 {
                     continue;
                 }
@@ -2981,9 +3017,18 @@ namespace DiGi.GIS.UI.Application.Windows
                         continue;
                     }
 
+                    // The part each item belongs to comes from the building_2d row already holding its
+                    // reference - one batched lookup for the whole split rather than one part for the code.
+                    Dictionary<string, int> countyIds_ByReference = await PostgreSQL.Query.CountyIdsByReferencesAsync(building2DPostgreSQLConverter, references, countyIds);
+
                     List<PostgreSQL.Classes.YearBuiltData> yearBuiltDatas_PostgreSQL = [];
                     foreach (YearBuiltData yearBuiltData in dictionary.Values)
                     {
+                        if (yearBuiltData?.Reference is not string reference_Temp || !countyIds_ByReference.TryGetValue(reference_Temp, out int countyId))
+                        {
+                            continue;
+                        }
+
                         PostgreSQL.Classes.YearBuiltData? yearBuiltData_PostgreSQL = yearBuiltData.ToPostgreSQL(countyId);
                         if (yearBuiltData_PostgreSQL is not null)
                         {
@@ -3021,6 +3066,14 @@ namespace DiGi.GIS.UI.Application.Windows
 
             PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter? administrativeAreal2DPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<PostgreSQL.Classes.AdministrativeAreal2DPostgreSQLConverter>();
             if (administrativeAreal2DPostgreSQLConverter is null)
+            {
+                return;
+            }
+
+            // The county part an item belongs to is a question about building_2d, so the converter that
+            // answers it is needed alongside the one that lists the parts.
+            PostgreSQL.Classes.Building2DPostgreSQLConverter? building2DPostgreSQLConverter = gISPostgreSQLConverterManager.GetPostgreSQLConverter<PostgreSQL.Classes.Building2DPostgreSQLConverter>();
+            if (building2DPostgreSQLConverter is null)
             {
                 return;
             }
@@ -3094,8 +3147,12 @@ namespace DiGi.GIS.UI.Application.Windows
                     continue;
                 }
 
-                int? countyId = await administrativeAreal2DPostgreSQLConverter.GetIdByCodeAsync(code, PostgreSQL.Enums.AdministrativeArealType.County);
-                if (countyId is null || !countyId.HasValue)
+                // Every polygon part of the code, not the lowest of them. A county whose territory is
+                // disconnected is stored as one row per part and a building is filed under exactly one of
+                // them, which need not be the lowest - for code 3020 the lowest part holds no building at
+                // all. Which part each item belongs to is read from its own building_2d row below.
+                HashSet<int>? countyIds = await administrativeAreal2DPostgreSQLConverter.GetIdsByCodeAsync(code, PostgreSQL.Enums.AdministrativeArealType.County);
+                if (countyIds is null || countyIds.Count == 0)
                 {
                     continue;
                 }
@@ -3103,11 +3160,20 @@ namespace DiGi.GIS.UI.Application.Windows
                 List<Building2D>? building2Ds_GIS = gISModel_Input.GetObjects<Building2D>();
                 if (building2Ds_GIS is not null && building2Ds_GIS.Count != 0)
                 {
+                    // The part each item belongs to comes from the building_2d row already holding its
+                    // reference - one batched lookup for the whole split rather than one part for the code.
+                    Dictionary<string, int> countyIds_ByReference = await PostgreSQL.Query.CountyIdsByReferencesAsync(building2DPostgreSQLConverter, building2Ds_GIS.Select(x => x?.Reference), countyIds);
+
                     List<PostgreSQL.Classes.Building2DOccupancyData> building2DOccupancyDatas = [];
                     foreach (Building2D building2D_GIS in building2Ds_GIS)
                     {
                         OccupancyCalculationResult? occupancyCalculationResult = gISModel_Input.GetRelatedObject<OccupancyCalculationResult>(building2D_GIS);
                         if (occupancyCalculationResult is null)
+                        {
+                            continue;
+                        }
+
+                        if (building2D_GIS.Reference is not string reference_Temp || !countyIds_ByReference.TryGetValue(reference_Temp, out int countyId))
                         {
                             continue;
                         }
