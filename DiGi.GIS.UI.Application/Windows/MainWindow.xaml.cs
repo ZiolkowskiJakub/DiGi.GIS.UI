@@ -584,7 +584,7 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = string.Format("Done Appending Building Models! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
-        // TODO [YearBuiltPipelineFileSource]: Superseded by the automated Year Built Prediction pipeline (ZiolkowskiJakub/DiGi.YOLO#1). Do not remove without: 1. A successful prediction parity run on deployed PostgreSQL data (#1 §Verification), 2. Full database coverage established, 3. An explicit decision and developer opt-in.
+        // TODO [YearBuiltPipelineFileSource]: Superseded by the automated Year Built Prediction pipeline (ZiolkowskiJakub/DiGi.YOLO#1). Do not remove without: 1. An automated pipeline run (wiki "Running a County", ZiolkowskiJakub/DiGi.GIS.YOLO.UI) completes a full sweep for at least one county against deployed PostgreSQL data, with the building_data detection and populated-year columns filled for that county, 2. Full database coverage established, 3. An explicit decision and developer opt-in (tracking checklist: ZiolkowskiJakub/DiGi.YOLO#11).
         [Obsolete("Superseded by WebAPI write endpoints in the automated Year Built Prediction pipeline. TODO [YearBuiltPipelineFileSource]")]
         private void AppendPredictionYearBuilts()
         {
@@ -599,7 +599,7 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = string.Format("Done Appending Prediction Year Builts! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
-        // TODO [YearBuiltPipelineFileSource]: Superseded by the automated Year Built Prediction pipeline (ZiolkowskiJakub/DiGi.YOLO#1). Do not remove without: 1. A successful prediction parity run on deployed PostgreSQL data (#1 §Verification), 2. Full database coverage established, 3. An explicit decision and developer opt-in.
+        // TODO [YearBuiltPipelineFileSource]: Superseded by the automated Year Built Prediction pipeline (ZiolkowskiJakub/DiGi.YOLO#1). Do not remove without: 1. An automated pipeline run (wiki "Running a County", ZiolkowskiJakub/DiGi.GIS.YOLO.UI) completes a full sweep for at least one county against deployed PostgreSQL data, with the building_data detection and populated-year columns filled for that county, 2. Full database coverage established, 3. An explicit decision and developer opt-in (tracking checklist: ZiolkowskiJakub/DiGi.YOLO#11).
         [Obsolete("Superseded by direct building_data column projections in the automated Year Built Prediction pipeline. TODO [YearBuiltPipelineFileSource]")]
         private void AppendTable()
         {
@@ -1918,7 +1918,7 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = string.Format("Done Checking! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s:{4}ms", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, timeSpan.Milliseconds));
         }
 
-        // TODO [YearBuiltPipelineFileSource]: Superseded by the automated Year Built Prediction pipeline (ZiolkowskiJakub/DiGi.YOLO#1). Do not remove without: 1. A successful prediction parity run on deployed PostgreSQL data (#1 §Verification), 2. Full database coverage established, 3. An explicit decision and developer opt-in.
+        // TODO [YearBuiltPipelineFileSource]: Superseded by the automated Year Built Prediction pipeline (ZiolkowskiJakub/DiGi.YOLO#1). Do not remove without: 1. An automated pipeline run (wiki "Running a County", ZiolkowskiJakub/DiGi.GIS.YOLO.UI) completes a full sweep for at least one county against deployed PostgreSQL data, with the building_data detection and populated-year columns filled for that county, 2. Full database coverage established, 3. An explicit decision and developer opt-in (tracking checklist: ZiolkowskiJakub/DiGi.YOLO#11).
         [Obsolete("Superseded by the automated Year Built Prediction pipeline. TODO [YearBuiltPipelineFileSource]")]
         private void Convert_ToFiles(int count = 10)
         {
