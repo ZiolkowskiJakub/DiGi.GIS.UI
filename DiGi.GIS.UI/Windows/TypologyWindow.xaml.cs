@@ -222,7 +222,7 @@ namespace DiGi.GIS.UI.Windows
                 return;
             }
 
-            List<TypologyPath>? typologyPaths = typology?.GetTypologyPaths(true);
+            List<TypologyPath>? typologyPaths = Typology.Query.TypologyPaths(typology, true);
             if (typologyPaths == null || typologyPaths.Count == 0)
             {
                 return;
@@ -231,7 +231,7 @@ namespace DiGi.GIS.UI.Windows
             List<Typology.Classes.Typology> typologies = [];
             foreach (TypologyPath typologyPath in typologyPaths)
             {
-                if (typology?.GetTypology(typologyPath) is not Typology.Classes.Typology typology_Temp)
+                if (Typology.Query.SubTypology(typology, typologyPath) is not Typology.Classes.Typology typology_Temp)
                 {
                     continue;
                 }
@@ -381,7 +381,7 @@ namespace DiGi.GIS.UI.Windows
             {
                 foreach (Typology.Classes.Typology typology_Temp in typologies)
                 {
-                    if (typology_Temp.GetReferences(true) is HashSet<string> references_Temp)
+                    if (Typology.Query.ReferenceSet(typology_Temp, true) is HashSet<string> references_Temp)
                     {
                         references.UnionWith(references_Temp);
                     }
@@ -408,7 +408,7 @@ namespace DiGi.GIS.UI.Windows
                     {
                         foreach (Typology.Classes.Typology subTypology in subTypologies)
                         {
-                            if (subTypology.GetReferences(true) is HashSet<string> references_Temp)
+                            if (Typology.Query.ReferenceSet(subTypology, true) is HashSet<string> references_Temp)
                             {
                                 references_SubTypology.UnionWith(references_Temp);
                             }

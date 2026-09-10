@@ -22,7 +22,7 @@ namespace DiGi.GIS.UI
                 return null;
             }
 
-            Typology.Classes.Typology? typology_Temp = typology.GetTypology(typologyPath);
+            Typology.Classes.Typology? typology_Temp = Typology.Query.SubTypology(typology, typologyPath);
             if (typology_Temp is null)
             {
                 return null;
@@ -43,7 +43,7 @@ namespace DiGi.GIS.UI
             TypologyPath? typologyPath_Temp = typologyPath.Parent;
             while (typologyPath_Temp is not null)
             {
-                typology_Temp = typology.GetTypology(typologyPath_Temp);
+                typology_Temp = Typology.Query.SubTypology(typology, typologyPath_Temp);
                 if (typology_Temp is null)
                 {
                     break;
