@@ -1654,7 +1654,16 @@ namespace DiGi.GIS.UI.Application.Windows
 
                     // The part each item belongs to comes from the building_2d row already holding its
                     // reference - one batched lookup for the whole split rather than one part for the code.
-                    Dictionary<string, int> countyIds_ByReference = await PostgreSQL.Query.CountyIdsByReferencesAsync(building2DPostgreSQLConverter, ortoDatas_GIS.Select(x => x?.Reference), countyIds);
+                    Dictionary<string, int>? countyIds_ByReference = await PostgreSQL.Query.CountyIdsByReferencesAsync(building2DPostgreSQLConverter, ortoDatas_GIS.Select(x => x?.Reference), countyIds);
+
+                    if (countyIds_ByReference is null)
+                    {
+                        // The lookup could not run - a Main connection that cannot answer for one split
+                        // cannot answer for the next one either, so the run stops instead of silently
+                        // rejecting every item as unresolvable.
+                        TextBlock_Progress.Text = "Update stopped: the building_2d lookup could not run (check the Main database connection).";
+                        return;
+                    }
 
                     List<PostgreSQL.Classes.OrtoDatas>? ortoDatas_PostgreSQL = [];
                     foreach (OrtoDatas ortoDatas_GIS_Temp in ortoDatas_GIS)
@@ -3019,7 +3028,16 @@ namespace DiGi.GIS.UI.Application.Windows
 
                     // The part each item belongs to comes from the building_2d row already holding its
                     // reference - one batched lookup for the whole split rather than one part for the code.
-                    Dictionary<string, int> countyIds_ByReference = await PostgreSQL.Query.CountyIdsByReferencesAsync(building2DPostgreSQLConverter, references, countyIds);
+                    Dictionary<string, int>? countyIds_ByReference = await PostgreSQL.Query.CountyIdsByReferencesAsync(building2DPostgreSQLConverter, references, countyIds);
+
+                    if (countyIds_ByReference is null)
+                    {
+                        // The lookup could not run - a Main connection that cannot answer for one split
+                        // cannot answer for the next one either, so the run stops instead of silently
+                        // rejecting every item as unresolvable.
+                        TextBlock_Progress.Text = "Update stopped: the building_2d lookup could not run (check the Main database connection).";
+                        return;
+                    }
 
                     List<PostgreSQL.Classes.YearBuiltData> yearBuiltDatas_PostgreSQL = [];
                     foreach (YearBuiltData yearBuiltData in dictionary.Values)
@@ -3162,7 +3180,16 @@ namespace DiGi.GIS.UI.Application.Windows
                 {
                     // The part each item belongs to comes from the building_2d row already holding its
                     // reference - one batched lookup for the whole split rather than one part for the code.
-                    Dictionary<string, int> countyIds_ByReference = await PostgreSQL.Query.CountyIdsByReferencesAsync(building2DPostgreSQLConverter, building2Ds_GIS.Select(x => x?.Reference), countyIds);
+                    Dictionary<string, int>? countyIds_ByReference = await PostgreSQL.Query.CountyIdsByReferencesAsync(building2DPostgreSQLConverter, building2Ds_GIS.Select(x => x?.Reference), countyIds);
+
+                    if (countyIds_ByReference is null)
+                    {
+                        // The lookup could not run - a Main connection that cannot answer for one split
+                        // cannot answer for the next one either, so the run stops instead of silently
+                        // rejecting every item as unresolvable.
+                        TextBlock_Progress.Text = "Update stopped: the building_2d lookup could not run (check the Main database connection).";
+                        return;
+                    }
 
                     List<PostgreSQL.Classes.Building2DOccupancyData> building2DOccupancyDatas = [];
                     foreach (Building2D building2D_GIS in building2Ds_GIS)
