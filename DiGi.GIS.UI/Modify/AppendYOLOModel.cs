@@ -14,11 +14,13 @@ namespace DiGi.GIS.UI
     public static partial class Modify
     {
         /// <summary>
-        /// Appends a 2D building YOLO model to the current context using the specified conversion options.
+        /// [TEMPORARY] Appends a 2D building YOLO model to the current context using the specified conversion options.
         /// </summary>
         /// <param name="owner">The owner window used for displaying modal dialogs.</param>
         /// <param name="yOLOConversionOptions">The options for YOLO conversion. If null, a new instance of <see cref="YOLOConversionOptions"/> will be initialized.</param>
         /// <returns><c>true</c> if the model was successfully appended; otherwise, <c>false</c>.</returns>
+        // TODO [YearBuiltPipelineFileSource]: Superseded by DiGi.GIS.YOLO.UI Modify.AppendYOLOTrainingDatasetAsync (ZiolkowskiJakub/DiGi.GIS.YOLO.UI#13). Do not remove until the DB-sourced dataset builder (ZiolkowskiJakub/DiGi.GIS.YOLO.UI#13) has appended a dataset from deployed data and weights trained on it have passed the acceptance gate of ZiolkowskiJakub/DiGi.GIS.YOLO.UI#12; tracking checklist: ZiolkowskiJakub/DiGi.YOLO#11.
+        [Obsolete("Superseded by DiGi.GIS.YOLO.UI Modify.AppendYOLOTrainingDatasetAsync. TODO [YearBuiltPipelineFileSource]")]
         public static bool AppendYOLOModel_Building2D(Window? owner, YOLOConversionOptions? yOLOConversionOptions = null)
         {
             yOLOConversionOptions ??= new YOLOConversionOptions();

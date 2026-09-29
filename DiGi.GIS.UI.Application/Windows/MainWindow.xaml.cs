@@ -627,6 +627,7 @@ namespace DiGi.GIS.UI.Application.Windows
             TextBlock_Progress.Text = string.Format("Done Appending VoTT Model! [{0}]", string.Format("{0}d:{1}h:{2}m:{3}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds));
         }
 
+        // TODO [YearBuiltPipelineFileSource]: Superseded by DiGi.GIS.YOLO.UI Modify.AppendYOLOTrainingDatasetAsync (ZiolkowskiJakub/DiGi.GIS.YOLO.UI#13). Do not remove until the DB-sourced dataset builder (ZiolkowskiJakub/DiGi.GIS.YOLO.UI#13) has appended a dataset from deployed data and weights trained on it have passed the acceptance gate of ZiolkowskiJakub/DiGi.GIS.YOLO.UI#12; tracking checklist: ZiolkowskiJakub/DiGi.YOLO#11.
         private void AppendYOLOModel()
         {
             bool includeOrtoRange = false;
@@ -644,7 +645,9 @@ namespace DiGi.GIS.UI.Application.Windows
             yOLOConversionOptions[YOLO.Enums.Category.Validate] = 0.1;
             yOLOConversionOptions[YOLO.Enums.Category.Test] = 0;
 
+#pragma warning disable CS0618
             Modify.AppendYOLOModel_Building2D(this, yOLOConversionOptions);
+#pragma warning restore CS0618
 
             if (includeOrtoRange)
             {
@@ -699,6 +702,7 @@ namespace DiGi.GIS.UI.Application.Windows
             AppendVoTTModel_OrtoRange();
         }
 
+        // TODO [YearBuiltPipelineFileSource]: Superseded by DiGi.GIS.YOLO.UI Modify.AppendYOLOTrainingDatasetAsync (ZiolkowskiJakub/DiGi.GIS.YOLO.UI#13). Do not remove until the DB-sourced dataset builder (ZiolkowskiJakub/DiGi.GIS.YOLO.UI#13) has appended a dataset from deployed data and weights trained on it have passed the acceptance gate of ZiolkowskiJakub/DiGi.GIS.YOLO.UI#12; tracking checklist: ZiolkowskiJakub/DiGi.YOLO#11.
         private void Button_AppendYOLOModel_Click(object sender, RoutedEventArgs e)
         {
             AppendYOLOModel();

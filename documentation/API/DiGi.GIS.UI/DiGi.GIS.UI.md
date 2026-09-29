@@ -1123,7 +1123,7 @@ Optional conversion options to be applied during the process\.
 
 ## Modify\.AppendYOLOModel\_Building2D\(Window, YOLOConversionOptions\) Method
 
-Appends a 2D building YOLO model to the current context using the specified conversion options\.
+\[TEMPORARY\] Appends a 2D building YOLO model to the current context using the specified conversion options\.
 
 ```csharp
 public static bool AppendYOLOModel_Building2D(System.Windows.Window? owner, DiGi.GIS.UI.Classes.YOLOConversionOptions? yOLOConversionOptions=null);
